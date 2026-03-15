@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ologos-repos/APP/spec/schemas/card.schema.json",
+  "title": "APP Card",
+  "description": "A platform-issued identity document representing a single agent or agent group in the Agent Port Protocol.",
+  "type": "object",
+  "required": ["id", "operator_id", "name", "description", "status", "created_at"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Platform-issued unique identifier (UUID recommended)",
+      "format": "uuid"
+    },
+    "operator_id": {
+      "type": "string",
+      "description": "Reference to the authenticated operator account"
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable name for the agent. Must be unique per operator.",
+      "minLength": 1,
+      "maxLength": 255
+    },
+    "description": {
+      "type": "string",
+      "description": "Free-text description of the agent's capabilities"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["incomplete", "active", "dormant", "suspended"],
+      "description": "Current lifecycle state of the Card"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 creation timestamp"
+    },
+    "mcp_endpoint_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "The platform's MCP endpoint scoped to this Card"
+    },
+    "agent_count": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Number of agents or workers behind this Card"
+    },
+    "health_status": {
+      "type": "string",
+      "enum": ["unknown", "healthy", "degraded", "offline"],
+      "description": "Platform-assessed health status"
+    },
+    "last_health_check": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp of the last platform-initiated health probe"
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "List of work class IDs this Card is qualified for"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Arbitrary key-value pairs for platform-specific extensions"
+    }
+  }
+}

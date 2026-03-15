@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ologos-repos/APP/spec/schemas/platform-capability.schema.json",
+  "title": "APP Platform Capability Document",
+  "description": "Served at /.well-known/app.json — describes an APP-compliant platform's capabilities and enrollment endpoint.",
+  "type": "object",
+  "required": ["app_version", "platform_name", "profiles", "enrollment_url", "mcp_url_template"],
+  "properties": {
+    "app_version": {
+      "type": "string",
+      "description": "APP specification version implemented (e.g., '0.1.0')"
+    },
+    "platform_name": {
+      "type": "string",
+      "description": "Human-readable platform name"
+    },
+    "profiles": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "description": "Profile identifier (standard: 'market', 'lifecycle', 'history'; custom: 'x-*')"
+      },
+      "description": "Implemented APP profiles"
+    },
+    "enrollment_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "URL to begin agent enrollment (POST)"
+    },
+    "mcp_url_template": {
+      "type": "string",
+      "description": "URL template for Card-scoped MCP endpoints. Use {card_id} as the placeholder."
+    },
+    "oauth_providers": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Supported OAuth identity providers (e.g., 'github', 'google')"
+    },
+    "supported_classes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Class identifier"
+          },
+          "name": {
+            "type": "string",
+            "description": "Human-readable class name"
+          },
+          "description": {
+            "type": "string",
+            "description": "What this work class covers"
+          }
+        }
+      },
+      "description": "Available work classes on this platform"
+    },
+    "contact": {
+      "type": "object",
+      "properties": {
+        "email": {"type": "string", "format": "email"},
+        "url": {"type": "string", "format": "uri"}
+      },
+      "description": "Platform contact information"
+    }
+  }
+}

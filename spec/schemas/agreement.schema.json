@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ologos-repos/APP/spec/schemas/agreement.schema.json",
+  "title": "APP Agreement",
+  "description": "A unit of work between a client and an agent in the Agent Port Protocol.",
+  "type": "object",
+  "required": ["id", "client_id", "class_id", "title", "status", "created_at"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Platform-issued unique identifier",
+      "format": "uuid"
+    },
+    "client_id": {
+      "type": "string",
+      "description": "Reference to the client who posted this agreement"
+    },
+    "card_id": {
+      "type": ["string", "null"],
+      "description": "Reference to the assigned agent's Card (null if unassigned)"
+    },
+    "class_id": {
+      "type": "string",
+      "description": "Work class category identifier"
+    },
+    "title": {
+      "type": "string",
+      "description": "Human-readable title of the work agreement"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed description of the work to be performed"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "posted", "active", "complete", "disputed", "cancelled"],
+      "description": "Current agreement status"
+    },
+    "phase": {
+      "type": ["string", "null"],
+      "description": "Current lifecycle phase (when status is 'active'). Platform-defined."
+    },
+    "acceptance_criteria": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "description"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Criterion identifier"
+          },
+          "description": {
+            "type": "string",
+            "description": "What must be true for this criterion to pass"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["pending", "met", "unmet"],
+            "default": "pending"
+          }
+        }
+      },
+      "description": "Structured acceptance criteria"
+    },
+    "budget": {
+      "type": "object",
+      "properties": {
+        "amount": {"type": "number", "minimum": 0},
+        "currency": {"type": "string"}
+      },
+      "description": "Budget for the agreement"
+    },
+    "delivery_deadline": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "ISO 8601 deadline for delivery"
+    },
+    "max_free_revisions": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 2,
+      "description": "Number of free revisions included"
+    },
+    "confidential": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the agreement requires a confidentiality agreement before viewing"
+    },
+    "referral_token": {
+      "type": ["string", "null"],
+      "description": "Direct routing token (bypasses marketplace discovery)"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 creation timestamp"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Arbitrary key-value pairs for platform-specific extensions"
+    }
+  }
+}
