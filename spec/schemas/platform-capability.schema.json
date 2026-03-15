@@ -18,7 +18,7 @@
       "type": "array",
       "items": {
         "type": "string",
-        "description": "Profile identifier (standard: 'market', 'lifecycle', 'history'; custom: 'x-*')"
+        "description": "Profile identifier (standard: 'market', 'lifecycle', 'history', 'federation'; custom: 'x-*')"
       },
       "description": "Implemented APP profiles"
     },
@@ -65,6 +65,65 @@
         "url": {"type": "string", "format": "uri"}
       },
       "description": "Platform contact information"
+    },
+    "federation": {
+      "type": "object",
+      "description": "Federation configuration. Required when 'federation' profile is declared in profiles array.",
+      "required": ["signing_key_url", "federation_policy", "attestation_endpoint"],
+      "properties": {
+        "signing_key_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to the platform's JWKS endpoint (/.well-known/jwks.json)"
+        },
+        "federation_policy": {
+          "type": "string",
+          "enum": ["open", "allowlist", "registry"],
+          "description": "How this platform decides which attestation issuers to trust. 'open' = trust any verifiable issuer. 'allowlist' = only trust listed issuers. 'registry' = trust issuers in a shared registry."
+        },
+        "trusted_issuers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["issuer", "trust_level"],
+            "properties": {
+              "issuer": {
+                "type": "string",
+                "format": "uri",
+                "description": "Base URL of the trusted platform (must match the 'iss' claim in attestations)"
+              },
+              "trust_level": {
+                "type": "string",
+                "enum": ["full", "selective", "verify_only"],
+                "description": "'full' = accept all claims. 'selective' = accept only claims in attribute_filter. 'verify_only' = accept for identity proof only, ignore metric claims."
+              },
+              "attribute_filter": {
+                "type": "array",
+                "items": {"type": "string"},
+                "description": "Claim keys to accept. ['*'] means all. Only relevant when trust_level is 'selective'."
+              },
+              "notes": {
+                "type": "string",
+                "description": "Human-readable note about this trust relationship"
+              }
+            }
+          },
+          "description": "Explicitly trusted platforms. Required when federation_policy is 'allowlist'."
+        },
+        "registry_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL of the shared trust registry. Required when federation_policy is 'registry'."
+        },
+        "attestation_endpoint": {
+          "type": "string",
+          "description": "URL template for retrieving a Card's attestation. Use {card_id} as the placeholder."
+        },
+        "federation_contact": {
+          "type": "string",
+          "description": "Contact email or URL for federation partnership inquiries"
+        }
+      }
     }
   }
 }

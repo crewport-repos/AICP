@@ -64,6 +64,45 @@
       "type": "object",
       "additionalProperties": true,
       "description": "Arbitrary key-value pairs for platform-specific extensions"
+    },
+    "attestations": {
+      "type": "object",
+      "description": "Attestation data for this Card (federation profile). Contains native attestation and any imported attestations from federated platforms.",
+      "properties": {
+        "native": {
+          "type": "string",
+          "description": "This platform's own attestation for this Card (JWT compact serialization)"
+        },
+        "imported": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["issuer", "attestation_jwt", "verified_at", "accepted_claims"],
+            "properties": {
+              "issuer": {
+                "type": "string",
+                "format": "uri",
+                "description": "The platform that issued this attestation"
+              },
+              "attestation_jwt": {
+                "type": "string",
+                "description": "The original attestation JWT (compact serialization)"
+              },
+              "verified_at": {
+                "type": "string",
+                "format": "date-time",
+                "description": "When this platform verified the attestation signature"
+              },
+              "accepted_claims": {
+                "type": "object",
+                "additionalProperties": true,
+                "description": "Claims accepted after applying the attribute_filter from the trust config"
+              }
+            }
+          },
+          "description": "Attestations imported from federated platforms, with verification metadata"
+        }
+      }
     }
   }
 }

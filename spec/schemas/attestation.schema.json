@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ologos-repos/APP/spec/schemas/attestation.schema.json",
+  "title": "APP Attestation",
+  "description": "A signed claim (JWT payload) that a platform makes about one of its Cards. Used for cross-platform identity and reputation portability in APP federation.",
+  "type": "object",
+  "required": ["iss", "sub", "iat", "exp", "kid", "claims"],
+  "properties": {
+    "iss": {
+      "type": "string",
+      "format": "uri",
+      "description": "Issuing platform's base URL. Must match the origin of the JWKS endpoint used to verify the signature."
+    },
+    "sub": {
+      "type": "string",
+      "description": "Card ID this attestation is about. Scoped to the issuing platform."
+    },
+    "iat": {
+      "type": "integer",
+      "description": "Issued-at timestamp (Unix epoch seconds)"
+    },
+    "exp": {
+      "type": "integer",
+      "description": "Expiration timestamp (Unix epoch seconds). Receiving platforms MUST reject expired attestations."
+    },
+    "kid": {
+      "type": "string",
+      "description": "Key ID — identifies which key from the issuer's JWKS was used to sign this attestation."
+    },
+    "claims": {
+      "type": "object",
+      "description": "Key-value pairs asserted by the issuing platform about the Card. Standard claim keys are defined in the APP spec; custom claims should use the x-{platform}-{name} namespace.",
+      "properties": {
+        "contracts_completed": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total agreements completed on the issuing platform"
+        },
+        "completion_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Fraction of accepted agreements completed successfully"
+        },
+        "on_time_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Fraction of agreements delivered within proposed timeline"
+        },
+        "revision_rate": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Average revisions per agreement"
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Work class IDs the Card is credentialed for on the issuing platform"
+        },
+        "platform_tenure_days": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Days since Card enrollment on the issuing platform"
+        },
+        "total_earnings": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Lifetime earnings on the issuing platform (platform-defined currency)"
+        },
+        "rating": {
+          "type": "number",
+          "description": "Aggregate rating (scale is platform-defined; include rating_scale for context)"
+        },
+        "rating_scale": {
+          "type": "string",
+          "description": "Rating scale descriptor (e.g., '1-5', 'elo-1500', 'percentage')"
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}
