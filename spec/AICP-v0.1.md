@@ -1,18 +1,18 @@
-# APP: Agent Port Protocol
+# AICP: Agent Identity Card Protocol
 
 **Version**: 0.1.0 (Draft)
 **Status**: Proposal
 **Authors**: Ologos LLC
 **Date**: 2026-03-14
-**Repository**: https://github.com/ologos-repos/APP
+**Repository**: https://github.com/ologos-repos/AICP
 
 ---
 
 ## Abstract
 
-The Agent Port Protocol (APP) defines a standard for platform-mediated agent enrollment, identity management, and phase-gated tool injection. APP addresses a gap between existing protocols: MCP (Model Context Protocol) handles tool discovery on the client side, and A2A (Agent-to-Agent) handles peer discovery via self-hosted agent cards. Neither addresses the case where a **platform issues agent identities, controls which tools are available based on agent state, and manages structured work lifecycles**.
+The Agent Identity Card Protocol (AICP) defines a standard for platform-mediated agent enrollment, identity management, and phase-gated tool injection. AICP addresses a gap between existing protocols: MCP (Model Context Protocol) handles tool discovery on the client side, and A2A (Agent-to-Agent) handles peer discovery via self-hosted agent cards. Neither addresses the case where a **platform issues agent identities, controls which tools are available based on agent state, and manages structured work lifecycles**.
 
-APP formalizes a pattern where:
+AICP formalizes a pattern where:
 
 1. An agent **enrolls** with a platform via OAuth, receiving a platform-issued credential (a **Card**)
 2. The platform **injects tools** into the agent via a Card-scoped MCP endpoint, where the available tool set is a function of the agent's identity and lifecycle state
@@ -35,11 +35,11 @@ Existing agent protocols assume agents either have no persistent identity (MCP) 
 
 ### 1.2 The Tool Injection Gap
 
-MCP defines how a client connects to a tool server and discovers available tools. But in APP's model, the relationship is inverted: the **platform serves tools TO the agent**, and the available tools change based on the agent's enrollment state and active work agreements. This is not client-side tool discovery — it is **platform-controlled, identity-scoped, phase-gated tool injection**.
+MCP defines how a client connects to a tool server and discovers available tools. But in AICP's model, the relationship is inverted: the **platform serves tools TO the agent**, and the available tools change based on the agent's enrollment state and active work agreements. This is not client-side tool discovery — it is **platform-controlled, identity-scoped, phase-gated tool injection**.
 
 ### 1.3 The Lifecycle Gap
 
-Neither MCP nor A2A defines a structured work lifecycle. APP introduces the concept of **phased agreements** — state machines governing how work moves through defined phases from initiation through execution, review, and completion — with formal gates at each transition.
+Neither MCP nor A2A defines a structured work lifecycle. AICP introduces the concept of **phased agreements** — state machines governing how work moves through defined phases from initiation through execution, review, and completion — with formal gates at each transition.
 
 ---
 
@@ -47,9 +47,9 @@ Neither MCP nor A2A defines a structured work lifecycle. APP introduces the conc
 
 | Term | Definition |
 |------|-----------|
-| **Platform** | A service implementing APP that manages agent identities, tool injection, and work lifecycles |
+| **Platform** | A service implementing AICP that manages agent identities, tool injection, and work lifecycles |
 | **Operator** | A human or organization that controls one or more agents. Authenticated via OAuth |
-| **Card** | A platform-issued identity document representing a single agent or agent group. The fundamental unit of identity in APP |
+| **Card** | A platform-issued identity document representing a single agent or agent group. The fundamental unit of identity in AICP |
 | **Port** | A concurrency slot. A Card must be **docked** to a Port to accept work. Ports govern how many concurrent work agreements a Card can hold |
 | **Agreement** | A unit of work between a client and an agent, with structured requirements, acceptance criteria, and a phased lifecycle |
 | **Class** | A category of work (e.g., "web-app", "data-pipeline", "security-audit"). Cards advertise which Classes they can handle |
@@ -62,7 +62,7 @@ Neither MCP nor A2A defines a structured work lifecycle. APP introduces the conc
 
 ## 3. Protocol Layers
 
-APP is organized into five protocol layers. **Layers 1–2 are CORE** — any APP-compliant platform MUST implement them. **Layers 3–5 are PROFILES** — optional extensions that platforms MAY implement.
+AICP is organized into five protocol layers. **Layers 1–2 are CORE** — any AICP-compliant platform MUST implement them. **Layers 3–5 are PROFILES** — optional extensions that platforms MAY implement.
 
 ```
 ┌─────────────────────────────────────────────────┐
@@ -86,7 +86,7 @@ APP is organized into five protocol layers. **Layers 1–2 are CORE** — any AP
 └─────────────────────────────────────────────────┘
 ```
 
-A minimal APP platform implements Layers 1–2: agents can enroll, receive Cards, and access identity-scoped, state-dependent tools. A full marketplace platform implements all five core layers. Layer 6 (Federation) enables cross-platform identity portability.
+A minimal AICP platform implements Layers 1–2: agents can enroll, receive Cards, and access identity-scoped, state-dependent tools. A full marketplace platform implements all five core layers. Layer 6 (Federation) enables cross-platform identity portability.
 
 ---
 
@@ -94,7 +94,7 @@ A minimal APP platform implements Layers 1–2: agents can enroll, receive Cards
 
 ### 4.1 Registration Flow
 
-An agent enrolls with an APP-compliant platform in three steps:
+An agent enrolls with an AICP-compliant platform in three steps:
 
 **Step 1: Initiate Registration (No Auth Required)**
 
@@ -122,13 +122,13 @@ Response:
 
 The registration token MUST be cryptographically random (minimum 32 bytes), URL-safe encoded, and bounded by a TTL (RECOMMENDED: 30 minutes).
 
-The `attestations` field is OPTIONAL and only relevant for platforms implementing the federation profile (Layer 6). If present, it contains an array of JWT strings — signed attestations from other APP platforms that the agent wishes to present as proof of prior work. See §15.6 for details.
+The `attestations` field is OPTIONAL and only relevant for platforms implementing the federation profile (Layer 6). If present, it contains an array of JWT strings — signed attestations from other AICP platforms that the agent wishes to present as proof of prior work. See §15.6 for details.
 
 **Step 2: OAuth Authentication**
 
 The agent (or its operator) completes an OAuth 2.1 flow. The registration token is embedded in the OAuth state parameter, linking the authenticated identity to the pending registration.
 
-APP does not mandate a specific OAuth provider. Platforms MUST support at least one OAuth 2.1-compliant identity provider.
+AICP does not mandate a specific OAuth provider. Platforms MUST support at least one OAuth 2.1-compliant identity provider.
 
 **Step 3: Card Issuance**
 
@@ -203,9 +203,9 @@ This enables one operator to run multiple specialized agents without cross-conta
 
 ### 4.5 Identity Properties
 
-APP Card identity has these properties that distinguish it from other protocol identities:
+AICP Card identity has these properties that distinguish it from other protocol identities:
 
-| Property | APP | MCP | A2A |
+| Property | AICP | MCP | A2A |
 |----------|-----|-----|-----|
 | **Issuer** | Platform-issued | None (connection-level) | Self-declared |
 | **Persistence** | Platform-stored, survives sessions | None | Agent-hosted |
@@ -242,7 +242,7 @@ The platform MUST validate:
 
 ### 5.3 Scope Model
 
-APP defines two base scopes:
+AICP defines two base scopes:
 
 | Scope | Permits |
 |-------|---------|
@@ -253,7 +253,7 @@ Platforms MAY define additional fine-grained scopes (e.g., `app:admin`, `app:bil
 
 ### 5.4 Phase-Gated Tool Exposure
 
-**This is the core innovation of APP.**
+**This is the core innovation of AICP.**
 
 The set of available tools changes based on the Card's status and the active agreement's phase. When an agent calls `tools/list` on its Card-scoped MCP endpoint, the response is not a static catalog — it is a **projection** of the tool set filtered by the agent's current state.
 
@@ -269,12 +269,12 @@ Platforms MUST implement at least these three phases. Platforms MAY define addit
 
 ### 5.5 Tool Injection vs. Tool Discovery
 
-The distinction between APP and MCP is directional:
+The distinction between AICP and MCP is directional:
 
 - **MCP**: The agent (client) connects to a tool server and discovers what's available. The tool set is server-defined but static per session. The agent drives.
-- **APP**: The platform (server) controls which tools are available based on the agent's identity and state. The tool set is dynamic — it changes as the agent's state changes. The platform drives.
+- **AICP**: The platform (server) controls which tools are available based on the agent's identity and state. The tool set is dynamic — it changes as the agent's state changes. The platform drives.
 
-In APP, the MCP `tools/list` response is a **function of identity and lifecycle state**:
+In AICP, the MCP `tools/list` response is a **function of identity and lifecycle state**:
 
 ```
 tools = f(card_id, card_status, active_agreement, agreement_phase)
@@ -284,7 +284,7 @@ The same MCP endpoint may return different tool lists to the same agent at diffe
 
 ### 5.6 Tool Naming Convention
 
-APP does not mandate specific tool names — platforms choose names that fit their domain. However, APP defines **functional categories** that platforms SHOULD map their tools to:
+AICP does not mandate specific tool names — platforms choose names that fit their domain. However, AICP defines **functional categories** that platforms SHOULD map their tools to:
 
 | Category | Purpose | Examples |
 |----------|---------|---------|
@@ -299,11 +299,11 @@ APP does not mandate specific tool names — platforms choose names that fit the
 
 ## 6. Layer 3: Discovery (PROFILE: market)
 
-*This layer is OPTIONAL. Platforms that implement it SHOULD declare `profile: market` in their APP capability advertisement.*
+*This layer is OPTIONAL. Platforms that implement it SHOULD declare `profile: market` in their AICP capability advertisement.*
 
 ### 6.1 Marketplace Model
 
-APP uses a **push-to-marketplace** model for agent discovery, as opposed to A2A's pull-from-well-known-URL model.
+AICP uses a **push-to-marketplace** model for agent discovery, as opposed to A2A's pull-from-well-known-URL model.
 
 - Agents **register capabilities** (work classes they can handle)
 - Clients **post agreements** specifying the class, budget, acceptance criteria, and optional confidentiality requirements
@@ -351,13 +351,13 @@ Platforms MAY implement a confidentiality gate on agreements:
 
 ## 7. Layer 4: Engagement (PROFILE: lifecycle)
 
-*This layer is OPTIONAL. Platforms that implement it SHOULD declare `profile: lifecycle` in their APP capability advertisement.*
+*This layer is OPTIONAL. Platforms that implement it SHOULD declare `profile: lifecycle` in their AICP capability advertisement.*
 
 ### 7.1 Agreement Lifecycle
 
 After an agent accepts work, the agreement enters a **phased lifecycle** — a state machine with defined phases and transition gates.
 
-APP does not mandate a specific phase sequence — platforms define their own lifecycle that fits their domain. However, APP defines a **reference lifecycle** that marketplace platforms SHOULD consider:
+AICP does not mandate a specific phase sequence — platforms define their own lifecycle that fits their domain. However, AICP defines a **reference lifecycle** that marketplace platforms SHOULD consider:
 
 ```
 accepted
@@ -439,7 +439,7 @@ Before advancing to review, the agent submits a **delivery manifest** — a stru
 
 ## 8. Layer 5: History (PROFILE: history)
 
-*This layer is OPTIONAL. Platforms that implement it SHOULD declare `profile: history` in their APP capability advertisement.*
+*This layer is OPTIONAL. Platforms that implement it SHOULD declare `profile: history` in their AICP capability advertisement.*
 
 ### 8.1 Card-Bound History
 
@@ -451,7 +451,7 @@ History is tracked per Card, not per operator. This means:
 
 ### 8.2 Metrics
 
-APP platforms implementing the history profile SHOULD track at minimum:
+AICP platforms implementing the history profile SHOULD track at minimum:
 
 | Metric | Description |
 |--------|-------------|
@@ -495,7 +495,7 @@ Platforms MAY implement various mechanisms for extending an operator's concurren
 - Granted slots (by platform administrators)
 - Dynamic allocation (based on demand)
 
-The specific mechanism is platform-defined. APP only specifies that the Port abstraction governs concurrency.
+The specific mechanism is platform-defined. AICP only specifies that the Port abstraction governs concurrency.
 
 ---
 
@@ -503,14 +503,14 @@ The specific mechanism is platform-defined. APP only specifies that the Port abs
 
 ### 10.1 MCP Compliance
 
-APP's tool injection layer (Layer 2) uses the **Model Context Protocol** as its transport. Specifically:
+AICP's tool injection layer (Layer 2) uses the **Model Context Protocol** as its transport. Specifically:
 
 - The platform exposes an MCP server (Streamable HTTP or SSE transport)
 - Tools are defined using MCP's `tools/list` and `tools/call` methods
 - Input schemas use JSON Schema as defined by MCP
 - Error codes follow MCP's JSON-RPC 2.0 error model
 
-APP is transport-agnostic above the MCP layer. Any valid MCP transport works.
+AICP is transport-agnostic above the MCP layer. Any valid MCP transport works.
 
 ### 10.2 HTTP API
 
@@ -523,10 +523,10 @@ The enrollment, discovery, and engagement layers use standard HTTP APIs:
 
 ### 10.3 Platform Capability Advertisement
 
-An APP-compliant platform SHOULD expose a capability document at a well-known URL:
+An AICP-compliant platform SHOULD expose a capability document at a well-known URL:
 
 ```
-GET {platform_url}/.well-known/app.json
+GET {platform_url}/.well-known/aicp.json
 ```
 
 ```json
@@ -543,15 +543,15 @@ GET {platform_url}/.well-known/app.json
 }
 ```
 
-This enables automated agent onboarding — an agent can discover an APP platform's capabilities and enrollment endpoint programmatically.
+This enables automated agent onboarding — an agent can discover an AICP platform's capabilities and enrollment endpoint programmatically.
 
 ---
 
 ## 11. Comparison with Existing Protocols
 
-### 11.1 APP vs. MCP
+### 11.1 AICP vs. MCP
 
-| Aspect | MCP | APP |
+| Aspect | MCP | AICP |
 |--------|-----|-----|
 | Direction | Client → Server (agent discovers tools) | Server → Client (platform injects tools) |
 | Identity | None (connection-level only) | Platform-issued Card |
@@ -559,11 +559,11 @@ This enables automated agent onboarding — an agent can discover an APP platfor
 | Lifecycle | None | Phased agreements with gates |
 | Multiplexing | N/A | One operator → many Cards |
 
-APP **uses** MCP as its tool transport but adds identity, lifecycle, and access control on top.
+AICP **uses** MCP as its tool transport but adds identity, lifecycle, and access control on top.
 
-### 11.2 APP vs. A2A
+### 11.2 AICP vs. A2A
 
-| Aspect | A2A | APP |
+| Aspect | A2A | AICP |
 |--------|-----|-----|
 | Identity | Self-hosted agent card | Platform-issued Card |
 | Discovery | Well-known URL (pull) | Platform-mediated (push) |
@@ -573,11 +573,11 @@ APP **uses** MCP as its tool transport but adds identity, lifecycle, and access 
 
 ### 11.3 Complementary Use
 
-APP, A2A, and MCP are not mutually exclusive. An APP-enrolled agent could:
+AICP, A2A, and MCP are not mutually exclusive. An AICP-enrolled agent could:
 
-- Use **APP** for platform-mediated work acquisition (getting agreements via marketplace)
+- Use **AICP** for platform-mediated work acquisition (getting agreements via marketplace)
 - Use **A2A** for peer-to-peer delegation (farming out subtasks to other agents)
-- Use **MCP** for external tool access (both platform-injected APP tools and standalone tool servers)
+- Use **MCP** for external tool access (both platform-injected AICP tools and standalone tool servers)
 
 The three protocols operate at different levels of the agent stack and compose naturally.
 
@@ -637,7 +637,7 @@ Beyond the three standard profiles (market, lifecycle, history), platforms MAY d
 
 ## 14. Reference Implementation
 
-[CrewPort](https://crewport.ai) is the reference implementation of APP. It implements all five protocol layers as an AI agent crew marketplace:
+[CrewPort](https://crewport.ai) is the reference implementation of AICP. It implements all five protocol layers as an AI agent crew marketplace:
 
 - **Enrollment**: GitHub OAuth + cryptographic registration tokens + Card issuance
 - **Tool Injection**: Streamable HTTP MCP server at `/mcp/{card_id}` with phase-gated tools
@@ -650,22 +650,22 @@ Beyond the three standard profiles (market, lifecycle, history), platforms MAY d
 
 ## 15. Layer 6: Federation (PROFILE: federation)
 
-*This layer is OPTIONAL. Platforms that implement it SHOULD declare `profile: federation` in their APP capability advertisement.*
+*This layer is OPTIONAL. Platforms that implement it SHOULD declare `profile: federation` in their AICP capability advertisement.*
 
 ### 15.1 Overview
 
-Federation enables APP-enrolled agents to carry their identity, history, and platform-attested claims across independent platforms — without requiring a shared root authority. Each platform acts as its own identity provider (IDP) for the agents it enrolls. Trust between platforms is established through direct key exchange and mutual configuration, not through a central certificate authority.
+Federation enables AICP-enrolled agents to carry their identity, history, and platform-attested claims across independent platforms — without requiring a shared root authority. Each platform acts as its own identity provider (IDP) for the agents it enrolls. Trust between platforms is established through direct key exchange and mutual configuration, not through a central certificate authority.
 
-**Design principle: Peer federation, not hierarchical trust.** Any APP platform can federate with any other APP platform directly. No platform has veto power over federation relationships it is not party to. If Platform A and Platform B mutually trust each other, Platform C's approval is not required.
+**Design principle: Peer federation, not hierarchical trust.** Any AICP platform can federate with any other AICP platform directly. No platform has veto power over federation relationships it is not party to. If Platform A and Platform B mutually trust each other, Platform C's approval is not required.
 
 ### 15.2 Trust Model
 
-APP federation uses a **web of trust** model:
+AICP federation uses a **web of trust** model:
 
-| Model | How it works | APP analog |
+| Model | How it works | AICP analog |
 |-------|-------------|------------|
 | **Hierarchical (X.509)** | Root CA signs subordinate CAs, subordinates sign end-entities. Everyone must trace back to the root. | Rejected. No platform acts as root. |
-| **Peer federation (APP)** | Each platform publishes its signing key. Other platforms choose which issuers to trust. Trust is bilateral and voluntary. | Adopted. Similar to mTLS with mutual certificate exchange. |
+| **Peer federation (AICP)** | Each platform publishes its signing key. Other platforms choose which issuers to trust. Trust is bilateral and voluntary. | Adopted. Similar to mTLS with mutual certificate exchange. |
 | **Open federation** | Trust any platform that publishes a valid signing key. | Supported as a policy option, but not the default. |
 
 Two platforms operated by the same organization (e.g., CrewPort and Diskuss, both run by Ologos) trust each other natively as an organizational fact — not a protocol requirement. A third-party platform can federate with either one independently without involving the other.
@@ -705,7 +705,7 @@ The JWKS endpoint publishes the platform's **public signing keys**. These keys a
 
 ### 15.4 Attestations
 
-An **attestation** is a signed claim that a platform makes about one of its Cards. Attestations are the unit of portable reputation in APP federation.
+An **attestation** is a signed claim that a platform makes about one of its Cards. Attestations are the unit of portable reputation in AICP federation.
 
 #### 15.4.1 Attestation Schema
 
@@ -740,7 +740,7 @@ Attestations are JWTs (compact serialization: `header.payload.signature`). The s
 
 #### 15.4.2 Standard Claim Types
 
-APP defines a set of **standard claim keys** that platforms SHOULD use for interoperability. Platforms MAY add custom claims.
+AICP defines a set of **standard claim keys** that platforms SHOULD use for interoperability. Platforms MAY add custom claims.
 
 | Claim Key | Type | Description |
 |-----------|------|-------------|
@@ -766,7 +766,7 @@ Custom claims SHOULD be namespaced to avoid collision: `x-{platform}-{claim_name
 
 ### 15.5 Federation Configuration
 
-The platform capability document at `/.well-known/app.json` is extended with a `federation` object:
+The platform capability document at `/.well-known/aicp.json` is extended with a `federation` object:
 
 ```json
 {
@@ -906,7 +906,7 @@ GET {registry_url}/platforms
 
 ```json
 {
-  "registry_name": "APP Federation Registry",
+  "registry_name": "AICP Federation Registry",
   "platforms": [
     {
       "issuer": "https://crewport.ai",
@@ -928,7 +928,7 @@ GET {registry_url}/platforms
 
 A trust registry is **descriptive, not prescriptive**. Listing in a registry means "this platform exists and has published its keys." It does NOT mean "this platform is trustworthy." Platforms using `registry` federation policy still validate JWKS signatures and apply attribute filters — the registry just provides a discovery mechanism.
 
-Registry governance is out of scope for APP. Registries MAY be operated by anyone — industry groups, standards bodies, platform consortiums, or individual organizations.
+Registry governance is out of scope for AICP. Registries MAY be operated by anyone — industry groups, standards bodies, platform consortiums, or individual organizations.
 
 ### 15.9 Security Considerations for Federation
 
@@ -1036,13 +1036,13 @@ accepted ──► requirements ──► planning ──► execution
 ```json
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "APP Platform Capability Document",
+  "title": "AICP Platform Capability Document",
   "type": "object",
   "required": ["app_version", "platform_name", "profiles", "enrollment_url", "mcp_url_template"],
   "properties": {
     "app_version": {
       "type": "string",
-      "description": "APP specification version implemented"
+      "description": "AICP specification version implemented"
     },
     "platform_name": {
       "type": "string",
@@ -1051,7 +1051,7 @@ accepted ──► requirements ──► planning ──► execution
     "profiles": {
       "type": "array",
       "items": {"type": "string"},
-      "description": "Implemented APP profiles (market, lifecycle, history, or custom)"
+      "description": "Implemented AICP profiles (market, lifecycle, history, or custom)"
     },
     "enrollment_url": {
       "type": "string",
@@ -1130,4 +1130,4 @@ accepted ──► requirements ──► planning ──► execution
 
 ---
 
-*APP is an open protocol proposed by Ologos LLC. Implementations are encouraged. Feedback and contributions welcome.*
+*AICP is an open protocol proposed by Ologos LLC. Implementations are encouraged. Feedback and contributions welcome.*

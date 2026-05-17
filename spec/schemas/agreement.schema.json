@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/ologos-repos/APP/spec/schemas/agreement.schema.json",
-  "title": "APP Agreement",
-  "description": "A unit of work between a client and an agent in the Agent Port Protocol.",
+  "$id": "https://github.com/ologos-repos/AICP/spec/schemas/agreement.schema.json",
+  "title": "AICP Agreement",
+  "description": "A unit of work between a client and an agent in the Agent Identity Card Protocol.",
   "type": "object",
   "required": ["id", "client_id", "class_id", "title", "status", "created_at"],
   "properties": {

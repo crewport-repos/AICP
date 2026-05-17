@@ -1,17 +1,17 @@
-# APP: Agent Port Protocol
+# AICP: Agent Identity Card Protocol
 
 **Platform-mediated agent identity, tool injection, and work lifecycle management.**
 
-APP defines a standard for how platforms issue agent identities, control which tools are available based on agent state, and manage structured work lifecycles. It sits above MCP (which handles tool transport) and alongside A2A (which handles peer-to-peer agent discovery).
+AICP defines a standard for how platforms issue agent identities, control which tools are available based on agent state, and manage structured work lifecycles. It sits above MCP (which handles tool transport) and alongside A2A (which handles peer-to-peer agent discovery).
 
 ## The Core Innovation
 
-Existing protocols assume agents either have **no persistent identity** (MCP) or **self-declare their identity** (A2A). APP introduces **platform-issued identity** with **phase-gated tool injection** — the platform controls which tools an agent can access based on who they are and where they are in a work lifecycle.
+Existing protocols assume agents either have **no persistent identity** (MCP) or **self-declare their identity** (A2A). AICP introduces **platform-issued identity** with **phase-gated tool injection** — the platform controls which tools an agent can access based on who they are and where they are in a work lifecycle.
 
 ```
 MCP:  Agent ──connects──► Tool Server (static tool list)
 A2A:  Agent ──publishes──► Agent Card (self-declared)
-APP:  Platform ──issues──► Card ──injects──► Tools (dynamic, phase-gated)
+AICP:  Platform ──issues──► Card ──injects──► Tools (dynamic, phase-gated)
 ```
 
 ## Protocol Layers
@@ -24,7 +24,7 @@ APP:  Platform ──issues──► Card ──injects──► Tools (dynamic,
 | 4 | **Engagement** | Profile | Agreement lifecycle, phase gates, review |
 | 5 | **History** | Profile | Track record, metrics, performance |
 
-Layers 1–2 are **required** for APP compliance. Layers 3–5 are **optional profiles** that platforms can implement based on their domain.
+Layers 1–2 are **required** for AICP compliance. Layers 3–5 are **optional profiles** that platforms can implement based on their domain.
 
 ## Key Concepts
 
@@ -35,17 +35,17 @@ Layers 1–2 are **required** for APP compliance. Layers 3–5 are **optional pr
 
 ## Quick Start for Implementors
 
-1. Serve a capability document at `/.well-known/app.json` ([schema](spec/schemas/platform-capability.schema.json))
+1. Serve a capability document at `/.well-known/aicp.json` ([schema](spec/schemas/platform-capability.schema.json))
 2. Implement enrollment: registration endpoint → OAuth → Card issuance
 3. Implement a Card-scoped MCP endpoint at `/mcp/{card_id}` with phase-gated tool lists
 4. Optionally implement Discovery, Engagement, and/or History profiles
 
 ## Specification
 
-- **[Full Specification](spec/APP-v0.1.md)** — Complete protocol definition (v0.1.0 Draft)
-- **[Card Schema](spec/schemas/card.schema.json)** — JSON Schema for APP Card documents
+- **[Full Specification](spec/AICP-v0.1.md)** — Complete protocol definition (v0.1.0 Draft)
+- **[Card Schema](spec/schemas/card.schema.json)** — JSON Schema for AICP Card documents
 - **[Agreement Schema](spec/schemas/agreement.schema.json)** — JSON Schema for work agreements
-- **[Platform Capability Schema](spec/schemas/platform-capability.schema.json)** — JSON Schema for `/.well-known/app.json`
+- **[Platform Capability Schema](spec/schemas/platform-capability.schema.json)** — JSON Schema for `/.well-known/aicp.json`
 
 ## Reference Implementation
 
@@ -53,14 +53,14 @@ Layers 1–2 are **required** for APP compliance. Layers 3–5 are **optional pr
 
 ## Relationship to Other Protocols
 
-| | MCP | A2A | APP |
+| | MCP | A2A | AICP |
 |---|---|---|---|
 | **Handles** | Tool transport | Peer discovery | Platform identity + tool injection |
 | **Identity** | None | Self-declared | Platform-issued |
 | **Tools** | Static per server | N/A | Dynamic per Card + phase |
 | **Composable** | ✅ | ✅ | ✅ |
 
-All three protocols compose naturally. An APP-enrolled agent can use MCP for external tools and A2A for peer delegation.
+All three protocols compose naturally. An AICP-enrolled agent can use MCP for external tools and A2A for peer delegation.
 
 ## License
 
@@ -68,4 +68,4 @@ All three protocols compose naturally. An APP-enrolled agent can use MCP for ext
 
 ## Contributing
 
-APP is an open protocol proposed by Ologos LLC. Feedback, issues, and contributions are welcome.
+AICP is an open protocol proposed by Ologos LLC. Feedback, issues, and contributions are welcome.

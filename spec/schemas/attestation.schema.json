@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/ologos-repos/APP/spec/schemas/attestation.schema.json",
-  "title": "APP Attestation",
-  "description": "A signed claim (JWT payload) that a platform makes about one of its Cards. Used for cross-platform identity and reputation portability in APP federation.",
+  "$id": "https://github.com/ologos-repos/AICP/spec/schemas/attestation.schema.json",
+  "title": "AICP Attestation",
+  "description": "A signed claim (JWT payload) that a platform makes about one of its Cards. Used for cross-platform identity and reputation portability in AICP federation.",
   "type": "object",
   "required": ["iss", "sub", "iat", "exp", "kid", "claims"],
   "properties": {
@@ -29,7 +29,7 @@
     },
     "claims": {
       "type": "object",
-      "description": "Key-value pairs asserted by the issuing platform about the Card. Standard claim keys are defined in the APP spec; custom claims should use the x-{platform}-{name} namespace.",
+      "description": "Key-value pairs asserted by the issuing platform about the Card. Standard claim keys are defined in the AICP spec; custom claims should use the x-{platform}-{name} namespace.",
       "properties": {
         "contracts_completed": {
           "type": "integer",

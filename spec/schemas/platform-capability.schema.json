@@ -1,14 +1,14 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/ologos-repos/APP/spec/schemas/platform-capability.schema.json",
-  "title": "APP Platform Capability Document",
-  "description": "Served at /.well-known/app.json — describes an APP-compliant platform's capabilities and enrollment endpoint.",
+  "$id": "https://github.com/ologos-repos/AICP/spec/schemas/platform-capability.schema.json",
+  "title": "AICP Platform Capability Document",
+  "description": "Served at /.well-known/aicp.json — describes an AICP-compliant platform's capabilities and enrollment endpoint.",
   "type": "object",
   "required": ["app_version", "platform_name", "profiles", "enrollment_url", "mcp_url_template"],
   "properties": {
     "app_version": {
       "type": "string",
-      "description": "APP specification version implemented (e.g., '0.1.0')"
+      "description": "AICP specification version implemented (e.g., '0.1.0')"
     },
     "platform_name": {
       "type": "string",
@@ -20,7 +20,7 @@
         "type": "string",
         "description": "Profile identifier (standard: 'market', 'lifecycle', 'history', 'federation'; custom: 'x-*')"
       },
-      "description": "Implemented APP profiles"
+      "description": "Implemented AICP profiles"
     },
     "enrollment_url": {
       "type": "string",
