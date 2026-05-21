@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ologos-repos/AICP/spec/schemas/audit-event.schema.json",
+  "title": "AICP Audit Event",
+  "description": "A normalized audit record for traceable Card action, authorization decisions, phase transitions, and governance events in the Agent Identity Card Protocol.",
+  "type": "object",
+  "required": ["id", "timestamp", "event_type", "actor_card_id", "operator_id", "decision"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Platform-issued unique identifier for this audit event"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when the event occurred"
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "card_issued",
+        "card_updated",
+        "card_status_changed",
+        "tool_call",
+        "tool_call_denied",
+        "phase_transition",
+        "artifact_submitted",
+        "manifest_submitted",
+        "agreement_status_changed",
+        "attestation_issued",
+        "attestation_imported",
+        "federation_verification",
+        "policy_violation"
+      ],
+      "description": "Type of event being recorded"
+    },
+    "actor_card_id": {
+      "type": "string",
+      "description": "Card identity under which the action occurred"
+    },
+    "operator_id": {
+      "type": "string",
+      "description": "Authenticated operator account from which authority was delegated"
+    },
+    "human_principal_id": {
+      "type": ["string", "null"],
+      "description": "Human principal or organization ultimately accountable for the operator account, when available"
+    },
+    "agreement_id": {
+      "type": ["string", "null"],
+      "description": "Agreement associated with the event, if applicable"
+    },
+    "tool_name": {
+      "type": ["string", "null"],
+      "description": "Tool invoked or denied, if applicable"
+    },
+    "authorization_scope": {
+      "type": ["string", "null"],
+      "description": "OAuth or platform scope evaluated for this action"
+    },
+    "credential_id": {
+      "type": ["string", "null"],
+      "description": "Identifier for the token, credential, or session used, if recorded by the platform"
+    },
+    "decision": {
+      "type": "string",
+      "enum": ["allowed", "denied", "recorded"],
+      "description": "Authorization or recording decision associated with the event"
+    },
+    "reason": {
+      "type": ["string", "null"],
+      "description": "Human-readable explanation for the decision or state change"
+    },
+    "correlation_id": {
+      "type": ["string", "null"],
+      "description": "Request, trace, or workflow correlation identifier for joining related events"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Platform-specific event metadata"
+    }
+  }
+}

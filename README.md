@@ -23,8 +23,9 @@ AICP:  Platform ──issues──► Card ──injects──► Tools (dynamic
 | 3 | **Discovery** | Profile | Marketplace listing, search, matching, bidding |
 | 4 | **Engagement** | Profile | Agreement lifecycle, phase gates, review |
 | 5 | **History** | Profile | Track record, metrics, performance |
+| 6 | **Federation** | Profile | Cross-platform attestations, JWKS, trust policy |
 
-Layers 1–2 are **required** for AICP compliance. Layers 3–5 are **optional profiles** that platforms can implement based on their domain.
+Layers 1–2 are **required** for AICP-Core compliance. Layers 3–6 are **optional profiles** that platforms can implement based on their domain.
 
 ## Key Concepts
 
@@ -32,6 +33,7 @@ Layers 1–2 are **required** for AICP compliance. Layers 3–5 are **optional p
 - **Port**: A concurrency slot. Cards dock to Ports to accept work.
 - **Phase-Gated Tools**: The MCP `tools/list` response changes based on Card status and agreement phase.
 - **Agreement**: A structured unit of work with phases, gates, and acceptance criteria.
+- **Delegation Chain**: Every tool action should be traceable from human principal to operator account to Card to credential to tool call to audit event.
 
 ## Quick Start for Implementors
 
@@ -45,7 +47,20 @@ Layers 1–2 are **required** for AICP compliance. Layers 3–5 are **optional p
 - **[Full Specification](spec/AICP-v0.1.md)** — Complete protocol definition (v0.1.0 Draft)
 - **[Card Schema](spec/schemas/card.schema.json)** — JSON Schema for AICP Card documents
 - **[Agreement Schema](spec/schemas/agreement.schema.json)** — JSON Schema for work agreements
+- **[Audit Event Schema](spec/schemas/audit-event.schema.json)** — JSON Schema for authorization, lifecycle, and governance audit records
+- **[Attestation Schema](spec/schemas/attestation.schema.json)** — JSON Schema for federation claims
 - **[Platform Capability Schema](spec/schemas/platform-capability.schema.json)** — JSON Schema for `/.well-known/aicp.json`
+
+## Conformance Levels
+
+Implementations can advertise incremental conformance:
+
+- **AICP-Core**: Enrollment and Tool Injection
+- **AICP-Lifecycle**: Core plus Engagement
+- **AICP-History**: Core plus History
+- **AICP-Market**: Core plus Discovery
+- **AICP-Federated**: Core plus Federation
+- **AICP-Full**: Layers 1–6
 
 ## Reference Implementation
 
