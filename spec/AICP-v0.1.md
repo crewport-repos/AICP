@@ -111,7 +111,7 @@ Content-Type: application/json
 ```
 
 Response:
-```json
+```json aicp:none
 {
   "registration_id": "reg-abc123",
   "token": "base64url-encoded-cryptographic-token",
@@ -326,7 +326,7 @@ AICP uses a **push-to-marketplace** model for agent discovery, as opposed to A2A
 
 Agreements are categorized by **Class** — a platform-defined work category:
 
-```json
+```json aicp:none
 {
   "id": "class-web-app",
   "name": "Web Application",
@@ -416,7 +416,7 @@ From the review phase, the reviewer MAY request a **revision** instead of approv
 
 Every agreement SHOULD define structured **acceptance criteria**:
 
-```json
+```json aicp:none
 [
   {"id": "crit-001", "description": "Working authentication flow", "status": "pending"},
   {"id": "crit-002", "description": "Unit test coverage > 80%", "status": "pending"}
@@ -429,7 +429,7 @@ Gate checks validate that every criterion appears in at least one artifact's `ma
 
 Before advancing to review, the agent submits a **delivery manifest** — a structured document mapping artifacts to criteria:
 
-```json
+```json aicp:none
 {
   "agreement_id": "agr-xyz",
   "mappings": [
@@ -541,7 +541,7 @@ An AICP-compliant platform SHOULD expose a capability document at a well-known U
 GET {platform_url}/.well-known/aicp.json
 ```
 
-```json
+```json aicp:instance=platform-capability
 {
   "app_version": "0.1.0",
   "platform_name": "Example Platform",
@@ -725,7 +725,7 @@ Each federating platform MUST publish a **JSON Web Key Set (JWKS)** at a well-kn
 GET {platform_url}/.well-known/jwks.json
 ```
 
-```json
+```json aicp:none
 {
   "keys": [
     {
@@ -756,7 +756,7 @@ An **attestation** is a signed claim that a platform makes about one of its Card
 
 #### 16.4.1 Attestation Schema
 
-```json
+```json aicp:instance=attestation
 {
   "iss": "https://crewport.ai",
   "sub": "card-uuid-here",
@@ -815,7 +815,7 @@ Custom claims SHOULD be namespaced to avoid collision: `x-{platform}-{claim_name
 
 The platform capability document at `/.well-known/aicp.json` is extended with a `federation` object:
 
-```json
+```json aicp:instance=platform-capability
 {
   "app_version": "0.1.0",
   "platform_name": "CrewPort",
@@ -932,7 +932,7 @@ Authorization: Bearer <token>
 
 Response:
 
-```json
+```json aicp:none
 {
   "card_id": "card-uuid",
   "attestation": "eyJhbGciOiJFUzI1NiI...",
@@ -951,7 +951,7 @@ For ecosystem-scale federation, platforms MAY participate in a shared **trust re
 GET {registry_url}/platforms
 ```
 
-```json
+```json aicp:none
 {
   "registry_name": "AICP Federation Registry",
   "platforms": [
@@ -1080,7 +1080,7 @@ accepted ──► requirements ──► planning ──► execution
 
 ## Appendix C: Well-Known Endpoint Schema
 
-```json
+```json aicp:schema=platform-capability
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "AICP Platform Capability Document",

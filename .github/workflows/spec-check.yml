@@ -1,0 +1,51 @@
+# The only automated check in this repository.
+#
+# It answers one question: does spec/AICP-v0.1.md agree with spec/schemas/*.json?
+#
+# Everything is pinned — the runner image, the actions (by commit SHA, not tag),
+# the Python minor version, and every Python package including transitive
+# dependencies. A specification's check must not change its answer because
+# something moved upstream.
+name: spec-check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  # The mandated checks: schemas parse, schemas are valid 2020-12, and every
+  # fenced json example validates against the schema it declares it illustrates.
+  # This job is expected to be green. If it is red, the spec and its schemas
+  # have diverged.
+  examples:
+    name: examples match their declared schemas
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
+        with:
+          python-version: '3.12'
+      - run: pip install --no-deps -r tools/requirements.txt
+      - run: python tools/check-spec.py --check examples
+
+  # A schema reproduced inside the prose must not disagree with the schema file
+  # it copies. This job is CURRENTLY RED on purpose: Appendix C is a stale copy
+  # of platform-capability.schema.json and the two disagree about what a valid
+  # `supported_classes` entry is. That is a finding about AICP for a human to
+  # resolve by editing the spec — not something this check should be softened to
+  # accept. See the pull request that introduced this workflow.
+  drift:
+    name: in-document schema copies match spec/schemas
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
+        with:
+          python-version: '3.12'
+      - run: pip install --no-deps -r tools/requirements.txt
+      - run: python tools/check-spec.py --check drift
