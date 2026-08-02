@@ -1,0 +1,13 @@
+# Pinned exactly, including every transitive dependency, and installed with
+# `pip install --no-deps`. A specification repository's check must not start
+# failing — or start passing — because a dependency moved upstream. If these
+# versions change, it is because someone changed this file on purpose.
+#
+# jsonschema is the only real dependency. It bundles the draft 2020-12
+# meta-schema locally, so the check never fetches anything over the network and
+# gives the same answer offline, in five years, as it does today.
+attrs==24.2.0
+jsonschema==4.23.0
+jsonschema-specifications==2023.12.1
+referencing==0.35.1
+rpds-py==0.20.0
