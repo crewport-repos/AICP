@@ -57,6 +57,7 @@ Neither MCP nor A2A defines a structured work lifecycle. AICP introduces the con
 | **Gate** | A precondition that must be satisfied before a phase transition is allowed |
 | **Manifest** | A structured document mapping deliverable artifacts to acceptance criteria |
 | **Phase** | A discrete stage in the agreement lifecycle, with defined entry/exit conditions |
+| **Memory Ledger** | A per-Card persistent key-value store where agents and operators record memories (facts, lessons, preferences, references). The ledger travels with the Card and is searchable by keyword |
 
 ---
 
@@ -82,11 +83,12 @@ AICP is organized into five protocol layers. **Layers 1–2 are CORE** — any A
 │  Card-scoped MCP endpoint, phase gating         │
 ├─────────────────────────────────────────────────┤
 │  Layer 1: ENROLLMENT       [CORE]               │
-│  OAuth, Card issuance, self-description         │
+│  OAuth, Card issuance, self-description,        │
+│  Memory Ledger                                  │
 └─────────────────────────────────────────────────┘
 ```
 
-A minimal AICP platform implements Layers 1–2: agents can enroll, receive Cards, and access identity-scoped, state-dependent tools. A full marketplace platform implements all five core layers. Layer 6 (Federation) enables cross-platform identity portability.
+A minimal AICP platform implements Layers 1–2: agents can enroll, receive Cards with a persistent Memory Ledger, and access identity-scoped, state-dependent tools. A full marketplace platform implements all six layers. Layer 6 (Federation) enables cross-platform identity portability.
 
 ---
 
@@ -213,6 +215,82 @@ AICP Card identity has these properties that distinguish it from other protocol 
 | **History binding** | Platform-tracked per Card | None | None |
 | **Verifiability** | Platform-attested | N/A | Self-attested |
 
+### 4.6 Memory Ledger (CORE)
+
+Every Card MUST have an associated **Memory Ledger** — a persistent key-value store where agents and operators record memories that survive across sessions, engagements, and platform interactions. The Memory Ledger is the Card's long-term knowledge base.
+
+**Design principle: memories are first-class Card state.** The Memory Ledger is not an optional add-on — it is part of the Card itself. A Card without a Memory Ledger has no ability to learn, adapt, or carry context between engagements.
+
+#### 4.6.1 Memory Entry Schema
+
+Each entry in the Memory Ledger MUST contain:
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `key` | string | Yes | Short identifier for the memory. Unique per Card — writing to an existing key overwrites the previous content (upsert semantics) |
+| `content` | string | Yes | The memory content. Free-text, capped at 8 KB per entry |
+| `category` | string | Yes | Classification label. Standard categories below; platforms MAY define additional categories |
+| `author` | enum | Yes | Who wrote this memory: `agent` or `operator` |
+| `created_at` | timestamp | Yes | ISO 8601 creation time |
+| `updated_at` | timestamp | Yes | ISO 8601 last update time |
+
+#### 4.6.2 Standard Categories
+
+AICP defines the following standard memory categories. Platforms MUST support these; platforms MAY define additional categories.
+
+| Category | Purpose | Example |
+|----------|---------|---------|
+| `fact` | Objective information about the world, the Card, or the platform | "Primary language: Go. Deployment target: Fly.io." |
+| `lesson` | Something learned from experience — especially failures or dead ends | "Streaming uploads over 50MB timeout on this platform — use chunked upload instead." |
+| `preference` | How the operator or agent prefers things done | "Operator prefers concise responses. Always convert deliverables to PDF." |
+| `reference` | Pointers to external resources, documentation, or prior work | "Architecture doc: /docs/architecture-overview.md" |
+| `system` | Platform-injected context (e.g., auto-seeded on enrollment) | "Card enrolled on 2026-03-14. Platform: CrewPort. Tracts: code, research." |
+
+#### 4.6.3 Write Access
+
+Both the **agent** and the **operator** can write to the Memory Ledger:
+
+- **Agent writes** (`author: agent`): The agent stores memories it considers worth persisting — facts discovered during engagements, lessons from failures, context that would be costly to rediscover. Agents SHOULD write memories proactively as they learn.
+- **Operator writes** (`author: operator`): The operator stores preferences, standing instructions, or context the agent should always have available. Operator memories take precedence in the sense that they represent human intent.
+
+Writes use **upsert semantics**: writing to an existing `key` replaces the previous content. This keeps the ledger current — agents overwrite stale facts rather than accumulating duplicates.
+
+#### 4.6.4 Recall
+
+The Memory Ledger MUST support keyword-based recall. When an agent or operator queries the ledger, the platform returns entries matching the query ranked by relevance.
+
+Recall parameters:
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `query` | string | Yes | Keyword search query |
+| `category` | string | No | Filter results to a specific category |
+| `limit` | integer | No | Maximum entries to return (RECOMMENDED default: 10) |
+
+The platform SHOULD implement full-text search (e.g., FTS5, trigram, or equivalent) for efficient recall. Simple substring matching is acceptable for minimal implementations.
+
+#### 4.6.5 Memory Ledger vs. History
+
+The Memory Ledger and History (Layer 5) serve different purposes:
+
+| Aspect | Memory Ledger | History |
+|--------|---------------|---------|
+| **Content** | Agent/operator-authored free-text memories | Platform-computed structured metrics |
+| **Author** | Agent or operator writes explicitly | Platform computes automatically from engagement outcomes |
+| **Examples** | "This client prefers TypeScript", "Chunked upload avoids timeouts" | `completion_rate: 0.96`, `revision_rate: 0.3` |
+| **Mutability** | Mutable (upsert by key) | Append-only (metrics accumulate) |
+| **Purpose** | Contextual knowledge that makes the agent more effective | Track record that makes the agent more trustworthy |
+
+Both are Card-bound and persistent. Together, they give a Card both **knowledge** (Memory Ledger) and **reputation** (History).
+
+#### 4.6.6 Platform Responsibilities
+
+- Platforms MUST provide persistent storage for the Memory Ledger that survives session boundaries
+- Platforms MUST enforce the 8 KB per-entry size limit
+- Platforms SHOULD expose memory tools in ALL tool phases (Setup, Idle, Working) — memory is always available
+- Platforms MAY impose a total ledger size limit per Card (RECOMMENDED minimum: 1,000 entries)
+- Platforms MUST scope the Memory Ledger to the Card — one Card's memories are never visible to another Card, even under the same operator
+
 ---
 
 ## 5. Layer 2: Tool Injection (CORE)
@@ -305,6 +383,7 @@ AICP does not mandate specific tool names — platforms choose names that fit th
 | `agreement.*` | Agreement lifecycle | check status, advance phase, check gates |
 | `artifact.*` | Deliverable management | submit, retrieve, delete artifacts |
 | `history.*` | Performance and history | retrieve metrics, view past work |
+| `memory.*` | Memory Ledger operations | store memory, recall memories, list by category, forget |
 | `communication.*` | Messaging between parties | send message, read messages |
 
 ---
@@ -671,7 +750,7 @@ AICP defines conformance levels so implementations can adopt the architecture in
 
 | Level | Required Layers / Profiles | Description |
 |-------|----------------------------|-------------|
-| **AICP-Core** | Layer 1 Enrollment; Layer 2 Tool Injection | Platform-issued Cards, Card-scoped MCP endpoint, phase-gated tool projection, ownership and scope validation |
+| **AICP-Core** | Layer 1 Enrollment; Layer 2 Tool Injection | Platform-issued Cards with Memory Ledger, Card-scoped MCP endpoint, phase-gated tool projection, ownership and scope validation |
 | **AICP-Lifecycle** | AICP-Core + Layer 4 Engagement | Structured agreements, phases, gates, manifests, review, and revision handling |
 | **AICP-History** | AICP-Core + Layer 5 History | Card-bound track record, metrics, performance history, and history retrieval |
 | **AICP-Market** | AICP-Core + Layer 3 Discovery | Marketplace discovery, work classes, matching, bidding, and direct routing |
@@ -1023,6 +1102,27 @@ submit_bid(agreement_id, terms) → Bid
 
 get_history() → HistoryMetrics
   View Card performance metrics and past work summary.
+```
+
+### A.4 Memory Tools (All Phases)
+
+Memory tools SHOULD be available in ALL tool phases — agents need persistent memory regardless of lifecycle state.
+
+```
+remember(key, content, category?) → MemoryEntry
+  Store a memory in the Card's ledger. Upserts by key — writing an existing
+  key replaces the previous content. Category defaults to "fact" if omitted.
+
+recall(query, category?, limit?) → MemoryEntry[]
+  Search the Card's Memory Ledger by keyword. Returns entries ranked by
+  relevance, optionally filtered by category. Default limit: 10.
+
+list_memories(category?) → MemoryEntry[]
+  List all memories, optionally filtered by category. Returns entries
+  ordered by most recently updated.
+
+forget(key) → void
+  Remove a memory entry by key. Permanent — no undo.
 ```
 
 ### A.3 Working Phase Tools
