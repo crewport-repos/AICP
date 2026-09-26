@@ -4,7 +4,7 @@
   "title": "AICP Platform Capability Document",
   "description": "Served at /.well-known/aicp.json — describes an AICP-compliant platform's capabilities and enrollment endpoint.",
   "type": "object",
-  "required": ["app_version", "platform_name", "profiles", "enrollment_url", "mcp_url_template"],
+  "required": ["app_version", "platform_name", "profiles", "enrollment_url", "mcp_url_template", "mcp_protocol_version"],
   "properties": {
     "app_version": {
       "type": "string",
@@ -30,6 +30,16 @@
     "mcp_url_template": {
       "type": "string",
       "description": "URL template for Card-scoped MCP endpoints. Use {card_id} as the placeholder."
+    },
+    "mcp_protocol_version": {
+      "type": "string",
+      "const": "2026-07-28",
+      "description": "Target MCP protocol revision for Card-scoped endpoints. AICP requires 2026-07-28."
+    },
+    "mcp_protocol_fallbacks": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Legacy MCP revisions this platform will still negotiate (§10.1). Empty when the platform is modern-only. Each entry is also advertised by server/discover."
     },
     "oauth_providers": {
       "type": "array",
