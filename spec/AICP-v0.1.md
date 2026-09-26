@@ -4,7 +4,7 @@
 **Status**: Proposal
 **Authors**: Ologos LLC
 **Date**: 2026-03-14
-**Revised**: 2026-09-26 — normative MCP transport, authorization, registration, consent, and administrative-access requirements
+**Revised**: 2026-09-26 — normative MCP transport, authorization, registration, consent, administrative-access, and MCP revision compatibility (0.x window)
 **Repository**: https://github.com/ologos-repos/AICP
 
 ---
@@ -332,7 +332,7 @@ An invalid or expired access token MUST be rejected with HTTP `401`. The respons
 
 When the token is valid and is for this Card, but does not include a required scope, the platform MUST reject the call with HTTP `403` and a `WWW-Authenticate` challenge of `error="insufficient_scope"`, a `scope` parameter naming the scope required to step up, and the same `resource_metadata` parameter. That challenge is the step-up signal, including when the missing scope is `app:commit`. The platform MUST NOT answer an insufficient-scope failure with HTTP `200`.
 
-Error responses under this section MUST also carry the request's trace identifier (§12.7).
+HTTP `401` and `403` responses under this section SHOULD include the trace identifier from §12.7 in the `X-Request-Id` response header. They MUST NOT require the client to send any non-MCP request headers beyond those defined by the negotiated MCP revision and the MCP authorization specification.
 
 ```
 HTTP/1.1 401 Unauthorized
@@ -651,14 +651,32 @@ The specific mechanism is platform-defined. AICP only specifies that the Port ab
 
 ### 10.1 MCP Compliance
 
-AICP's tool injection layer (Layer 2) uses the **Model Context Protocol** as its transport. The target revision is [`2026-07-28`](https://modelcontextprotocol.io/specification/2026-07-28). Platforms MUST implement that revision for every Card-scoped MCP endpoint.
+AICP's tool injection layer (Layer 2) uses the **Model Context Protocol** as its transport. AICP does not define a transport above MCP. Card-scoped endpoints MUST be ordinary MCP servers: **Streamable HTTP** (and MAY **stdio** where MCP allows it). AICP MUST NOT define a custom transport, custom JSON-RPC methods, or client request headers beyond those in the negotiated MCP revision and the MCP authorization specification.
 
-On that revision, version agreement is per request. There is no `initialize` handshake for a modern session. The following rules apply to modern requests, not to an `initialize` request that selects an advertised legacy fallback:
+Every AICP requirement that touches MCP MUST be expressible with standard MCP mechanisms only: **tools**, **resources**, **prompts**, **capabilities**, **`_meta`**, the MCP authorization framework (OAuth 2.1, [RFC 9728](https://www.rfc-editor.org/rfc/rfc9728) protected-resource metadata, [RFC 8707](https://www.rfc-editor.org/rfc/rfc8707) resource indicators), and standard JSON-RPC errors. Where AICP needs additional metadata (for example Card phase hints or trace correlation on MCP messages), platforms MUST place it in **optional**, namespaced `_meta` keys under the `ai.crewport.aicp/` prefix, or in the MCP **`experimental`** capability map under the same prefix. Vanilla MCP clients (Claude, Cursor, ChatGPT, and similar) MUST still connect, authenticate, list tools, and call tools on an AICP server without implementing those extensions.
+
+#### Version window
+
+| AICP spec | Target MCP revision | Legacy MCP revision | Rule |
+|-----------|---------------------|------------------------|------|
+| **0.x** (this document) | [`2026-07-28`](https://modelcontextprotocol.io/specification/2026-07-28) — implementations **SHOULD** support it on every Card-scoped endpoint | [`2025-06-18`](https://modelcontextprotocol.io/specification/2025-06-18) — implementations **MUST** accept it via standard MCP version negotiation | Dual-era servers advertise both in `mcp_protocol_fallbacks` (§10.3) and honor the negotiation rules below |
+| **1.0** (future) | `2026-07-28` — **MUST** | `2025-06-18` — **MAY** be dropped | No change to OAuth, scope, or Card-binding rules; only the minimum legacy revision tightens |
+
+Through AICP **0.x**, version negotiation MUST use only mechanisms defined by MCP:
+
+- **Modern (`2026-07-28`)**: per-request `_meta["io.modelcontextprotocol/protocolVersion"]`, the `MCP-Protocol-Version` HTTP header on Streamable HTTP (same value as `_meta`), optional `server/discover`, and `UnsupportedProtocolVersionError` (`-32022`) with `error.data.supported` and `error.data.requested` as specified by that revision.
+- **Legacy (`2025-06-18`)**: the `initialize` request/result **`protocolVersion`** exchange, then the `MCP-Protocol-Version` header on subsequent Streamable HTTP requests as specified by that revision. There is no `server/discover` and no per-request `_meta` protocol version on legacy sessions.
+
+A platform MUST NOT invent alternate version-negotiation channels (for example a required AICP-specific header or JSON-RPC method).
+
+#### Revision `2026-07-28` (modern)
+
+When the client speaks `2026-07-28`, version agreement is per request. There is no session `initialize` handshake for that mode. The following rules apply to modern requests, not to an `initialize` request that selects an advertised legacy fallback:
 
 - The request MUST declare its protocol version in `_meta["io.modelcontextprotocol/protocolVersion"]`.
 - On HTTP, the same value MUST be sent in the `MCP-Protocol-Version` header. If the header is missing, or it disagrees with `_meta`, the platform MUST reject the request with HTTP `400`.
-- Platforms MUST implement `server/discover`. The result MUST list every protocol revision the platform supports, and that list MUST include `2026-07-28`.
-- If the platform does not implement the requested revision, it MUST respond with HTTP `400` and JSON-RPC error `-32022` (`UnsupportedProtocolVersionError`). `error.data.supported` MUST be the same set advertised by `server/discover`, and `error.data.requested` MUST be the revision the client sent. The client retries with a mutually supported revision, or stops.
+- Platforms MUST implement MCP `server/discover`. The result MUST list every protocol revision the platform supports, and that list MUST include `2026-07-28` when the platform implements that revision.
+- If the platform does not implement the requested revision, it MUST respond with HTTP `400` and JSON-RPC error `-32022` (`UnsupportedProtocolVersionError`). `error.data.supported` MUST list the revisions the server accepts; `error.data.requested` MUST be the revision the client sent. The client retries with a mutually supported revision, or stops.
 
 ```json aicp:none
 {
@@ -668,29 +686,49 @@ On that revision, version agreement is per request. There is no `initialize` han
     "code": -32022,
     "message": "Unsupported protocol version",
     "data": {
-      "supported": ["2026-07-28"],
-      "requested": "2025-06-18",
-      "trace_id": "7c1a"
+      "supported": ["2026-07-28", "2025-06-18"],
+      "requested": "2025-03-26"
     }
   }
 }
 ```
 
-**Fallback.** A platform MAY also implement earlier, handshake-based revisions (`2025-11-25` and earlier) as a dual-era server. Those revisions are fallbacks. The target remains `2026-07-28`.
+#### Revision `2025-06-18` (legacy fallback)
 
-- Every fallback revision MUST be listed in `mcp_protocol_fallbacks` (§10.3) and in the `supported` array from `server/discover` and from `-32022`.
-- A request that carries modern per-request `_meta` MUST be served under `2026-07-28`. The platform MUST NOT silently downgrade it onto any other revision.
-- An `initialize` request MUST be served under the negotiated legacy revision when that revision is an advertised fallback. The platform MUST NOT apply the modern per-request rules above to that legacy session.
-- A platform that implements no fallback MUST still reject `initialize` with an error that names the revisions it supports, including `2026-07-28`, so a legacy client has a diagnostic.
+For AICP **0.x**, every Card-scoped MCP endpoint MUST accept clients that negotiate **`2025-06-18`** using the lifecycle and Streamable HTTP rules from that revision, including session `initialize`, `notifications/initialized`, optional `Mcp-Session-Id`, and the `MCP-Protocol-Version` header tied to the negotiated version.
 
-In addition:
+Dual-era rules:
 
-- Tools MUST be exposed with MCP `tools/list` and `tools/call`
-- Tool input schemas MUST be JSON Schema as required by the negotiated revision
-- Method errors MUST use MCP's JSON-RPC 2.0 error model
-- Authentication and scope failures (§5.2) are HTTP `401` and `403` responses. They MUST NOT be downgraded to a JSON-RPC error on HTTP `200`
+- Every fallback revision MUST be listed in `mcp_protocol_fallbacks` (§10.3). For AICP **0.x**, that array MUST include `2025-06-18`.
+- When the platform implements `2026-07-28`, every fallback revision MUST also appear in the `supportedVersions` (or equivalent) list returned by `server/discover` and in `error.data.supported` from `-32022`.
+- A request that carries modern per-request `_meta["io.modelcontextprotocol/protocolVersion"]` MUST be served under `2026-07-28`. The platform MUST NOT silently downgrade it onto a legacy revision.
+- An `initialize` request on a dual-era endpoint MUST be served under the negotiated legacy revision when that revision is an advertised fallback. The platform MUST NOT apply the modern per-request rules to that legacy session.
+- A modern-only platform (AICP **1.0+** only) MAY reject `initialize` with a JSON-RPC error that names the revisions it supports; through AICP **0.x**, rejecting `2025-06-18` after a successful `initialize` negotiation is non-compliant.
 
-AICP does not define a transport above the MCP layer. The negotiated MCP revision determines which transports are legal. For `2026-07-28`, the platform MUST implement the Streamable HTTP transport that revision specifies.
+#### MCP compatibility matrix
+
+The table below maps **AICP-Core** MCP-layer requirements to each revision. Enrollment HTTP APIs (§4.1, §10.2) are unchanged across rows.
+
+| AICP-Core requirement | MCP `2026-07-28` | MCP `2025-06-18` | Degradation on `2025-06-18` |
+|----------------------|------------------|------------------|-----------------------------|
+| Card-scoped Streamable HTTP URL (§5.1) | Required | Required | None |
+| OAuth 2.1 + PKCE `S256`, RFC 8707 resource binding, RFC 9728 metadata (§4.6, §5.2, §5.8) | Required (MCP auth spec for that revision) | Required (MCP auth spec for that revision) | None; `app:*` scopes remain platform-defined strings in metadata |
+| HTTP `401` / `403` + `WWW-Authenticate` (`invalid_token`, `insufficient_scope`, `resource_metadata`) (§5.2) | Required | Required | None |
+| Phase-gated `tools/list` / `tools/call` (§5.5–§5.6) | Required | Required | None; projection is server-side behavior |
+| Distinct MCP vs session tokens, no passthrough (§5.2) | Required | Required | None |
+| Per-request `_meta` protocol version + matching `MCP-Protocol-Version` | Required in modern mode | Not used; `initialize` + header on session instead | Legacy clients do not send modern `_meta`; server uses negotiated session version |
+| `server/discover` | Required when `2026-07-28` is implemented | Not available | Legacy clients rely on `initialize` negotiation only |
+| `UnsupportedProtocolVersionError` (`-32022`) | Required in modern mode | Not used; version mismatch handled in `initialize` per that revision | Different error shape and code on mismatch |
+| Optional `ai.crewport.aicp/*` `_meta` / `experimental` hints | MAY be omitted by clients | MAY be omitted by clients | AICP-specific hints unavailable unless client reads optional `_meta` |
+
+#### Core MCP surface
+
+In all revisions:
+
+- Tools MUST be exposed only with MCP `tools/list` and `tools/call`.
+- Tool input schemas MUST be JSON Schema as required by the negotiated revision.
+- Method errors MUST use MCP's JSON-RPC 2.0 error model. Authentication and scope failures (§5.2) are HTTP `401` and `403` responses. They MUST NOT be downgraded to a JSON-RPC error on HTTP `200`.
+- Platforms MUST NOT add required fields to standard MCP error `data` objects beyond those defined by MCP for that error. Optional trace correlation for MCP JSON-RPC MAY appear in `_meta["ai.crewport.aicp/traceId"]` when the platform implements that extension; it MUST NOT be required for interoperability.
 
 ### 10.2 HTTP API
 
@@ -718,7 +756,7 @@ GET {platform_url}/.well-known/aicp.json
   "enrollment_url": "{platform_url}/app/register",
   "mcp_url_template": "{platform_url}/mcp/{card_id}",
   "mcp_protocol_version": "2026-07-28",
-  "mcp_protocol_fallbacks": [],
+  "mcp_protocol_fallbacks": ["2025-06-18"],
   "oauth_providers": ["github"],
   "supported_classes": [
     {"id": "class-web-app", "name": "Web Application"}
@@ -726,7 +764,7 @@ GET {platform_url}/.well-known/aicp.json
 }
 ```
 
-`mcp_protocol_version` MUST be `2026-07-28`. `mcp_protocol_fallbacks` MUST list every legacy revision the platform is willing to negotiate (§10.1), and MUST be an empty array when the platform is modern-only. The platform MUST NOT serve a revision other than `2026-07-28` unless that revision is listed in `mcp_protocol_fallbacks`.
+`mcp_protocol_version` MUST be `2026-07-28` (the target revision). `mcp_protocol_fallbacks` MUST list every legacy MCP revision the platform will negotiate via standard MCP rules (§10.1). For AICP **0.x**, the array MUST include `2025-06-18`. At AICP **1.0**, the array MAY be empty if the platform drops legacy clients. The platform MUST NOT honor a revision that is not `2026-07-28` and not listed in `mcp_protocol_fallbacks`.
 
 This enables automated agent onboarding — an agent can discover an AICP platform's capabilities and enrollment endpoint programmatically.
 
@@ -831,9 +869,11 @@ Administrator status MUST NOT authorize a cross-tenant write. A write whose targ
 
 ### 12.7 Trace Identifiers and Logging
 
-The platform MUST assign exactly one trace identifier to each HTTP request. It MUST return that identifier in the `X-Request-Id` response header. Every error response MUST include the same identifier as `trace_id`: a field of the JSON error object for an HTTP error, and `error.data.trace_id` for a JSON-RPC error. The platform MUST NOT replace a trace identifier it has already associated with the request.
+The platform MUST assign exactly one trace identifier to each HTTP request. For **AICP HTTP APIs** (enrollment, marketplace, federation, and similar routes in §10.2), the platform MUST return that identifier in the `X-Request-Id` response header. JSON error bodies on those routes SHOULD include the same value in a `trace_id` field when the response is JSON.
 
-When the incoming `X-Request-Id` contains only ASCII letters, digits, and hyphens and is at most 128 characters, the platform SHOULD adopt it as the trace identifier. Otherwise the platform MUST generate one.
+For **MCP JSON-RPC** on Card-scoped endpoints, the platform MUST NOT require clients to send custom trace headers. The platform MAY echo a trace identifier in the optional `_meta["ai.crewport.aicp/traceId"]` field on MCP responses (including JSON-RPC errors) when it implements that extension. MCP `401`/`403` responses SHOULD still include `X-Request-Id` as an HTTP response header. The platform MUST NOT add required non-standard fields to MCP-standard `error.data` objects (for example `UnsupportedProtocolVersionError`).
+
+When the incoming `X-Request-Id` contains only ASCII letters, digits, and hyphens and is at most 128 characters, the platform SHOULD adopt it as the trace identifier. Otherwise the platform MUST generate one. The platform MUST NOT replace a trace identifier it has already associated with the request.
 
 The platform MUST NOT write any of the following to logs:
 
@@ -877,7 +917,7 @@ AICP defines conformance levels so implementations can adopt the architecture in
 
 | Level | Required Layers / Profiles | Description |
 |-------|----------------------------|-------------|
-| **AICP-Core** | Layer 1 Enrollment; Layer 2 Tool Injection | Platform-issued Cards, authenticated registration, Card-scoped MCP endpoint at revision 2026-07-28, phase-gated tool projection, the authorization and consent rules in §14.1 |
+| **AICP-Core** | Layer 1 Enrollment; Layer 2 Tool Injection | Platform-issued Cards, authenticated registration, Card-scoped MCP endpoint with the §10.1 version window (SHOULD `2026-07-28`, MUST accept `2025-06-18` through AICP 0.x), phase-gated tool projection, the authorization and consent rules in §14.1 |
 | **AICP-Lifecycle** | AICP-Core + Layer 4 Engagement | Structured agreements, phases, gates, manifests, review, and revision handling |
 | **AICP-History** | AICP-Core + Layer 5 History | Card-bound track record, metrics, performance history, and history retrieval |
 | **AICP-Market** | AICP-Core + Layer 3 Discovery | Marketplace discovery, work classes, matching, bidding, and direct routing |
@@ -897,10 +937,10 @@ AICP-Core includes the following. An implementation that skips any of them MUST 
 | §5.2 | MCP access tokens distinct from session tokens (separate signing key, or mandatory `aud` and `typ`); no token passthrough; HTTP `401` with a `resource_metadata` challenge for an invalid or expired token; HTTP `403` `insufficient_scope` for step-up |
 | §5.4 | Scope groups `app:read`, `app:write`, and `app:commit` (bids, phase changes, delivery). `app:commit` is never granted by default. Tokens are bound to a single Card, and consent is per Card |
 | §5.8 | RFC 9728 protected-resource metadata at the per-Card path |
-| §10.1 | MCP `2026-07-28` as the target revision, with per-request version negotiation and advertised fallback only |
+| §10.1 | Standard MCP surface only; version window (0.x: SHOULD `2026-07-28`, MUST accept `2025-06-18` via MCP negotiation); optional `ai.crewport.aicp/*` extensions |
 | §12.1 | The OAuth flow does not bypass multi-factor authentication |
 | §12.6 | No administrative read of user content without an unexpired consent grant from a party; every such read is audited (R1); no implicit administrative authorization for a cross-tenant write |
-| §12.7 | One trace identifier in the response header and in error bodies; secrets, authorization codes, OAuth state, and personally identifiable information are not logged |
+| §12.7 | Trace identifiers on AICP HTTP APIs (`X-Request-Id`); optional `ai.crewport.aicp/traceId` on MCP; no required non-standard MCP error fields; secrets, authorization codes, OAuth state, and personally identifiable information are not logged |
 
 ---
 
@@ -1045,7 +1085,7 @@ The platform capability document at `/.well-known/aicp.json` is extended with a 
   "enrollment_url": "https://crewport.ai/app/register",
   "mcp_url_template": "https://crewport.ai/mcp/{card_id}",
   "mcp_protocol_version": "2026-07-28",
-  "mcp_protocol_fallbacks": [],
+  "mcp_protocol_fallbacks": ["2025-06-18"],
   "oauth_providers": ["github"],
   "supported_classes": [
     {"id": "class-web-app", "name": "Web Application"}
@@ -1337,12 +1377,12 @@ accepted ──► requirements ──► planning ──► execution
     "mcp_protocol_version": {
       "type": "string",
       "const": "2026-07-28",
-      "description": "Target MCP protocol revision for Card-scoped endpoints"
+      "description": "Target MCP protocol revision for Card-scoped endpoints (§10.1)"
     },
     "mcp_protocol_fallbacks": {
       "type": "array",
       "items": {"type": "string"},
-      "description": "Legacy MCP revisions this platform will still negotiate. Empty when the platform is modern-only."
+      "description": "Legacy MCP revisions negotiated via standard MCP rules. For AICP 0.x, MUST include 2025-06-18."
     },
     "oauth_providers": {
       "type": "array",

@@ -34,12 +34,12 @@
     "mcp_protocol_version": {
       "type": "string",
       "const": "2026-07-28",
-      "description": "Target MCP protocol revision for Card-scoped endpoints. AICP requires 2026-07-28."
+      "description": "Target MCP protocol revision for Card-scoped endpoints (§10.1). AICP 0.x implementations SHOULD implement this revision."
     },
     "mcp_protocol_fallbacks": {
       "type": "array",
       "items": {"type": "string"},
-      "description": "Legacy MCP revisions this platform will still negotiate (§10.1). Empty when the platform is modern-only. Each entry is also advertised by server/discover."
+      "description": "Legacy MCP revisions negotiated via standard MCP rules (§10.1). For AICP 0.x, MUST include 2025-06-18. When 2026-07-28 is implemented, each entry MUST also appear in server/discover supported versions."
     },
     "oauth_providers": {
       "type": "array",
