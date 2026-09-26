@@ -247,10 +247,7 @@ The server MUST store a refresh token only as a hash at rest, and MUST NOT retai
 
 Rotation MUST be atomic. An exchange succeeds only when the stored hash still matches the presented token, and the check and the write of the successor MUST be one compare-and-swap. An update that does not condition on the presented hash MUST NOT be used to rotate.
 
-The server MUST accept the immediately previous refresh token for 10 minutes after a successful rotation, as an idempotent replay window. A presentation of that previous token inside the window MUST return the same successor access-token and refresh-token pair already issued for that rotation, and MUST NOT mint a second successor or slide the family's expiry again. Either of the following is reuse that MUST revoke the refresh-token family (the grant and every token descended from it):
-
-- presentation of a refresh token that is neither the current token nor that immediate predecessor
-- presentation of the immediate predecessor after the 10-minute window
+Rotation MUST allow a replay window of 10 minutes. Inside that window, presentation of the immediately previous refresh token MUST return the same new access-token and refresh-token pair already issued for that rotation (§4.6.9), and MUST NOT mint a second successor or slide the family's expiry again. Reuse of a refresh token after that window MUST revoke the whole token family (the grant and every token descended from it). The same revocation MUST apply when the presented token is neither the current token nor that immediate predecessor.
 
 Expiry MUST slide. Each successful rotation MUST set the family's expiry from the time of that rotation, not from the family's original issue time. The server MUST document the sliding lifetime it implements.
 
@@ -275,7 +272,23 @@ A cookie that stores OAuth `state` MUST be integrity-protected by a signature (H
 
 Consent is collected per Card (§5.4). When the operator grants consent and the grant is submitted with POST, the server MUST continue the flow with HTTP `303 See Other`. It MUST NOT answer that successful grant with `302`.
 
----
+#### 4.6.9 Token endpoint response
+
+Every successful token-endpoint response MUST include `access_token`, `token_type`, `expires_in`, and `scope`. `token_type` MUST be the string `Bearer`. `scope` MUST be the space-delimited list of scopes granted for that token. When a refresh token is issued or rotated, the response MUST also include `refresh_token`. These rules apply to an `authorization_code` grant, to refresh-token rotation, and to a replay-window re-issue of the same new pair (§4.6.4).
+
+The response MUST be sent with `Cache-Control: no-store` and `Pragma: no-cache`.
+
+```json aicp:none
+{
+  "access_token": "issued-access-token",
+  "token_type": "Bearer",
+  "expires_in": 3600,
+  "refresh_token": "issued-or-rotated-refresh-token",
+  "scope": "app:read"
+}
+```
+
+The `expires_in` value in the example is illustrative. This specification requires the field; it does not fix the access-token lifetime.
 
 ## 5. Layer 2: Tool Injection (CORE)
 
@@ -347,7 +360,7 @@ Platforms MUST validate Card ownership and credential scope before executing a t
 
 ### 5.4 Scope Model
 
-AICP defines three scope groups. The scope strings are `app:read`, `app:write`, and `app:commit`.
+AICP defines three scope groups. The scope strings are `app:read`, `app:write`, and `app:commit`. These `app:*` names are legacy names from the protocol's APP (Agent Port Protocol) era. A rename is pending under the maturity plan.
 
 | Scope | Group | Permits |
 |-------|-------|---------|
@@ -880,7 +893,7 @@ AICP-Core includes the following. An implementation that skips any of them MUST 
 | Section | Requirement |
 |---------|-------------|
 | §4.1 | A registration belongs to an authenticated account when it is created. Anonymous registrations are forbidden. A sign-in completes only the registration bound to it |
-| §4.6 | OAuth 2.1 with PKCE `S256`; RFC 8707 resource binding to one Card; RFC 9207 `iss`; 10-minute one-time authorization codes consumed atomically; refresh tokens hashed at rest, rotated atomically, with a 10-minute replay window, family revocation on reuse, and sliding expiry; registered redirect URIs are hosted pages or loopback; no analytics on OAuth or error pages; signed `Secure` state cookies; consent success redirects with `303` |
+| §4.6 | OAuth 2.1 with PKCE `S256`; RFC 8707 resource binding to one Card; RFC 9207 `iss`; 10-minute one-time authorization codes consumed atomically; refresh tokens hashed at rest, rotated atomically, with a 10-minute replay window that returns the same new pair, family revocation on reuse after that window, and sliding expiry; token responses include `access_token`, `token_type` `Bearer`, `expires_in`, `refresh_token` when one is issued or rotated, and `scope`, and are sent with `Cache-Control: no-store` and `Pragma: no-cache`; registered redirect URIs are hosted pages or loopback; no analytics on OAuth or error pages; signed `Secure` state cookies; consent success redirects with `303` |
 | §5.2 | MCP access tokens distinct from session tokens (separate signing key, or mandatory `aud` and `typ`); no token passthrough; HTTP `401` with a `resource_metadata` challenge for an invalid or expired token; HTTP `403` `insufficient_scope` for step-up |
 | §5.4 | Scope groups `app:read`, `app:write`, and `app:commit` (bids, phase changes, delivery). `app:commit` is never granted by default. Tokens are bound to a single Card, and consent is per Card |
 | §5.8 | RFC 9728 protected-resource metadata at the per-Card path |
