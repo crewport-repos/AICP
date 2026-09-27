@@ -29,7 +29,7 @@
     },
     "mcp_url_template": {
       "type": "string",
-      "description": "URL template for Card-scoped MCP endpoints. Use {card_id} as the placeholder."
+      "description": "URL template for MCP endpoints. Include {card_id} when each Card has its own path, or a fixed platform-wide URL (e.g. https://example.com/mcp) with no placeholder when §5.1 uses a single resource."
     },
     "mcp_protocol_version": {
       "type": "string",
@@ -38,7 +38,7 @@
     "mcp_protocol_fallbacks": {
       "type": "array",
       "items": {"type": "string"},
-      "description": "Other implemented MCP revisions negotiated via standard MCP rules (§10.1). For AICP 0.x, MUST include 2025-06-18 when implemented."
+      "description": "Other MCP revisions the platform implements, listed only on dual-era platforms (§10.1). Omit or use an empty array when only one revision is implemented. Dual-era AICP 0.x platforms MUST include 2025-06-18 when that revision is implemented."
     },
     "oauth_providers": {
       "type": "array",

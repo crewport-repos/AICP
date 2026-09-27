@@ -297,7 +297,7 @@ The `expires_in` value in the example is illustrative. This specification requir
 
 #### 4.6.10 OAuth client registration
 
-Platforms MUST provide a working registration path for hosted OAuth clients connecting to Card MCP resources. The platform MUST implement Dynamic Client Registration ([RFC 7591](https://www.rfc-editor.org/rfc/rfc7591)) and/or **OAuth Client ID Metadata Documents** (as supported by the platform's OAuth 2.1 authorization-server metadata). If authorization-server metadata advertises a `registration_endpoint`, that endpoint MUST accept registrations the platform policy allows and MUST NOT be advertised if it is non-functional.
+Platforms MUST provide a working OAuth client registration path for MCP clients (including native and browser-based apps) connecting to Card MCP resources. The platform MUST implement Dynamic Client Registration ([RFC 7591](https://www.rfc-editor.org/rfc/rfc7591)) and/or **OAuth Client ID Metadata Documents** (as supported by the platform's OAuth 2.1 authorization-server metadata). If authorization-server metadata advertises a `registration_endpoint`, that endpoint MUST accept registrations the platform policy allows and MUST NOT be advertised if it is non-functional.
 
 ## 5. Layer 2: Tool Injection (CORE)
 
@@ -341,9 +341,9 @@ Both `aud` and `typ` are mandatory when the platform chooses the second option. 
 
 The platform MUST NOT pass a received access token, refresh token, or session token through to another service. A downstream call MUST use a credential issued for that hop.
 
-An invalid or expired access token MUST be rejected with HTTP `401`. The response MUST include a `WWW-Authenticate` challenge whose scheme is `Bearer`, whose `error` is `invalid_token`, and which includes a `resource_metadata` parameter set to the protected-resource metadata URL for this Card (§5.8). The platform MUST NOT use HTTP `403` for an invalid or expired token, and MUST NOT report that failure as a JSON-RPC error with HTTP `200`.
+An invalid or expired access token MUST be rejected with HTTP `401`. The response MUST include a `WWW-Authenticate` challenge whose scheme is `Bearer`, whose `error` is `invalid_token`, and which includes a `resource_metadata` parameter set to the protected-resource metadata URL for the MCP resource addressed (§5.8). The platform MUST NOT use HTTP `403` for an invalid or expired token, and MUST NOT report that failure as a JSON-RPC error with HTTP `200`.
 
-When the token is valid and is for this Card, but does not include a required scope, the platform SHOULD reject the call with HTTP `403` and a `WWW-Authenticate` challenge of `error="insufficient_scope"`, a `scope` parameter naming the scope required to step up, and the same `resource_metadata` parameter. That challenge is the recommended step-up signal, including when the missing scope is the platform's **commit**-group scope (for example `app:commit`). The platform MAY allow the call without that scope when policy permits. The platform MUST NOT answer an insufficient-scope failure with HTTP `200` when it rejects the call.
+When the token is valid and is for this Card, but does not include a required scope, the platform SHOULD reject the call with HTTP `403` and a `WWW-Authenticate` challenge of `error="insufficient_scope"`, a `scope` parameter naming the scope required to step up, and the same `resource_metadata` parameter. That challenge is the recommended step-up signal, including when the missing scope is the platform's **commit**-group scope (for example `app:commit`). The platform MUST NOT answer an insufficient-scope failure with HTTP `200` when it rejects the call.
 
 HTTP `401` and `403` responses under this section SHOULD include the trace identifier from §12.7 in the `X-Request-Id` response header. They MUST NOT require the client to send any non-MCP request headers beyond those defined by the negotiated MCP revision and the MCP authorization specification.
 
@@ -682,13 +682,13 @@ Every AICP requirement that touches MCP MUST be expressible with standard MCP me
 
 | AICP spec | Target MCP revision | Legacy MCP revision | Rule |
 |-----------|---------------------|------------------------|------|
-| **0.x** (this document) | [`2026-07-28`](https://modelcontextprotocol.io/specification/2026-07-28) — implementations **SHOULD** support it on every Card-scoped endpoint | [`2025-06-18`](https://modelcontextprotocol.io/specification/2025-06-18) — implementations **MUST** accept it via standard MCP version negotiation | Dual-era servers advertise both in `mcp_protocol_fallbacks` (§10.3) and honor the negotiation rules below |
+| **0.x** (this document) | [`2026-07-28`](https://modelcontextprotocol.io/specification/2026-07-28) — implementations **SHOULD** support it on every Card-scoped endpoint | [`2025-06-18`](https://modelcontextprotocol.io/specification/2025-06-18) — implementations **MUST** accept it via standard MCP version negotiation | **Dual-era** servers advertise additional revisions in `mcp_protocol_fallbacks` (§10.3). A **`2025-06-18`-only** server sets `mcp_protocol_version` to `2025-06-18` and omits fallbacks or leaves the array empty |
 | **1.0** (future) | `2026-07-28` — **MUST** | `2025-06-18` — **MAY** be dropped | No change to OAuth, scope, or Card-binding rules; only the minimum legacy revision tightens |
 
 Through AICP **0.x**, version negotiation MUST use only mechanisms defined by MCP:
 
-- **Modern (`2026-07-28`)**: per-request `_meta["io.modelcontextprotocol/protocolVersion"]`, the `MCP-Protocol-Version` HTTP header on Streamable HTTP (same value as `_meta`), optional `server/discover`, and `UnsupportedProtocolVersionError` (`-32022`) with `error.data.supported` and `error.data.requested` as specified by that revision.
-- **Legacy (`2025-06-18`)**: the `initialize` request/result **`protocolVersion`** exchange, then the `MCP-Protocol-Version` header on subsequent Streamable HTTP requests as specified by that revision. There is no `server/discover` and no per-request `_meta` protocol version on legacy sessions.
+- **Modern (`2026-07-28`)**: per-request `_meta["io.modelcontextprotocol/protocolVersion"]`, the `MCP-Protocol-Version` HTTP header on Streamable HTTP (same value as `_meta`), `server/discover` (platforms implementing this revision **MUST** implement it; clients **MAY** call it before other requests), and `UnsupportedProtocolVersionError` (`-32022`) with `error.data.supported` and `error.data.requested` as specified by that revision.
+- **Legacy (`2025-06-18`)**: the `initialize` request/result **`protocolVersion`** exchange, then the `MCP-Protocol-Version` header on subsequent Streamable HTTP requests as specified by that revision. There is no `server/discover` and no per-request `_meta` protocol version on legacy sessions. An unsupported or mismatched `MCP-Protocol-Version` on those requests MUST receive HTTP `400` per MCP `2025-06-18`. Platforms MUST NOT use `-32022` unless they implement modern `2026-07-28` per-request mode.
 
 A platform MUST NOT invent alternate version-negotiation channels (for example a required AICP-specific header or JSON-RPC method).
 
@@ -718,11 +718,11 @@ When the client speaks `2026-07-28`, version agreement is per request. There is 
 
 #### Revision `2025-06-18` (legacy fallback)
 
-For AICP **0.x**, every Card-scoped MCP endpoint MUST accept clients that negotiate **`2025-06-18`** using the lifecycle and Streamable HTTP rules from that revision, including session `initialize`, `notifications/initialized`, optional `Mcp-Session-Id`, and the `MCP-Protocol-Version` header tied to the negotiated version.
+For AICP **0.x**, every Card-scoped MCP endpoint MUST accept clients that negotiate **`2025-06-18`** using the lifecycle and Streamable HTTP rules from that revision, including session `initialize`, `notifications/initialized`, optional `Mcp-Session-Id`, and the `MCP-Protocol-Version` header tied to the negotiated version. Version agreement uses standard `initialize` negotiation; invalid `MCP-Protocol-Version` values on subsequent HTTP requests MUST fail with HTTP `400` as in MCP `2025-06-18`, not with `-32022`.
 
-Dual-era rules:
+Dual-era rules (platforms that implement both `2026-07-28` and one or more legacy revisions):
 
-- Every fallback revision MUST be listed in `mcp_protocol_fallbacks` (§10.3). For AICP **0.x**, that array MUST include `2025-06-18`.
+- Every legacy revision the platform implements besides the value of `mcp_protocol_version` MUST be listed in `mcp_protocol_fallbacks` (§10.3). For AICP **0.x** dual-era platforms, that array MUST include `2025-06-18`.
 - When the platform implements `2026-07-28`, every fallback revision MUST also appear in the `supportedVersions` (or equivalent) list returned by `server/discover` and in `error.data.supported` from `-32022`.
 - A request that carries modern per-request `_meta["io.modelcontextprotocol/protocolVersion"]` MUST be served under `2026-07-28`. The platform MUST NOT silently downgrade it onto a legacy revision.
 - An `initialize` request on a dual-era endpoint MUST be served under the negotiated legacy revision when that revision is an advertised fallback. The platform MUST NOT apply the modern per-request rules to that legacy session.
@@ -741,7 +741,7 @@ The table below maps **AICP-Core** MCP-layer requirements to each revision. Enro
 | Distinct MCP vs session tokens, no passthrough (§5.2) | Required | Required | None |
 | Per-request `_meta` protocol version + matching `MCP-Protocol-Version` | Required in modern mode | Not used; `initialize` + header on session instead | Legacy clients do not send modern `_meta`; server uses negotiated session version |
 | `server/discover` | Required when `2026-07-28` is implemented | Not available | Legacy clients rely on `initialize` negotiation only |
-| `UnsupportedProtocolVersionError` (`-32022`) | Required in modern mode | Not used; version mismatch handled in `initialize` per that revision | Different error shape and code on mismatch |
+| `UnsupportedProtocolVersionError` (`-32022`) | Required in modern (`2026-07-28`) mode only | Not used; `initialize` negotiation plus HTTP `400` on bad `MCP-Protocol-Version` | No `-32022`; initialize mismatch uses that revision's JSON-RPC errors |
 | Optional `ai.crewport.aicp/*` `_meta` / `experimental` hints | MAY be omitted by clients | MAY be omitted by clients | AICP-specific hints unavailable unless client reads optional `_meta` |
 
 #### Core MCP surface
@@ -787,9 +787,9 @@ GET {platform_url}/.well-known/aicp.json
 }
 ```
 
-`mcp_protocol_version` MUST name an MCP revision the platform **actually implements** on its Card MCP endpoints. When the platform implements `2026-07-28`, this field SHOULD be `2026-07-28`. The platform MUST NOT advertise a revision in `mcp_protocol_version` or `mcp_protocol_fallbacks` unless that revision is implemented (§10.1).
+`mcp_protocol_version` MUST name an MCP revision the platform **actually implements** on its Card MCP endpoints. When the platform implements `2026-07-28`, this field SHOULD be `2026-07-28`. A platform that implements only `2025-06-18` MUST set this field to `2025-06-18`. The platform MUST NOT advertise a revision in `mcp_protocol_version` or `mcp_protocol_fallbacks` unless that revision is implemented (§10.1).
 
-`mcp_protocol_fallbacks` MUST list every legacy MCP revision the platform will negotiate via standard MCP rules (§10.1). For AICP **0.x**, the array MUST include `2025-06-18` when that revision is implemented (which is required for 0.x). At AICP **1.0**, the array MAY be empty if the platform drops legacy clients. The platform MUST NOT honor a revision that is not listed in `mcp_protocol_version` or `mcp_protocol_fallbacks`.
+On **dual-era** platforms, `mcp_protocol_fallbacks` MUST list every other implemented MCP revision negotiated via standard MCP rules (§10.1). For AICP **0.x** dual-era platforms, the array MUST include `2025-06-18`. A **`2025-06-18`-only** platform MAY omit `mcp_protocol_fallbacks` or set it to an empty array. At AICP **1.0**, dual-era platforms MAY drop legacy entries. The platform MUST NOT honor a revision that is not named in `mcp_protocol_version` or listed in `mcp_protocol_fallbacks` when dual-era.
 
 This enables automated agent onboarding — an agent can discover an AICP platform's capabilities and enrollment endpoint programmatically.
 
@@ -1397,7 +1397,7 @@ accepted ──► requirements ──► planning ──► execution
     },
     "mcp_url_template": {
       "type": "string",
-      "description": "URL template for Card-scoped MCP endpoints. {card_id} is the placeholder."
+      "description": "URL template for MCP endpoints; {card_id} optional when using a platform-wide resource (§5.1)"
     },
     "mcp_protocol_version": {
       "type": "string",
@@ -1406,7 +1406,7 @@ accepted ──► requirements ──► planning ──► execution
     "mcp_protocol_fallbacks": {
       "type": "array",
       "items": {"type": "string"},
-      "description": "Other implemented MCP revisions negotiated via standard MCP rules (§10.1)"
+      "description": "Other MCP revisions on dual-era platforms (§10.1); omit or empty when only one revision is implemented"
     },
     "oauth_providers": {
       "type": "array",
