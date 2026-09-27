@@ -1417,6 +1417,7 @@ accepted ──► requirements ──► planning ──► execution
       "type": "array",
       "items": {
         "type": "object",
+        "required": ["id", "name"],
         "properties": {
           "id": {"type": "string"},
           "name": {"type": "string"},
@@ -1424,6 +1425,14 @@ accepted ──► requirements ──► planning ──► execution
         }
       },
       "description": "Available work classes"
+    },
+    "contact": {
+      "type": "object",
+      "properties": {
+        "email": {"type": "string", "format": "email"},
+        "url": {"type": "string", "format": "uri"}
+      },
+      "description": "Platform contact information"
     },
     "federation": {
       "type": "object",
