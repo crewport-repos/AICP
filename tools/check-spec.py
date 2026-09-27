@@ -48,11 +48,6 @@ from pathlib import Path
 
 from jsonschema import Draft202012Validator
 
-try:
-    import jwt
-except ImportError:  # pragma: no cover - optional until vector deps installed
-    jwt = None
-
 REPO = Path(__file__).resolve().parent.parent
 SPEC = REPO / "spec" / "AICP-v0.1.md"
 SCHEMA_DIR = REPO / "spec" / "schemas"
@@ -332,11 +327,11 @@ def check_drift(blocks: list[Block], schemas: dict[str, dict]) -> list[str]:
     return failures
 
 
-def _jwks_to_key(jwk: dict):
+def _jwks_to_key(jwk: dict, jwt_mod):
     alg = jwk.get("alg") or ("EdDSA" if jwk.get("kty") == "OKP" else "ES256")
-    if alg not in jwt.algorithms.get_default_algorithms():
+    if alg not in jwt_mod.algorithms.get_default_algorithms():
         raise ValueError(f"unsupported jwk alg {alg}")
-    return jwt.algorithms.get_default_algorithms()[alg].from_jwk(json.dumps(jwk))
+    return jwt_mod.algorithms.get_default_algorithms()[alg].from_jwk(json.dumps(jwk))
 
 
 def verify_attestation_vector(
@@ -347,9 +342,10 @@ def verify_attestation_vector(
     now: int,
     max_skew: int,
     jti_cache: set[str],
+    jwt_mod,
 ) -> None:
-    header = jwt.get_unverified_header(token)
-    payload = jwt.decode(token, options={"verify_signature": False})
+    header = jwt_mod.get_unverified_header(token)
+    payload = jwt_mod.decode(token, options={"verify_signature": False})
 
     if header.get("alg") not in ("ES256", "EdDSA"):
         raise ValueError(f"disallowed alg {header.get('alg')}")
@@ -385,8 +381,8 @@ def verify_attestation_vector(
     keys = {k["kid"]: k for k in jwks.get("keys", [])}
     if hdr_kid not in keys:
         raise ValueError("kid not in jwks")
-    key = _jwks_to_key(keys[hdr_kid])
-    jwt.decode(
+    key = _jwks_to_key(keys[hdr_kid], jwt_mod)
+    jwt_mod.decode(
         token,
         key,
         algorithms=[header["alg"]],
@@ -400,7 +396,9 @@ def verify_attestation_vector(
 
 def check_vectors() -> list[str]:
     failures: list[str] = []
-    if jwt is None:
+    try:
+        import jwt as jwt_mod
+    except ImportError:
         failures.append("vectors: PyJWT is not installed (required for --check vectors)")
         return failures
 
@@ -437,6 +435,7 @@ def check_vectors() -> list[str]:
                 now=now,
                 max_skew=max_skew,
                 jti_cache=jti_cache,
+                jwt_mod=jwt_mod,
             )
             ok = True
         except Exception as e:
