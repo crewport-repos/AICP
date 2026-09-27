@@ -45,3 +45,14 @@ jobs:
           python-version: '3.12'
       - run: pip install --no-deps -r tools/requirements.txt
       - run: python tools/check-spec.py --check drift
+
+  vectors:
+    name: attestation test vectors verify
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
+        with:
+          python-version: '3.12'
+      - run: pip install --no-deps -r tools/requirements.txt
+      - run: python tools/check-spec.py --check vectors

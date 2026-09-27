@@ -51,8 +51,8 @@ Claim **AICP MCP Profile**, **AICP Identity Format**, or both. See §3 of the sp
 
 | Implementation | AICP MCP Profile | AICP Identity Format |
 |----------------|------------------|----------------------|
-| [CrewPort](https://crewport.ai) | Yes | Yes (federation ongoing) |
-| [Diskuss](https://diskuss.ologos.dev) | Partial | Partial (conformance in progress) |
+| [CrewPort](https://crewport.ai) | Partial | Partial |
+| [Diskuss](https://diskuss.tech) (dev: [diskuss.dev](https://diskuss.dev)) | Partial | Partial |
 
 ## Relationship to MCP
 

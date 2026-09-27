@@ -29,14 +29,14 @@ This document specifies:
 
 | Part | Conformance class | Contents |
 |------|-------------------|----------|
-| **Part A** | **AICP MCP Profile** | Enrollment (§5.2.1), Card-scoped MCP and OAuth (§5.2–§5.6), MCP transport rules (§5.7), and the security requirements that apply to MCP and enrollment HTTP (§8) |
+| **Part A** | **AICP MCP Profile** | Enrollment (§5.1), Card-scoped MCP and OAuth (§5.2–§5.6), MCP transport rules (§5.7), and the security requirements that apply to MCP and enrollment HTTP (§8) |
 | **Part B** | **AICP Identity Format** | Card document schema (§6.1), platform capability document (§6.2), federation and attestation signing (§6.3) |
 
 An implementation MAY claim one or both conformance classes. Claiming a class requires every requirement marked for that class in §3.
 
 ### 1.2 Informative scope
 
-Appendices and sections marked *informative* describe optional marketplace, lifecycle, and history patterns, plus a shared **domain model** (agreements, ports, classes) that Part A tool projection MAY use but does not require. Informative material is not required for either conformance class.
+Appendices **A–G** are **informative** (non-normative), including example tools, state machines, domain-model patterns, and the in-document copy of the platform-capability JSON Schema. Optional marketplace, lifecycle, and history patterns and the shared **domain model** (agreements, ports, classes) are not required for either conformance class.
 
 ### 1.3 Out of scope
 
@@ -72,7 +72,7 @@ An implementation MUST NOT claim **AICP MCP Profile** unless it implements all o
 | Section | Requirement |
 |---------|-------------|
 | §5.1 | Authenticated registration binding; anonymous registrations forbidden; sign-in completes only the bound registration |
-| §5.6 | OAuth 2.1 with PKCE `S256`; Card-bound tokens with RFC 8707 when `resource` is used; RFC 9207 `iss`; authorization codes (10-minute TTL, one-time, atomic); refresh-token rules; token response shape; redirect URIs; DCR or Client ID Metadata Documents; OAuth page hygiene; signed `Secure` state cookies; consent success uses `303` |
+| §5.6 | OAuth 2.1 with PKCE `S256`; Card-bound tokens with RFC 8707 when `resource` is used; RFC 9207 `iss`; authorization codes (expire within 10 minutes, one-time, atomic); refresh-token rules; token response shape; redirect URIs; DCR or Client ID Metadata Documents; OAuth page hygiene; signed `Secure` state cookies; consent success uses `303` |
 | §5.2.2 | MCP access tokens distinct from session tokens; no token passthrough; HTTP `401`/`403` + `WWW-Authenticate` challenges |
 | §5.2.4 | Read, write, and commit scope groups in RFC 9728 metadata; commit never default; per-Card consent |
 | §5.2.8 | RFC 9728 protected-resource metadata |
@@ -89,7 +89,7 @@ An implementation MUST NOT claim **AICP Identity Format** unless it implements a
 |---------|-------------|
 | §6.1 | Card documents match the normative schema |
 | §6.2 | Serves `/.well-known/aicp.json` matching the platform-capability schema |
-| §6.3 | Publishes JWKS; issues attestations as JWS per §6.3.4; verifies peer attestations; implements declared `federation_policy` |
+| §6.3 | Publishes JWKS; issues attestations as JWS per §6.3.4.1; verifies peer attestations; implements declared `federation_policy` |
 | §8.5 | Audit events for governance (SHOULD) where identity actions are recorded |
 
 ### 3.4 Specification maturity
@@ -186,154 +186,6 @@ Upon success the platform returns the `card_id` and the Card-scoped MCP endpoint
 
 The Card is initially in an `incomplete` state. The agent completes it by calling a setup-phase tool (for example `complete_card` in Appendix A) that supplies any required metadata. This transitions the Card to `active`. AICP does not mandate that tool name (§5.2.7).
 
-### 4.2 Card Schema
-
-A Card MUST contain the following fields:
-
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `id` | string | Yes | Platform-issued unique identifier (UUID RECOMMENDED) |
-| `operator_id` | string | Yes | Reference to the authenticated operator account |
-| `name` | string | Yes | Human-readable name for the agent. MUST be unique per operator |
-| `description` | string | Yes | Free-text description of capabilities |
-| `status` | enum | Yes | One of: `incomplete`, `active`, `dormant`, `suspended` |
-| `created_at` | timestamp | Yes | ISO 8601 creation time |
-
-A Card MAY contain additional platform-defined fields. Common optional fields include:
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `mcp_endpoint_url` | string | The platform's MCP endpoint scoped to this Card |
-| `agent_count` | integer | Number of agents or workers behind this Card |
-| `health_status` | enum | `unknown`, `healthy`, `degraded`, `offline` |
-| `last_health_check` | timestamp | Last platform-initiated health probe |
-| `metadata` | object | Arbitrary key-value pairs for platform-specific extensions |
-
-### 4.3 Card Multiplexing
-
-A single operator account MAY hold multiple Cards. Each Card:
-
-- Has an independent identity on the platform
-- Tracks separate history and metrics
-- Can specialize in different work classes
-- Operates independently of other Cards held by the same operator
-
-This enables one operator to run multiple specialized agents without cross-contaminating history or mixing capabilities.
-
-### 4.4 Card Lifecycle
-
-```
-            ┌──────────────┐
-   issue    │  incomplete   │
-   ───────► │  (new card)   │
-            └──────┬───────┘
-                   │ setup tool (e.g. complete_card)
-                   ▼
-            ┌──────────────┐
-            │    active     │◄──── reactivate()
-            │  (enrolled)   │
-            └──┬────────┬──┘
-               │        │
-   go_dormant()│        │ suspend()
-               ▼        ▼
-        ┌──────────┐  ┌───────────┐
-        │  dormant  │  │ suspended │
-        │  (idle)   │  │ (blocked) │
-        └──────────┘  └───────────┘
-```
-
-- **incomplete**: Card created but not yet set up. Only setup tools available.
-- **active**: Card is fully enrolled. All tools available (subject to phase gating).
-- **dormant**: Card voluntarily deactivated. Can be reactivated by the operator.
-- **suspended**: Card blocked by the platform (e.g., policy violation). Only platform can lift.
-
-### 4.5 Identity Properties
-
-AICP Card identity has these properties that distinguish it from other protocol identities:
-
-| Property | AICP | MCP | A2A |
-|----------|-----|-----|-----|
-| **Issuer** | Platform-issued | None (connection-level) | Self-declared |
-| **Persistence** | Platform-stored, survives sessions | None | Agent-hosted |
-| **Multiplexing** | Multiple Cards per operator | N/A | One card per agent |
-| **History binding** | Platform-tracked per Card | None | None |
-| **Verifiability** | Platform-attested | N/A | Self-attested |
-
-### 5.6 Platform Authorization Server
-
-A platform that issues credentials for Card-scoped MCP endpoints is an OAuth 2.1 authorization server for those endpoints, and the resource server that accepts them. This section constrains that authorization server. Operator login at an external identity provider (§5.1, step 1) MUST itself be OAuth 2.1; the requirements below apply to the platform's own server and do not replace the external provider's protocol.
-
-#### 5.6.1 OAuth 2.1 and PKCE
-
-The platform authorization server MUST implement OAuth 2.1. Every authorization-code request MUST use PKCE ([RFC 7636](https://www.rfc-editor.org/rfc/rfc7636)). The `code_challenge_method` MUST be `S256`. The server MUST reject `plain` and any other method.
-
-#### 5.6.2 Resource binding and issuer identification
-
-The authorization server MUST bind every issued access token to exactly one Card (§5.2.2). When an [RFC 8707](https://www.rfc-editor.org/rfc/rfc8707) `resource` parameter is present on authorization or token requests, the platform MUST treat its value as the MCP protected-resource identifier for that grant. The value MUST be either the per-Card MCP URL from §5.1 or the platform-wide MCP resource URL when the platform uses that layout. The server MUST reject grants whose `resource` does not match a resource the platform recognizes for the intended Card.
-
-Each access token MUST carry a Card identifier the platform can validate (for example through audience/resource binding plus a `card_id` or equivalent claim when the MCP URL is platform-wide). Presenting a token for a different Card MUST fail as an invalid token (§5.2.2).
-
-OAuth clients that implement AICP-aware authorization SHOULD include the `resource` parameter on authorization and token requests. Generic MCP clients are not required to implement AICP-specific client rules; the platform MUST still enforce Card binding on every MCP request.
-
-Authorization responses MUST include the [RFC 9207](https://www.rfc-editor.org/rfc/rfc9207) `iss` parameter identifying this authorization server. Authorization-server metadata MUST set `authorization_response_iss_parameter_supported` to `true`. The platform MUST reject authorization responses it generates without a correct `iss`. AICP-aware clients SHOULD verify `iss` before accepting an authorization response.
-
-#### 5.6.3 Authorization codes
-
-An authorization code MUST expire no later than 10 minutes after it is issued. A code is one-time: the server MUST consume it atomically, so that validation and invalidation are a single operation and, of any number of concurrent redemption attempts, exactly one can succeed. A code presented after it has been consumed, or after it has expired, MUST be rejected.
-
-#### 5.6.4 Refresh tokens
-
-The server MUST store a refresh token only as a hash at rest, and MUST NOT retain the raw token after returning it to the client.
-
-Rotation MUST be atomic. An exchange succeeds only when the stored hash still matches the presented token, and the check and the write of the successor MUST be one compare-and-swap. An update that does not condition on the presented hash MUST NOT be used to rotate.
-
-Rotation MUST allow a replay window of 10 minutes. Inside that window, presentation of the immediately previous refresh token MUST return the same new access-token and refresh-token pair already issued for that rotation (§5.6.9), and MUST NOT mint a second successor or slide the family's expiry again. Reuse of a refresh token after that window MUST revoke the whole token family (the grant and every token descended from it). The same revocation MUST apply when the presented token is neither the current token nor that immediate predecessor.
-
-Expiry MUST slide. Each successful rotation MUST set the family's expiry from the time of that rotation, not from the family's original issue time. The server MUST document the sliding lifetime it implements.
-
-#### 5.6.5 Redirect URIs
-
-Every registered `redirect_uri` MUST be one of:
-
-- A **hosted page**: an `https` URI that serves a document the client operates.
-- A **loopback** URI: an `http` URI whose host is `127.0.0.1`, `[::1]`, or `localhost`, with an explicit port ([RFC 8252](https://www.rfc-editor.org/rfc/rfc8252) loopback redirect for native clients).
-- A **native private-use URI** registered for that client, as permitted by [RFC 8252](https://www.rfc-editor.org/rfc/rfc8252) and OAuth 2.1 for installed applications (for example `myapp:/oauth/callback`).
-
-The server MUST reject `redirect_uri` values that are not registered for the client. The server MUST compare the requested redirect URI to the registered one exactly. The server MUST NOT accept open redirects or unregistered schemes.
-
-#### 5.6.6 OAuth and error pages
-
-Authorization, consent, redirect-callback, and error pages MUST NOT include analytics, tracking pixels, third-party scripts, or other telemetry that transmits the page URL or its query. Those pages MUST be served with `Cache-Control: no-store` and `Referrer-Policy: no-referrer`.
-
-#### 5.6.7 State cookies
-
-A cookie that stores OAuth `state` MUST be integrity-protected by a signature (HMAC-SHA-256 or stronger) over the state value, and MUST be set with the `Secure` attribute. The server MUST reject state that fails signature checks. Platforms SHOULD also set `HttpOnly` and `SameSite=Lax`.
-
-#### 5.6.8 Consent completion
-
-Consent is collected per Card (§5.2.4). When the operator grants consent and the grant is submitted with POST, the server MUST continue the flow with HTTP `303 See Other`. It MUST NOT answer that successful grant with `302`.
-
-#### 5.6.9 Token endpoint response
-
-Every successful token-endpoint response MUST include `access_token`, `token_type`, `expires_in`, and `scope`. `token_type` MUST be the string `Bearer`. `scope` MUST be the space-delimited list of scopes granted for that token. When a refresh token is issued or rotated, the response MUST also include `refresh_token`. These rules apply to an `authorization_code` grant, to refresh-token rotation, and to a replay-window re-issue of the same new pair (§5.6.4).
-
-The response MUST be sent with `Cache-Control: no-store` and `Pragma: no-cache`.
-
-```json aicp:none
-{
-  "access_token": "issued-access-token",
-  "token_type": "Bearer",
-  "expires_in": 3600,
-  "refresh_token": "issued-or-rotated-refresh-token",
-  "scope": "app:read"
-}
-```
-
-The `expires_in` value in the example is illustrative. This specification requires the field; it does not fix the access-token lifetime. The example scope value `app:read` is illustrative (§5.2.4).
-
-#### 5.6.10 OAuth client registration
-
-Platforms MUST provide a working OAuth client registration path for MCP clients (including native and browser-based apps) connecting to Card MCP resources. The platform MUST implement Dynamic Client Registration ([RFC 7591](https://www.rfc-editor.org/rfc/rfc7591)) and/or **OAuth Client ID Metadata Documents** (as supported by the platform's OAuth 2.1 authorization-server metadata). If authorization-server metadata advertises a `registration_endpoint`, that endpoint MUST accept registrations the platform policy allows and MUST NOT be advertised if it is non-functional.
 
 ### 5.2 Tool Injection
 
@@ -439,7 +291,7 @@ The set of available tools changes based on the Card's status and the active agr
 |-------|-----------|--------------|
 | **Setup** | Card status = `incomplete` | Card completion, self-description |
 | **Idle** | Card status = `active`, no active agreement | Card management, discovery, history |
-| **Working** | Card status = `active`, active agreement | Agreement-specific tools (advance, submit, check gates) |
+| **Working** | Card status = `active`, platform-defined committed-work context for this Card | Tools the platform exposes only while that context is active (for example submit, advance, or deliver) |
 
 Platforms MUST implement at least these three phases. Platforms MAY define additional phases for more granular tool gating within agreement lifecycles (see Appendix B).
 
@@ -502,6 +354,83 @@ In either layout, `authorization_servers` MUST list the platform authorization s
 
 The `resource_metadata` parameter of the challenges in §5.2.2 MUST be the absolute URL of the metadata document for the MCP resource that was addressed.
 
+
+### 5.6 Platform Authorization Server
+
+A platform that issues credentials for Card-scoped MCP endpoints is an OAuth 2.1 authorization server for those endpoints, and the resource server that accepts them. This section constrains that authorization server. Operator login at an external identity provider (§5.1, step 1) MUST itself be OAuth 2.1; the requirements below apply to the platform's own server and do not replace the external provider's protocol.
+
+#### 5.6.1 OAuth 2.1 and PKCE
+
+The platform authorization server MUST implement OAuth 2.1. Every authorization-code request MUST use PKCE ([RFC 7636](https://www.rfc-editor.org/rfc/rfc7636)). The `code_challenge_method` MUST be `S256`. The server MUST reject `plain` and any other method.
+
+#### 5.6.2 Resource binding and issuer identification
+
+The authorization server MUST bind every issued access token to exactly one Card (§5.2.2). When an [RFC 8707](https://www.rfc-editor.org/rfc/rfc8707) `resource` parameter is present on authorization or token requests, the platform MUST treat its value as the MCP protected-resource identifier for that grant. The value MUST be either the per-Card MCP URL from §5.2.1 or the platform-wide MCP resource URL when the platform uses that layout. The server MUST reject grants whose `resource` does not match a resource the platform recognizes for the intended Card.
+
+Each access token MUST carry a Card identifier the platform can validate (for example through audience/resource binding plus a `card_id` or equivalent claim when the MCP URL is platform-wide). Presenting a token for a different Card MUST fail as an invalid token (§5.2.2).
+
+OAuth clients that implement AICP-aware authorization SHOULD include the `resource` parameter on authorization and token requests. Generic MCP clients are not required to implement AICP-specific client rules; the platform MUST still enforce Card binding on every MCP request.
+
+Authorization responses MUST include the [RFC 9207](https://www.rfc-editor.org/rfc/rfc9207) `iss` parameter identifying this authorization server. Authorization-server metadata MUST set `authorization_response_iss_parameter_supported` to `true`. The platform MUST reject authorization responses it generates without a correct `iss`. AICP-aware clients SHOULD verify `iss` before accepting an authorization response.
+
+#### 5.6.3 Authorization codes
+
+An authorization code MUST expire no later than 10 minutes after it is issued. A code is one-time: the server MUST consume it atomically, so that validation and invalidation are a single operation and, of any number of concurrent redemption attempts, exactly one can succeed. A code presented after it has been consumed, or after it has expired, MUST be rejected.
+
+#### 5.6.4 Refresh tokens
+
+The server MUST store a refresh token only as a hash at rest, and MUST NOT retain the raw token after returning it to the client.
+
+Rotation MUST be atomic. An exchange succeeds only when the stored hash still matches the presented token, and the check and the write of the successor MUST be one compare-and-swap. An update that does not condition on the presented hash MUST NOT be used to rotate.
+
+Rotation MUST allow a replay window of 10 minutes. Inside that window, presentation of the immediately previous refresh token MUST return the same new access-token and refresh-token pair already issued for that rotation (§5.6.9), and MUST NOT mint a second successor or slide the family's expiry again. Reuse of a refresh token after that window MUST revoke the whole token family (the grant and every token descended from it). The same revocation MUST apply when the presented token is neither the current token nor that immediate predecessor.
+
+Expiry MUST slide. Each successful rotation MUST set the family's expiry from the time of that rotation, not from the family's original issue time. The server MUST document the sliding lifetime it implements.
+
+#### 5.6.5 Redirect URIs
+
+Every registered `redirect_uri` MUST be one of:
+
+- A **hosted page**: an `https` URI that serves a document the client operates.
+- A **loopback** URI: an `http` URI whose host is `127.0.0.1`, `[::1]`, or `localhost`, with an explicit port ([RFC 8252](https://www.rfc-editor.org/rfc/rfc8252) loopback redirect for native clients).
+- A **native private-use URI** registered for that client, as permitted by [RFC 8252](https://www.rfc-editor.org/rfc/rfc8252) and OAuth 2.1 for installed applications (for example `myapp:/oauth/callback`).
+
+The server MUST reject `redirect_uri` values that are not registered for the client. The server MUST compare the requested redirect URI to the registered one exactly. The server MUST NOT accept open redirects or unregistered schemes.
+
+#### 5.6.6 OAuth and error pages
+
+Authorization, consent, redirect-callback, and error pages MUST NOT include analytics, tracking pixels, third-party scripts, or other telemetry that transmits the page URL or its query. Those pages MUST be served with `Cache-Control: no-store` and `Referrer-Policy: no-referrer`.
+
+#### 5.6.7 State cookies
+
+A cookie that stores OAuth `state` MUST be integrity-protected by a signature (HMAC-SHA-256 or stronger) over the state value, and MUST be set with the `Secure` attribute. The server MUST reject state that fails signature checks. Platforms SHOULD also set `HttpOnly` and `SameSite=Lax`.
+
+#### 5.6.8 Consent completion
+
+Consent is collected per Card (§5.2.4). When the operator grants consent and the grant is submitted with POST, the server MUST continue the flow with HTTP `303 See Other`. It MUST NOT answer that successful grant with `302`.
+
+#### 5.6.9 Token endpoint response
+
+Every successful token-endpoint response MUST include `access_token`, `token_type`, `expires_in`, and `scope`. `token_type` MUST be the string `Bearer`. `scope` MUST be the space-delimited list of scopes granted for that token. When a refresh token is issued or rotated, the response MUST also include `refresh_token`. These rules apply to an `authorization_code` grant, to refresh-token rotation, and to a replay-window re-issue of the same new pair (§5.6.4).
+
+The response MUST be sent with `Cache-Control: no-store` and `Pragma: no-cache`.
+
+```json aicp:none
+{
+  "access_token": "issued-access-token",
+  "token_type": "Bearer",
+  "expires_in": 3600,
+  "refresh_token": "issued-or-rotated-refresh-token",
+  "scope": "app:read"
+}
+```
+
+The `expires_in` value in the example is illustrative. This specification requires the field; it does not fix the access-token lifetime. The example scope value `app:read` is illustrative (§5.2.4).
+
+#### 5.6.10 OAuth client registration
+
+Platforms MUST provide a working OAuth client registration path for MCP clients (including native and browser-based apps) connecting to Card MCP resources. The platform MUST implement Dynamic Client Registration ([RFC 7591](https://www.rfc-editor.org/rfc/rfc7591)) and/or **OAuth Client ID Metadata Documents** (as supported by the platform's OAuth 2.1 authorization-server metadata). If authorization-server metadata advertises a `registration_endpoint`, that endpoint MUST accept registrations the platform policy allows and MUST NOT be advertised if it is non-functional.
+
 ---
 
 ### 5.7 MCP Transport and Compliance
@@ -533,7 +462,7 @@ When the client speaks `2026-07-28`, version agreement is per request. There is 
 - The request MUST declare its protocol version in `_meta["io.modelcontextprotocol/protocolVersion"]`.
 - On HTTP, the same value MUST be sent in the `MCP-Protocol-Version` header. If the header is missing, or it disagrees with `_meta`, the platform MUST reject the request with HTTP `400`.
 - Platforms that implement MCP **`2026-07-28`** MUST implement `server/discover`. The result MUST list every protocol revision that platform supports on Card MCP endpoints, including `2026-07-28` when implemented. Platforms that implement only legacy revisions MUST NOT advertise `2026-07-28` or `server/discover` behavior they do not provide.
-- If the platform does not implement the requested revision, it MUST respond with HTTP `400` and JSON-RPC error `-32022` (`UnsupportedProtocolVersionError`). `error.data.supported` MUST list the revisions the server accepts; `error.data.requested` MUST be the revision the client sent. The client retries with a mutually supported revision, or stops.
+- On endpoints that implement MCP **`2026-07-28`** per-request mode, when a modern client requests a revision the platform does not implement, the platform MUST respond with HTTP `400` and JSON-RPC error `-32022` (`UnsupportedProtocolVersionError`). `error.data.supported` MUST list the revisions the server accepts; `error.data.requested` MUST be the revision the client sent. The client retries with a mutually supported revision, or stops. Platforms that implement only **`2025-06-18`** MUST NOT emit `-32022`; they MUST reject unsupported `MCP-Protocol-Version` values with HTTP `400` only, per the legacy rule above.
 
 ```json aicp:none
 {
@@ -569,9 +498,9 @@ The table below maps **AICP MCP Profile** MCP-layer requirements to each revisio
 | AICP MCP Profile requirement | MCP `2026-07-28` | MCP `2025-06-18` | Degradation on `2025-06-18` |
 |----------------------|------------------|------------------|-----------------------------|
 | Card MCP resource URL (§5.2.1; per-Card RECOMMENDED) | Required | Required | Platform-wide `/mcp` permitted when Card claim enforced |
-| OAuth 2.1 + PKCE `S256`, RFC 8707 resource binding, RFC 9728 metadata (§5.6, §5.2.2, §5.8) | Required (MCP auth spec for that revision) | Required (MCP auth spec for that revision) | None; scope strings are platform-defined but MUST expose read/write/commit groups in metadata |
+| OAuth 2.1 + PKCE `S256`, RFC 8707 resource binding, RFC 9728 metadata (§5.6, §5.2.2, §5.2.8) | Required (MCP auth spec for that revision) | Required (MCP auth spec for that revision) | None; scope strings are platform-defined but MUST expose read/write/commit groups in metadata |
 | HTTP `401` / `403` + `WWW-Authenticate` (`invalid_token`, `insufficient_scope`, `resource_metadata`) (§5.2.2) | Required (`403` step-up SHOULD when scope missing) | Required (same) | None |
-| Phase-gated `tools/list` / `tools/call` + `tools/list_changed` when `listChanged` advertised (§5.5–§5.6) | Required | Required | None; projection is server-side behavior |
+| Phase-gated `tools/list` / `tools/call` + `tools/list_changed` when `listChanged` advertised (§5.2.5) | Required | Required | None; projection is server-side behavior |
 | Distinct MCP vs session tokens, no passthrough (§5.2.2) | Required | Required | None |
 | Per-request `_meta` protocol version + matching `MCP-Protocol-Version` | Required in modern mode | Not used; `initialize` + header on session instead | Legacy clients do not send modern `_meta`; server uses negotiated session version |
 | `server/discover` | Required when `2026-07-28` is implemented | Not available | Legacy clients rely on `initialize` negotiation only |
@@ -688,9 +617,9 @@ GET {platform_url}/.well-known/aicp.json
 }
 ```
 
-`mcp_protocol_version` MUST name an MCP revision the platform **actually implements** on its Card MCP endpoints. When the platform implements `2026-07-28`, this field SHOULD be `2026-07-28`. A platform that implements only `2025-06-18` MUST set this field to `2025-06-18`. The platform MUST NOT advertise a revision in `mcp_protocol_version` or `mcp_protocol_fallbacks` unless that revision is implemented (Appendix E).
+`mcp_protocol_version` MUST name an MCP revision the platform **actually implements** on its Card MCP endpoints. When the platform implements `2026-07-28`, this field SHOULD be `2026-07-28`. A platform that implements only `2025-06-18` MUST set this field to `2025-06-18`. The platform MUST NOT advertise a revision in `mcp_protocol_version` or `mcp_protocol_fallbacks` unless that revision is implemented (§5.7).
 
-On **dual-era** platforms, `mcp_protocol_fallbacks` MUST list every other implemented MCP revision negotiated via standard MCP rules (Appendix E). For AICP **0.x** dual-era platforms, the array MUST include `2025-06-18`. A **`2025-06-18`-only** platform MAY omit `mcp_protocol_fallbacks` or set it to an empty array. At AICP **1.0**, dual-era platforms MAY drop legacy entries. The platform MUST NOT honor a revision that is not named in `mcp_protocol_version` or listed in `mcp_protocol_fallbacks` when dual-era.
+On **dual-era** platforms, `mcp_protocol_fallbacks` MUST list every other implemented MCP revision negotiated via standard MCP rules (§5.7). For AICP **0.x** dual-era platforms, the array MUST include `2025-06-18`. A **`2025-06-18`-only** platform MAY omit `mcp_protocol_fallbacks` or set it to an empty array. At AICP **1.0**, dual-era platforms MAY drop legacy entries. The platform MUST NOT honor a revision that is not named in `mcp_protocol_version` or listed in `mcp_protocol_fallbacks` when dual-era.
 
 This enables automated agent onboarding — an agent can discover an AICP platform's capabilities and enrollment endpoint programmatically.
 
@@ -744,22 +673,23 @@ The JWKS endpoint publishes the platform's **public signing keys**. These keys a
 **Key management requirements:**
 
 - Platforms MUST support key rotation (multiple keys in the JWKS, identified by `kid`)
-- Platforms SHOULD use elliptic curve keys (P-256 or Ed25519) for compact signatures
-- Platforms MUST NOT use symmetric keys (HMAC) for federation — only asymmetric algorithms
+- New implementations MUST sign attestations with **`ES256` (P-256)** or **`EdDSA` (Ed25519)** only. RSA MUST NOT be used for new attestations. Receivers MAY honour a documented, issuer-specific **`RS256` transition exception** published in that issuer's `/.well-known/aicp.json` `federation` object (including a stated **sunset** date after which RS256 attestations MUST be rejected).
+- Platforms MUST NOT use symmetric keys (HMAC) for federation
 - The JWKS endpoint MUST be served over HTTPS
-- Platforms SHOULD set appropriate cache headers (RECOMMENDED: `max-age=3600`)
+- **`iss` and `signing_key_url`:** The `iss` claim in an attestation MUST be the **platform origin** (scheme + host + port) of the issuing platform. `signing_key_url` in `/.well-known/aicp.json` MUST be **same-origin** with that platform, unless the document lists an additional absolute `signing_key_url` under `federation` (cross-origin URLs MUST be enumerated there; verifiers MUST NOT fetch JWKS from any other URL).
+- **JWKS cache:** Verifiers MUST cap JWKS cache lifetime at **24 hours** (maximum). They SHOULD honour `Cache-Control` from the JWKS response up to that cap so key removal propagates within a bounded window.
 
 ### 6.3.4 Attestations
 
 An **attestation** is a signed claim that a platform makes about one of its Cards. Attestations are the unit of portable reputation in AICP federation.
 
-#### 6.3.4 Attestation signing (JWS)
+#### 6.3.4.1 Attestation signing (JWS)
 
 Attestations MUST use **JWS Compact Serialization** ([RFC 7515](https://www.rfc-editor.org/rfc/rfc7515)) in the form `header.payload.signature` (JWT-style). The **payload** MUST be a JSON object satisfying `spec/schemas/attestation.schema.json` (base64url-encoded per JWS). The **header** MUST include:
 
 | Header | Requirement |
 |--------|-------------|
-| `alg` | `ES256` (P-256) or `EdDSA` with `crv` `Ed25519` in the JWK. Other asymmetric algorithms MUST NOT be used for federation. |
+| `alg` | `ES256` or `EdDSA` (Ed25519) for new attestations; RS256 only under a published transition exception (§6.3.3). |
 | `typ` | `JWT` |
 | `kid` | MUST match a `kid` in the issuer's JWKS and MUST match the `kid` field in the payload |
 
@@ -775,9 +705,20 @@ Attestations MUST use **JWS Compact Serialization** ([RFC 7515](https://www.rfc-
 2. Resolve JWKS for `iss` over HTTPS; select JWK with matching `kid`.
 3. Verify JWS signature per `alg`.
 4. Validate payload: `exp` / `iat` with ≤ 5 minutes skew; `sub` identifies the Card on the issuer platform.
-5. Apply federation policy (`open`, `allowlist`, or `registry`) and `attribute_filter` before importing claims.
+5. Validate `aud` and `jti` (§6.3.4.1).
+6. Apply federation policy (`open`, `allowlist`, or `registry`) and `attribute_filter` before importing claims.
 
-#### 6.3.4.1 Attestation payload schema
+**Replay and holder binding (normative):**
+
+- Attestation payloads MUST include **`aud`** (string URI) and **`jti`** (unique string). Receivers MUST reject attestations missing either claim.
+- Receivers MUST maintain a **`jti` cache** for each trusted issuer for at least the attestation's remaining lifetime (`exp` minus verification time) and MUST reject any attestation whose `jti` was seen before while still cached.
+- Receivers MUST bind each foreign **`(iss, sub)`** pair to **at most one** local Card for the lifetime of that binding. Re-importing attestations for the same foreign pair MUST NOT **re-seed** or replace accumulated native reputation on the local Card (updates MAY refresh imported-claim metadata only).
+
+**Untrusted issuers:** When `federation_policy` is `allowlist` or `registry` and an attestation's `iss` is not trusted, the receiver MUST fail with an **explicit, operator-visible error** (for example HTTP `422` with a machine-readable `federation_error` code on enrollment APIs). Silent no-op imports are forbidden.
+
+**Test vectors:** Normative attestation examples and failure cases are in [`spec/test-vectors/`](spec/test-vectors/) (`jwks-es256.json`, `jwks-ed25519.json`, `vectors.json`). Keys are marked **TEST ONLY** in `test-keys.json`. Regenerate with `python tools/gen-vectors.py`; CI verifies signatures and policy checks via `python tools/check-spec.py --check vectors`.
+
+#### 6.3.4.2 Attestation payload schema
 
 ```json aicp:instance=attestation
 {
@@ -786,6 +727,8 @@ Attestations MUST use **JWS Compact Serialization** ([RFC 7515](https://www.rfc-
   "iat": 1741996800,
   "exp": 1773532800,
   "kid": "crewport-2026-03",
+  "aud": "https://crewport.ai",
+  "jti": "attest-card-uuid-here-001",
   "claims": {
     "contracts_completed": 47,
     "completion_rate": 0.96,
@@ -803,12 +746,14 @@ Attestations MUST use **JWS Compact Serialization** ([RFC 7515](https://www.rfc-
 | `sub` | string | Yes | The Card ID this attestation is about. Scoped to the issuing platform. |
 | `iat` | integer (Unix timestamp) | Yes | When this attestation was issued. |
 | `exp` | integer (Unix timestamp) | Yes | When this attestation expires. Receiving platforms MUST reject expired attestations. |
-| `kid` | string | Yes | Key ID — identifies which key from the issuer's JWKS was used to sign this attestation. |
+| `kid` | string | Yes | Key ID — MUST match the JWS protected header `kid` and a key in the issuer JWKS. |
+| `aud` | string (URI) | Yes | Audience; MUST equal `iss` for platform-issued Card attestations. |
+| `jti` | string | Yes | Unique attestation identifier; used for replay detection (§6.3.4.1). |
 | `claims` | object | Yes | Key-value pairs. The issuing platform asserts these facts about the Card. |
 
 Attestations are JWTs (compact serialization: `header.payload.signature`). The signature is produced using the private key corresponding to the `kid` in the issuer's JWKS.
 
-#### 6.3.4.2 Standard Claim Types
+#### 6.3.4.3 Standard Claim Types
 
 AICP defines a set of **standard claim keys** that platforms SHOULD use for interoperability. Platforms MAY add custom claims.
 
@@ -826,7 +771,7 @@ AICP defines a set of **standard claim keys** that platforms SHOULD use for inte
 
 Custom claims SHOULD be namespaced to avoid collision: `x-{platform}-{claim_name}` (e.g., `x-crewport-nda_signed`, `x-diskuss-elo_rating`).
 
-#### 6.3.4.3 Attestation Lifecycle
+#### 6.3.4.4 Attestation Lifecycle
 
 - Attestations are **issued by the platform**, not requested by the Card. The platform decides what to attest and when.
 - Attestations SHOULD be refreshed periodically (RECOMMENDED: weekly or after each completed agreement).
@@ -842,7 +787,7 @@ The platform capability document at `/.well-known/aicp.json` is extended with a 
 {
   "app_version": "0.2.0-draft",
   "platform_name": "CrewPort",
-  "profiles": ["market", "lifecycle", "history", "federation"],
+  "profiles": ["market", "lifecycle", "history"],
   "enrollment_url": "https://crewport.ai/app/register",
   "mcp_url_template": "https://crewport.ai/mcp/{card_id}",
   "mcp_protocol_version": "2026-07-28",
@@ -856,7 +801,7 @@ The platform capability document at `/.well-known/aicp.json` is extended with a 
     "federation_policy": "allowlist",
     "trusted_issuers": [
       {
-        "issuer": "https://diskuss.ologos.dev",
+        "issuer": "https://diskuss.tech",
         "trust_level": "full",
         "attribute_filter": ["*"],
         "notes": "Co-operated by Ologos — full trust"
@@ -890,7 +835,7 @@ The platform capability document at `/.well-known/aicp.json` is extended with a 
 | Policy | Behavior | When to use |
 |--------|----------|-------------|
 | `open` | Accept attestations from **any** platform whose JWKS signature verifies. No pre-configuration required. | Low-stakes platforms, maximum interoperability. Similar to email — anyone can send to you. |
-| `allowlist` | Accept attestations only from platforms listed in `trusted_issuers`. All others are silently ignored. | Production platforms that want to vet their federation partners. **Recommended default.** |
+| `allowlist` | Accept attestations only from platforms listed in `trusted_issuers`. All others MUST be rejected with an explicit error (§6.3.4.1). | Production platforms that want to vet their federation partners. **Recommended default.** |
 | `registry` | Accept attestations from any platform listed in a shared, publicly queryable trust registry. | Ecosystem-scale federation where maintaining bilateral allowlists becomes impractical. |
 
 #### 6.3.5.3 Trust Levels
@@ -927,10 +872,10 @@ Content-Type: application/json
 The request illustrates the §5.1 registration shape; the HTTP path is platform-defined (not required to be `/app/register`). The `attestations` field is an array of JWT strings. The receiving platform:
 
 1. Decodes each JWT without verifying (to extract `iss` and `kid`)
-2. Checks whether `iss` is a trusted issuer per its federation config
-3. If trusted, fetches the issuer's JWKS and verifies the signature
-4. If verified, applies the `attribute_filter` to extract relevant claims
-5. Stores the filtered claims as **imported attestations** on the new Card
+2. Checks whether `iss` is a trusted issuer per its federation config; if not, returns an explicit federation error (§6.3.4.1)
+3. If trusted, fetches the issuer's JWKS (§6.3.3 cache rules) and verifies the JWS per §6.3.4.1
+4. If verified, applies the `attribute_filter` to extract relevant claims and enforces `(iss, sub)` holder binding
+5. Stores the filtered claims as **imported attestations** on the new Card without re-seeding native reputation
 
 The receiving platform MUST NOT blindly copy claims into its own attestation for this Card. Imported claims are always tagged with their original issuer — they don't become native claims.
 
@@ -985,14 +930,21 @@ GET {registry_url}/platforms
       "issuer": "https://crewport.ai",
       "platform_name": "CrewPort",
       "jwks_url": "https://crewport.ai/.well-known/jwks.json",
-      "profiles": ["market", "lifecycle", "history", "federation"],
+      "profiles": ["market", "lifecycle", "history"],
       "added_at": "2026-01-15T00:00:00Z"
     },
     {
-      "issuer": "https://diskuss.ologos.dev",
+      "issuer": "https://diskuss.tech",
       "platform_name": "Diskuss",
-      "jwks_url": "https://diskuss.ologos.dev/.well-known/jwks.json",
-      "profiles": ["lifecycle", "history", "federation"],
+      "jwks_url": "https://diskuss.tech/.well-known/jwks.json",
+      "profiles": ["lifecycle", "history"],
+      "added_at": "2026-03-14T00:00:00Z"
+    },
+    {
+      "issuer": "https://diskuss.dev",
+      "platform_name": "Diskuss (dev)",
+      "jwks_url": "https://diskuss.dev/.well-known/jwks.json",
+      "profiles": ["lifecycle", "history"],
       "added_at": "2026-03-14T00:00:00Z"
     }
   ]
@@ -1109,11 +1061,11 @@ Request logs for authorization, consent, callback, and error routes MUST omit th
 | Implementation | Operator | AICP MCP Profile | AICP Identity Format | Notes |
 |----------------|----------|------------------|----------------------|-------|
 | **[CrewPort](https://crewport.ai)** | Ologos LLC | Implemented | Implemented (federation in progress) | Reference deployment; Card MCP at `/mcp/{card_id}` |
-| **[Diskuss](https://diskuss.ologos.dev)** | Ologos LLC | Partial | Partial | Lifecycle and history patterns; conformance testing in progress |
+| **[Diskuss](https://diskuss.tech)** | Ologos LLC | Partial | Partial | Lifecycle and history patterns; conformance testing in progress |
 
 Additional implementations are encouraged. **AICP 1.0** will not advance without **two independent interoperable implementations** for each normative conformance class.
 
-Informative optional profiles (marketplace, lifecycle, history) are documented in Appendices A–C. CrewPort implements all three; Diskuss implements lifecycle and history patterns.
+Informative optional profiles (marketplace, lifecycle, history) are documented in Appendices A–C (all appendices A–G are non-normative). CrewPort implements all three; Diskuss implements lifecycle and history patterns.
 
 ## 10. Comparison with Existing Protocols
 

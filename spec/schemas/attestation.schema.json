@@ -4,7 +4,7 @@
   "title": "AICP Attestation",
   "description": "A signed claim (JWT payload) that a platform makes about one of its Cards. Used for cross-platform identity and reputation portability in AICP federation.",
   "type": "object",
-  "required": ["iss", "sub", "iat", "exp", "kid", "claims"],
+  "required": ["iss", "sub", "iat", "exp", "kid", "aud", "jti", "claims"],
   "properties": {
     "iss": {
       "type": "string",
@@ -25,7 +25,16 @@
     },
     "kid": {
       "type": "string",
-      "description": "Key ID — identifies which key from the issuer's JWKS was used to sign this attestation."
+      "description": "Key ID — identifies which key from the issuer's JWKS was used to sign this attestation. MUST match the JWS protected header kid."
+    },
+    "aud": {
+      "type": "string",
+      "format": "uri",
+      "description": "Audience URI. MUST equal iss for platform-issued Card attestations."
+    },
+    "jti": {
+      "type": "string",
+      "description": "Unique attestation identifier for replay detection."
     },
     "claims": {
       "type": "object",

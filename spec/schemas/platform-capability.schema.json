@@ -33,12 +33,12 @@
     },
     "mcp_protocol_version": {
       "type": "string",
-      "description": "Highest MCP revision the platform implements on Card MCP endpoints (§10.1). SHOULD be 2026-07-28 when supported. MUST NOT name a revision that is not implemented."
+      "description": "Highest MCP revision the platform implements on Card MCP endpoints (§5.7). SHOULD be 2026-07-28 when supported. MUST NOT name a revision that is not implemented."
     },
     "mcp_protocol_fallbacks": {
       "type": "array",
       "items": {"type": "string"},
-      "description": "Other MCP revisions the platform implements, listed only on dual-era platforms (§10.1). Omit or use an empty array when only one revision is implemented. Dual-era AICP 0.x platforms MUST include 2025-06-18 when that revision is implemented."
+      "description": "Other MCP revisions the platform implements, listed only on dual-era platforms (§5.7). Omit or use an empty array when only one revision is implemented. Dual-era AICP 0.x platforms MUST include 2025-06-18 when that revision is implemented."
     },
     "oauth_providers": {
       "type": "array",
