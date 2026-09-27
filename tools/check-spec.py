@@ -472,14 +472,32 @@ class ReputationFailure(Exception):
         self.code = code
 
 
+class PathDecodeError(Exception):
+    """Merkle audit path string could not be decoded to 32-byte nodes."""
+
+
 def _decode_path(items: list[str]) -> list[bytes]:
+    if not isinstance(items, list):
+        raise PathDecodeError("not_a_list")
     out = []
     for item in items:
-        raw = mkl.b64url_decode(item)
+        if not isinstance(item, str):
+            raise PathDecodeError("not_a_string")
+        try:
+            raw = mkl.b64url_decode(item)
+        except Exception as exc:
+            raise PathDecodeError("undecodable") from exc
         if len(raw) != 32:
-            raise ReputationFailure("inclusion_failed")
+            raise PathDecodeError("bad_length")
         out.append(raw)
     return out
+
+
+def _decode_path_or_fail(items: list[str], code: str) -> list[bytes]:
+    try:
+        return _decode_path(items)
+    except PathDecodeError:
+        raise ReputationFailure(code) from None
 
 
 def _sub_lt(left: str, right: str) -> bool:
@@ -680,7 +698,8 @@ def _reconcile_older(held: list[dict], current: dict, issuer_proofs: dict[tuple[
     """Decide freeze from the issuer consistency endpoint, never from the presenter's path.
 
     Fetch a proof only for exactly the two held sizes. tree_size 0 is a prefix of every
-    later tree. No issuer proof for the pair means ignore the older STH and do not freeze.
+    later tree. A missing issuer proof for the pair means ignore the older STH and do not
+    freeze. An empty proof array is a failed proof and is `split_view`.
     """
     older = [sth for sth in held if sth["tree_size"] < current["tree_size"]]
     if not older:
@@ -690,12 +709,15 @@ def _reconcile_older(held: list[dict], current: dict, issuer_proofs: dict[tuple[
     for sth in older:
         if sth["tree_size"] == 0:
             continue
-        path = proofs.get((sth["tree_size"], current["tree_size"]))
-        if not path:
+        pair = (sth["tree_size"], current["tree_size"])
+        if pair not in proofs:
             continue
+        path = proofs[pair]
+        if not path:
+            raise ReputationFailure("split_view")
         try:
             nodes = _decode_path(path)
-        except ReputationFailure:
+        except PathDecodeError:
             raise ReputationFailure("split_view") from None
         if not mkl.verify_consistency(
             sth["tree_size"],
@@ -705,6 +727,36 @@ def _reconcile_older(held: list[dict], current: dict, issuer_proofs: dict[tuple[
             nodes,
         ):
             raise ReputationFailure("split_view")
+
+
+def _held_tree_sizes(held_sths: list[str], jwt_mod) -> set[int]:
+    sizes: set[int] = set()
+    for token in held_sths:
+        payload = jwt_mod.decode(token, options={"verify_signature": False})
+        sizes.add(int(payload["tree_size"]))
+    return sizes
+
+
+def _validate_issuer_proof_overrides(vector: dict, held_sizes: set[int]) -> None:
+    overrides = vector.get("issuer_proof_overrides")
+    if not overrides:
+        return
+    vid = vector["id"]
+    for key in overrides:
+        if "," not in key:
+            raise ValueError(f"{vid}: issuer_proof_overrides key {key!r} must be first,second")
+        first_s, second_s = key.split(",", 1)
+        try:
+            first, second = int(first_s), int(second_s)
+        except ValueError as exc:
+            raise ValueError(f"{vid}: issuer_proof_overrides key {key!r} must be first,second") from exc
+        if not (0 < first < second):
+            raise ValueError(f"{vid}: issuer_proof_overrides {key!r} requires 0 < first < second")
+        if first not in held_sizes or second not in held_sizes:
+            raise ValueError(
+                f"{vid}: issuer_proof_overrides {key!r} requires both sizes among held STHs "
+                f"({sorted(held_sizes)!r})"
+            )
 
 
 def _issuer_consistency_proofs(entries: list[dict]) -> dict[tuple[int, int], list[str]]:
@@ -718,12 +770,25 @@ def _issuer_consistency_proofs(entries: list[dict]) -> dict[tuple[int, int], lis
     return proofs
 
 
+def _issuer_proofs_for_vector(entries: list[dict], vector: dict) -> dict[tuple[int, int], list[str]]:
+    """Fixture issuer proofs, with optional per-vector overrides for grading."""
+    proofs = _issuer_consistency_proofs(entries)
+    overrides = vector.get("issuer_proof_overrides")
+    if not overrides:
+        return proofs
+    for key, value in overrides.items():
+        first_s, second_s = key.split(",", 1)
+        pair = (int(first_s), int(second_s))
+        if value is None:
+            proofs.pop(pair, None)
+        else:
+            proofs[pair] = value
+    return proofs
+
+
 def _verify_leaf(index: int, tree_size: int, entry: dict, path: list[str], root_b64: str, code: str) -> None:
     leaf = mkl.leaf_hash(mkl.canon(entry))
-    try:
-        nodes = _decode_path(path)
-    except ReputationFailure:
-        raise ReputationFailure(code) from None
+    nodes = _decode_path_or_fail(path, code)
     if not mkl.verify_inclusion(index, tree_size, leaf, nodes, mkl.b64url_decode(root_b64)):
         raise ReputationFailure(code)
 
@@ -947,10 +1012,7 @@ def evaluate_presentation(
         path = presentation.get("consistency_path")
         if not path:
             raise ReputationFailure("consistency_failed")
-        try:
-            nodes = _decode_path(path)
-        except ReputationFailure:
-            raise ReputationFailure("consistency_failed") from None
+        nodes = _decode_path_or_fail(path, "consistency_failed")
         if not mkl.verify_consistency(
             proof_size,
             current["tree_size"],
@@ -1155,6 +1217,7 @@ def check_reputation() -> list[str]:
                     now,
                     jwt_mod,
                 )
+            _validate_issuer_proof_overrides(vector, _held_tree_sizes(vector.get("held_sths") or [], jwt_mod))
             result = evaluate_presentation(
                 vector["presentation"],
                 vector.get("held_sths") or [],
@@ -1163,7 +1226,7 @@ def check_reputation() -> list[str]:
                 jwt_mod,
                 cache,
                 earlier,
-                _issuer_consistency_proofs(doc["entries"]),
+                _issuer_proofs_for_vector(doc["entries"], vector),
             )
             if vector["expect"] == "reject":
                 outcome = "error:accepted"
