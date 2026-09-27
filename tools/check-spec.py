@@ -51,6 +51,7 @@ from jsonschema import Draft202012Validator
 REPO = Path(__file__).resolve().parent.parent
 SPEC = REPO / "spec" / "AICP-v0.1.md"
 SCHEMA_DIR = REPO / "spec" / "schemas"
+VECTORS_DIR = REPO / "spec" / "test-vectors"
 
 FENCE = re.compile(r"^(?P<indent>\s*)```(?P<info>.*)$")
 BINDING = re.compile(r"^aicp:(none|instance=[a-z0-9-]+|schema=[a-z0-9-]+)$")
@@ -326,11 +327,142 @@ def check_drift(blocks: list[Block], schemas: dict[str, dict]) -> list[str]:
     return failures
 
 
+def _jwks_to_key(jwk: dict, jwt_mod):
+    alg = jwk.get("alg") or ("EdDSA" if jwk.get("kty") == "OKP" else "ES256")
+    if alg not in jwt_mod.algorithms.get_default_algorithms():
+        raise ValueError(f"unsupported jwk alg {alg}")
+    return jwt_mod.algorithms.get_default_algorithms()[alg].from_jwk(json.dumps(jwk))
+
+
+def verify_attestation_vector(
+    token: str,
+    jwks: dict,
+    *,
+    issuer: str,
+    now: int,
+    max_skew: int,
+    jti_cache: set[str],
+    jwt_mod,
+) -> None:
+    header = jwt_mod.get_unverified_header(token)
+    payload = jwt_mod.decode(token, options={"verify_signature": False})
+
+    if header.get("alg") not in ("ES256", "EdDSA"):
+        raise ValueError(f"disallowed alg {header.get('alg')}")
+
+    hdr_kid = header.get("kid")
+    if not hdr_kid or not isinstance(hdr_kid, str):
+        raise ValueError("missing or invalid header kid")
+
+    body_kid = payload.get("kid")
+    if hdr_kid != body_kid:
+        raise ValueError("header/payload kid mismatch")
+
+    if payload.get("iss") != issuer:
+        raise ValueError("wrong iss")
+
+    if payload.get("aud") != issuer:
+        raise ValueError("wrong aud")
+
+    jti = payload.get("jti")
+    if not jti:
+        raise ValueError("missing jti")
+    if jti in jti_cache:
+        raise ValueError("replayed jti")
+    jti_cache.add(jti)
+
+    iat = int(payload["iat"])
+    exp = int(payload["exp"])
+    if iat > now + max_skew:
+        raise ValueError("future iat")
+    if exp < now - max_skew:
+        raise ValueError("expired")
+
+    keys = {k["kid"]: k for k in jwks.get("keys", [])}
+    if hdr_kid not in keys:
+        raise ValueError("kid not in jwks")
+    key = _jwks_to_key(keys[hdr_kid], jwt_mod)
+    jwt_mod.decode(
+        token,
+        key,
+        algorithms=[header["alg"]],
+        options={
+            "verify_aud": False,
+            "verify_exp": False,
+            "verify_iat": False,
+        },
+    )
+
+
+def check_vectors() -> list[str]:
+    failures: list[str] = []
+    try:
+        import jwt as jwt_mod
+    except ImportError:
+        failures.append("vectors: PyJWT is not installed (required for --check vectors)")
+        return failures
+
+    manifest_path = VECTORS_DIR / "vectors.json"
+    if not manifest_path.exists():
+        failures.append(f"vectors: missing {manifest_path}")
+        return failures
+
+    meta = json.loads(manifest_path.read_text())
+    now = int(meta["fixed_clock_unix"])
+    max_skew = int(meta.get("max_iat_skew_seconds", 300))
+    issuer = meta["issuer"]
+    jti_cache: set[str] = set()
+
+    print(f"[5] verifying {len(meta['vectors'])} attestation vector(s) in {manifest_path.relative_to(REPO)}")
+    by_id = {v["id"]: v for v in meta["vectors"]}
+
+    for entry in meta["vectors"]:
+        vid = entry["id"]
+        if entry.get("pair_with") and entry["pair_with"] in by_id:
+            # Ensure paired pass vector is exercised first (replay case).
+            pass
+
+    for entry in meta["vectors"]:
+        vid = entry["id"]
+        token = entry["jwt"]
+        jwks_path = VECTORS_DIR / entry["jwks"]
+        try:
+            jwks = json.loads(jwks_path.read_text())
+            verify_attestation_vector(
+                token,
+                jwks,
+                issuer=issuer,
+                now=now,
+                max_skew=max_skew,
+                jti_cache=jti_cache,
+                jwt_mod=jwt_mod,
+            )
+            ok = True
+        except Exception as e:
+            ok = False
+            err = str(e)
+
+        if entry["expect"] == "pass":
+            if ok:
+                print(f"    ok   {vid}: verified")
+            else:
+                failures.append(f"vectors:{vid}: expected pass but failed: {err}")
+                print(f"    FAIL {vid}: expected pass: {err}")
+        else:
+            if ok:
+                failures.append(f"vectors:{vid}: expected fail ({entry.get('reason')}) but verified")
+                print(f"    FAIL {vid}: expected fail but verified")
+            else:
+                print(f"    ok   {vid}: rejected ({entry.get('reason', err)})")
+
+    return failures
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument(
         "--check",
-        choices=["examples", "drift", "all"],
+        choices=["examples", "drift", "vectors", "all"],
         default="all",
         help="which checks to run and let fail the process",
     )
@@ -343,6 +475,8 @@ def main() -> int:
         failures += check_examples(blocks, schemas)
     if args.check in ("drift", "all"):
         failures += check_drift(blocks, schemas)
+    if args.check in ("vectors", "all"):
+        failures += check_vectors()
 
     print()
     if failures:

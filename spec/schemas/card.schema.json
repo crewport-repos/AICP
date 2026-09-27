@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/ologos-repos/AICP/spec/schemas/card.schema.json",
+  "$id": "https://github.com/crewport-repos/AICP/spec/schemas/card.schema.json",
   "title": "AICP Card",
   "description": "A platform-issued identity document representing a single agent or agent group in the Agent Identity Card Protocol.",
   "type": "object",

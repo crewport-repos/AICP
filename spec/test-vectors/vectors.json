@@ -1,0 +1,77 @@
+{
+  "description": "AICP attestation verification vectors (\u00a76.3.4.1). Fixed clock for iat/exp checks.",
+  "fixed_clock_unix": 1700000000,
+  "issuer": "https://platform.example",
+  "max_iat_skew_seconds": 300,
+  "vectors": [
+    {
+      "expect": "pass",
+      "id": "valid-es256",
+      "jwks": "jwks-es256.json",
+      "jwt": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJzdWIiOiJjYXJkLXRlc3QtMDAxIiwiaWF0IjoxNzAwMDAwMDAwLCJleHAiOjE3MDAwODY0MDAsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJqdGkiOiJqdGktdmFsaWQtMDAxIiwiY2xhaW1zIjp7ImNvbnRyYWN0c19jb21wbGV0ZWQiOjMsImNvbXBsZXRpb25fcmF0ZSI6MS4wfX0.03OFDjGuBb8aLcFTtrZAjzhYD4R8LctI0pPLV0wrg19ibYH_tGieGu-b2Fko4qqW-GGrzfaX3pcI0BNQS2ryTg"
+    },
+    {
+      "expect": "pass",
+      "id": "valid-ed25519",
+      "jwks": "jwks-ed25519.json",
+      "jwt": "eyJhbGciOiJFZERTQSIsImtpZCI6InRlc3QtZWQyNTUxOS0wMSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJzdWIiOiJjYXJkLXRlc3QtMDAxIiwiaWF0IjoxNzAwMDAwMDAwLCJleHAiOjE3MDAwODY0MDAsImtpZCI6InRlc3QtZWQyNTUxOS0wMSIsImF1ZCI6Imh0dHBzOi8vcGxhdGZvcm0uZXhhbXBsZSIsImp0aSI6Imp0aS12YWxpZC1lZC0wMDEiLCJjbGFpbXMiOnsiY29udHJhY3RzX2NvbXBsZXRlZCI6MywiY29tcGxldGlvbl9yYXRlIjoxLjB9fQ.6A3oacreRiVcEvtA4hF7fQux7CQO8C5ipuVKFR5MGi4wdVmZglW87feun9LMBFSMMKtK_tLYXdQjiCZOPJhjAg"
+    },
+    {
+      "expect": "fail",
+      "id": "fail-rs256",
+      "jwks": "jwks-es256.json",
+      "jwt": "eyJhbGciOiJSUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJzdWIiOiJjYXJkLXRlc3QtMDAxIiwiaWF0IjoxNzAwMDAwMDAwLCJleHAiOjE3MDAwODY0MDAsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJqdGkiOiJqdGktcnMyNTYtMDAxIiwiY2xhaW1zIjp7ImNvbnRyYWN0c19jb21wbGV0ZWQiOjMsImNvbXBsZXRpb25fcmF0ZSI6MS4wfX0.HmMi7n1o9e7KU3D5FNd1aBwc6MWd2LyYz7ANjKMbkrXfuzf1teZbfTfk_KhiScMFXHkeAXExN6K0m7JRZP5PSC5YbKusB3IRTCLGT8XqijDmbRe-K62s089BxCxAQySSTMt1inCgNNLB7lYjflosVqsS92NELnFwiv32L3FRvpEwEJA-ZJn1rMSybdYzSNeGK5xcCfOVFCzLwYuEo6NpIklidRdgy7bWLvikfOIXLs5-RrRhANyslBYSsdcSZkr0jN44lKTF84GEjuRZIJoPXfv80x1S_BuC-iY2_rfdjTsMNOeIkLnzYCLPefpdTA49ECtlpg2hdaQQSFI_3Sx_3Q",
+      "reason": "rs256"
+    },
+    {
+      "expect": "fail",
+      "id": "fail-missing-kid",
+      "jwks": "jwks-es256.json",
+      "jwt": "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJzdWIiOiJjYXJkLXRlc3QtMDAxIiwiaWF0IjoxNzAwMDAwMDAwLCJleHAiOjE3MDAwODY0MDAsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJqdGkiOiJqdGktbWlzc2luZy1raWQtaGRyIiwiY2xhaW1zIjp7ImNvbnRyYWN0c19jb21wbGV0ZWQiOjMsImNvbXBsZXRpb25fcmF0ZSI6MS4wfX0.l8JkFrEB3Rv2mfTRjOQFTYKoQ29fehdPEWubUPFLkVGMsr6CfHi9cyxcOe_UZEw8dgK3E6EUxFXEBZzVkIjx9g",
+      "reason": "missing_kid"
+    },
+    {
+      "expect": "fail",
+      "id": "fail-kid-mismatch",
+      "jwks": "jwks-es256.json",
+      "jwt": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJzdWIiOiJjYXJkLXRlc3QtMDAxIiwiaWF0IjoxNzAwMDAwMDAwLCJleHAiOjE3MDAwODY0MDAsImtpZCI6Indyb25nLWtpZCIsImF1ZCI6Imh0dHBzOi8vcGxhdGZvcm0uZXhhbXBsZSIsImp0aSI6Imp0aS1taXNtYXRjaCIsImNsYWltcyI6eyJjb250cmFjdHNfY29tcGxldGVkIjozLCJjb21wbGV0aW9uX3JhdGUiOjEuMH19.QSoh5wCcdC1EY_bvSVeLZgdYfOexivwsilUfuXvOmvWmoV2sSYABsyf2udpF8lOilDjXWMX5mUsO18t3TP6rDg",
+      "reason": "kid_mismatch"
+    },
+    {
+      "expect": "fail",
+      "id": "fail-expired",
+      "jwks": "jwks-es256.json",
+      "jwt": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJzdWIiOiJjYXJkLXRlc3QtMDAxIiwiaWF0IjoxNzAwMDAwMDAwLCJleHAiOjE2OTk5OTY0MDAsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJqdGkiOiJqdGktZXhwaXJlZCIsImNsYWltcyI6eyJjb250cmFjdHNfY29tcGxldGVkIjozLCJjb21wbGV0aW9uX3JhdGUiOjEuMH19.xiDyiO_z6WyJhPdbcr-bcye_Hv06Q0X43940OuLl20uGbw662rrc_CFe0bLL27lLxRoXDRt-bhP7dsTNHA54pQ",
+      "reason": "expired"
+    },
+    {
+      "expect": "fail",
+      "id": "fail-future-iat",
+      "jwks": "jwks-es256.json",
+      "jwt": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJzdWIiOiJjYXJkLXRlc3QtMDAxIiwiaWF0IjoxNzAwMDA3MjAwLCJleHAiOjE3MDAwODY0MDAsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJqdGkiOiJqdGktZnV0dXJlLWlhdCIsImNsYWltcyI6eyJjb250cmFjdHNfY29tcGxldGVkIjozLCJjb21wbGV0aW9uX3JhdGUiOjEuMH19._ZoO_LtxbZJhFjkUc3fJOSeim2rBbjqtNyxdKvbPBu5uteYapmSHjVjR9lN_poGm0HRej8Dfb2tEjZd2jb6cxQ",
+      "reason": "future_iat"
+    },
+    {
+      "expect": "fail",
+      "id": "fail-wrong-iss",
+      "jwks": "jwks-es256.json",
+      "jwt": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2V2aWwuZXhhbXBsZSIsInN1YiI6ImNhcmQtdGVzdC0wMDEiLCJpYXQiOjE3MDAwMDAwMDAsImV4cCI6MTcwMDA4NjQwMCwia2lkIjoidGVzdC1lczI1Ni0wMSIsImF1ZCI6Imh0dHBzOi8vcGxhdGZvcm0uZXhhbXBsZSIsImp0aSI6Imp0aS13cm9uZy1pc3MiLCJjbGFpbXMiOnsiY29udHJhY3RzX2NvbXBsZXRlZCI6MywiY29tcGxldGlvbl9yYXRlIjoxLjB9fQ.uqhafa4IOAXulboAHmmq6vle9c-rFEFkkCHrDgrzZhFzfLs5umLgzvmsY1cpOn4kqJGyzRLX0zHoAWmXMCxn0w",
+      "reason": "wrong_iss"
+    },
+    {
+      "expect": "fail",
+      "id": "fail-wrong-aud",
+      "jwks": "jwks-es256.json",
+      "jwt": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJzdWIiOiJjYXJkLXRlc3QtMDAxIiwiaWF0IjoxNzAwMDAwMDAwLCJleHAiOjE3MDAwODY0MDAsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJhdWQiOiJodHRwczovL290aGVyLmV4YW1wbGUiLCJqdGkiOiJqdGktd3JvbmctYXVkIiwiY2xhaW1zIjp7ImNvbnRyYWN0c19jb21wbGV0ZWQiOjMsImNvbXBsZXRpb25fcmF0ZSI6MS4wfX0.kck91cOTxo8tMiUriSLZUxMGMravkgd_pnvM6vuXcQ6ngVtc0Qw0SNbrNhElLWIqtlFCygm0Z5V1azFiY6I7sw",
+      "reason": "wrong_aud"
+    },
+    {
+      "expect": "fail",
+      "id": "fail-replay-jti",
+      "jwks": "jwks-es256.json",
+      "jwt": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJzdWIiOiJjYXJkLXRlc3QtMDAxIiwiaWF0IjoxNzAwMDAwMDAwLCJleHAiOjE3MDAwODY0MDAsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJqdGkiOiJqdGktdmFsaWQtMDAxIiwiY2xhaW1zIjp7ImNvbnRyYWN0c19jb21wbGV0ZWQiOjMsImNvbXBsZXRpb25fcmF0ZSI6MS4wfX0.03OFDjGuBb8aLcFTtrZAjzhYD4R8LctI0pPLV0wrg19ibYH_tGieGu-b2Fko4qqW-GGrzfaX3pcI0BNQS2ryTg",
+      "pair_with": "valid-es256",
+      "reason": "replay_jti"
+    }
+  ]
+}
