@@ -2,9 +2,10 @@
 
 **Version**: 0.1.0 (Draft)
 **Status**: Proposal
-**Authors**: Ologos LLC
+**Authors**: CrewPort
 **Date**: 2026-03-14
-**Repository**: https://github.com/ologos-repos/AICP
+**Revised**: 2026-09-26 — normative MCP transport, authorization, registration, consent, administrative-access, MCP revision compatibility (0.x window), Diskuss review alignment
+**Repository**: https://github.com/crewport-repos/AICP
 
 ---
 
@@ -44,6 +45,8 @@ Neither MCP nor A2A defines a structured work lifecycle. AICP introduces the con
 ---
 
 ## 2. Terminology
+
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) and [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174) when, and only when, they appear in all capitals.
 
 | Term | Definition |
 |------|-----------|
@@ -94,12 +97,21 @@ A minimal AICP platform implements Layers 1–2: agents can enroll, receive Card
 
 ### 4.1 Registration Flow
 
-An agent enrolls with an AICP-compliant platform in three steps:
+An agent enrolls with an AICP-compliant platform in three steps. A registration is the pending enrollment of one Card for one operator account.
 
-**Step 1: Initiate Registration (No Auth Required)**
+**Step 1: Authenticate the operator**
+
+The operator authenticates before any registration is created. Platforms MUST support at least one OAuth 2.1-compliant identity provider. AICP does not mandate which provider. This flow MUST NOT bypass multi-factor authentication (§12.1).
+
+**Step 2: Create the registration (authenticated)**
+
+The platform MUST create a registration only for an authenticated operator account, and MUST bind the new registration to that account in the same operation that creates it. An unauthenticated request MUST be rejected. Anonymous registrations are forbidden. The platform MUST NOT change the account binding for the life of the registration.
+
+AICP does not mandate a particular enrollment HTTP path. Platforms MAY expose registration through any authenticated HTTP API; `enrollment_url` in §10.3 points clients to the platform-defined entry. The example below uses `POST {platform_url}/app/register` as one common shape.
 
 ```
 POST {platform_url}/app/register
+Authorization: Bearer <operator-credential>
 Content-Type: application/json
 
 {
@@ -120,25 +132,23 @@ Response:
 }
 ```
 
-The registration token MUST be cryptographically random (minimum 32 bytes), URL-safe encoded, and bounded by a TTL (RECOMMENDED: 30 minutes).
+The registration token MUST be cryptographically random (minimum 32 bytes), URL-safe encoded, and bounded by a TTL (RECOMMENDED: 30 minutes). It identifies this registration and no other.
 
 The `attestations` field is OPTIONAL and only relevant for platforms implementing the federation profile (Layer 6). If present, it contains an array of JWT strings — signed attestations from other AICP platforms that the agent wishes to present as proof of prior work. See §16.6 for details.
 
-**Step 2: OAuth Authentication**
+**Step 3: Complete only the bound registration**
 
-The agent (or its operator) completes an OAuth 2.1 flow. The registration token is embedded in the OAuth state parameter, linking the authenticated identity to the pending registration.
+A sign-in completes a registration only when that registration was bound to the sign-in. The binding carrier MUST tie exactly one pending registration to that sign-in. Acceptable carriers include the registration token in OAuth `state` (as in the `auth_url` example above), an integrity-protected signed cookie (§4.6.7), or another platform-defined mechanism with equivalent binding strength. The platform MUST NOT complete a registration unless the carrier resolves to the same registration that was created for the authenticated account. On completion the platform MUST:
 
-AICP does not mandate a specific OAuth provider. Platforms MUST support at least one OAuth 2.1-compliant identity provider.
+1. Resolve exactly the registration identified by that token
+2. Require the authenticated account to be the account stored on that registration
+3. Issue one Card for that registration and no other
 
-**Step 3: Card Issuance**
+A sign-in MUST NOT create a Card for a different pending registration, MUST NOT adopt a registration that was not bound to it, and MUST NOT complete a registration owned by another account. Completing a registration inside the session that created it, without a further sign-in, MUST issue a Card only for that registration and MUST NOT sweep in any other pending registration.
 
-Upon successful OAuth authentication, the platform:
+Upon success the platform returns the `card_id` and the Card-scoped MCP endpoint URL.
 
-1. Creates or retrieves the operator's account
-2. Issues a **Card** — a platform-managed identity document
-3. Returns the `card_id` and the Card-scoped MCP endpoint URL
-
-The Card is initially in an `incomplete` state. The agent completes it by calling the platform-provided `complete_card` tool, supplying any required metadata. This transitions the Card to `active`.
+The Card is initially in an `incomplete` state. The agent completes it by calling a setup-phase tool (for example `complete_card` in Appendix A) that supplies any required metadata. This transitions the Card to `active`. AICP does not mandate that tool name (§5.7).
 
 ### 4.2 Card Schema
 
@@ -181,7 +191,7 @@ This enables one operator to run multiple specialized agents without cross-conta
    issue    │  incomplete   │
    ───────► │  (new card)   │
             └──────┬───────┘
-                   │ complete_card()
+                   │ setup tool (e.g. complete_card)
                    ▼
             ┌──────────────┐
             │    active     │◄──── reactivate()
@@ -213,32 +223,141 @@ AICP Card identity has these properties that distinguish it from other protocol 
 | **History binding** | Platform-tracked per Card | None | None |
 | **Verifiability** | Platform-attested | N/A | Self-attested |
 
----
+### 4.6 Platform Authorization Server
+
+A platform that issues credentials for Card-scoped MCP endpoints is an OAuth 2.1 authorization server for those endpoints, and the resource server that accepts them. This section constrains that authorization server. Operator login at an external identity provider (§4.1, step 1) MUST itself be OAuth 2.1; the requirements below apply to the platform's own server and do not replace the external provider's protocol.
+
+#### 4.6.1 OAuth 2.1 and PKCE
+
+The platform authorization server MUST implement OAuth 2.1. Every authorization-code request MUST use PKCE ([RFC 7636](https://www.rfc-editor.org/rfc/rfc7636)). The `code_challenge_method` MUST be `S256`. The server MUST reject `plain` and any other method.
+
+#### 4.6.2 Resource binding and issuer identification
+
+The authorization server MUST bind every issued access token to exactly one Card (§5.2). When an [RFC 8707](https://www.rfc-editor.org/rfc/rfc8707) `resource` parameter is present on authorization or token requests, the platform MUST treat its value as the MCP protected-resource identifier for that grant. The value MUST be either the per-Card MCP URL from §5.1 or the platform-wide MCP resource URL when the platform uses that layout. The server MUST reject grants whose `resource` does not match a resource the platform recognizes for the intended Card.
+
+Each access token MUST carry a Card identifier the platform can validate (for example through audience/resource binding plus a `card_id` or equivalent claim when the MCP URL is platform-wide). Presenting a token for a different Card MUST fail as an invalid token (§5.2).
+
+OAuth clients that implement AICP-aware authorization SHOULD include the `resource` parameter on authorization and token requests. Generic MCP clients are not required to implement AICP-specific client rules; the platform MUST still enforce Card binding on every MCP request.
+
+Authorization responses MUST include the [RFC 9207](https://www.rfc-editor.org/rfc/rfc9207) `iss` parameter identifying this authorization server. Authorization-server metadata MUST set `authorization_response_iss_parameter_supported` to `true`. The platform MUST reject authorization responses it generates without a correct `iss`. AICP-aware clients SHOULD verify `iss` before accepting an authorization response.
+
+#### 4.6.3 Authorization codes
+
+An authorization code MUST expire no later than 10 minutes after it is issued. A code is one-time: the server MUST consume it atomically, so that validation and invalidation are a single operation and, of any number of concurrent redemption attempts, exactly one can succeed. A code presented after it has been consumed, or after it has expired, MUST be rejected.
+
+#### 4.6.4 Refresh tokens
+
+The server MUST store a refresh token only as a hash at rest, and MUST NOT retain the raw token after returning it to the client.
+
+Rotation MUST be atomic. An exchange succeeds only when the stored hash still matches the presented token, and the check and the write of the successor MUST be one compare-and-swap. An update that does not condition on the presented hash MUST NOT be used to rotate.
+
+Rotation MUST allow a replay window of 10 minutes. Inside that window, presentation of the immediately previous refresh token MUST return the same new access-token and refresh-token pair already issued for that rotation (§4.6.9), and MUST NOT mint a second successor or slide the family's expiry again. Reuse of a refresh token after that window MUST revoke the whole token family (the grant and every token descended from it). The same revocation MUST apply when the presented token is neither the current token nor that immediate predecessor.
+
+Expiry MUST slide. Each successful rotation MUST set the family's expiry from the time of that rotation, not from the family's original issue time. The server MUST document the sliding lifetime it implements.
+
+#### 4.6.5 Redirect URIs
+
+Every registered `redirect_uri` MUST be one of:
+
+- A **hosted page**: an `https` URI that serves a document the client operates.
+- A **loopback** URI: an `http` URI whose host is `127.0.0.1`, `[::1]`, or `localhost`, with an explicit port ([RFC 8252](https://www.rfc-editor.org/rfc/rfc8252) loopback redirect for native clients).
+- A **native private-use URI** registered for that client, as permitted by [RFC 8252](https://www.rfc-editor.org/rfc/rfc8252) and OAuth 2.1 for installed applications (for example `myapp:/oauth/callback`).
+
+The server MUST reject `redirect_uri` values that are not registered for the client. The server MUST compare the requested redirect URI to the registered one exactly. The server MUST NOT accept open redirects or unregistered schemes.
+
+#### 4.6.6 OAuth and error pages
+
+Authorization, consent, redirect-callback, and error pages MUST NOT include analytics, tracking pixels, third-party scripts, or other telemetry that transmits the page URL or its query. Those pages MUST be served with `Cache-Control: no-store` and `Referrer-Policy: no-referrer`.
+
+#### 4.6.7 State cookies
+
+A cookie that stores OAuth `state` MUST be integrity-protected by a signature (HMAC-SHA-256 or stronger) over the state value, and MUST be set with the `Secure` attribute. The server MUST reject state that fails signature checks. Platforms SHOULD also set `HttpOnly` and `SameSite=Lax`.
+
+#### 4.6.8 Consent completion
+
+Consent is collected per Card (§5.4). When the operator grants consent and the grant is submitted with POST, the server MUST continue the flow with HTTP `303 See Other`. It MUST NOT answer that successful grant with `302`.
+
+#### 4.6.9 Token endpoint response
+
+Every successful token-endpoint response MUST include `access_token`, `token_type`, `expires_in`, and `scope`. `token_type` MUST be the string `Bearer`. `scope` MUST be the space-delimited list of scopes granted for that token. When a refresh token is issued or rotated, the response MUST also include `refresh_token`. These rules apply to an `authorization_code` grant, to refresh-token rotation, and to a replay-window re-issue of the same new pair (§4.6.4).
+
+The response MUST be sent with `Cache-Control: no-store` and `Pragma: no-cache`.
+
+```json aicp:none
+{
+  "access_token": "issued-access-token",
+  "token_type": "Bearer",
+  "expires_in": 3600,
+  "refresh_token": "issued-or-rotated-refresh-token",
+  "scope": "app:read"
+}
+```
+
+The `expires_in` value in the example is illustrative. This specification requires the field; it does not fix the access-token lifetime. The example scope value `app:read` is illustrative (§5.4).
+
+#### 4.6.10 OAuth client registration
+
+Platforms MUST provide a working OAuth client registration path for MCP clients (including native and browser-based apps) connecting to Card MCP resources. The platform MUST implement Dynamic Client Registration ([RFC 7591](https://www.rfc-editor.org/rfc/rfc7591)) and/or **OAuth Client ID Metadata Documents** (as supported by the platform's OAuth 2.1 authorization-server metadata). If authorization-server metadata advertises a `registration_endpoint`, that endpoint MUST accept registrations the platform policy allows and MUST NOT be advertised if it is non-functional.
 
 ## 5. Layer 2: Tool Injection (CORE)
 
-### 5.1 Card-Scoped MCP Endpoint
+### 5.1 MCP Endpoint and Card Context
 
-The platform exposes an MCP-compliant server at a Card-specific URL:
+The RECOMMENDED layout is a per-Card MCP URL:
 
 ```
 {platform_url}/mcp/{card_id}
 ```
 
-The `{card_id}` in the URL path serves as the **identity scope**. All tool calls through this endpoint are executed in the context of the specified Card. The platform MUST validate that the authenticated operator owns the Card.
+The `{card_id}` in the URL path is the **identity scope**. All tool calls through that URL are executed in the context of that Card.
+
+Alternatively, a platform MAY expose a single platform-wide MCP resource (for example `{platform_url}/mcp`) when every access token is bound to exactly one Card (§4.6.2) and the platform validates the Card on each request (for example via a `card_id` claim and matching operator ownership). Per-Card URLs remain RECOMMENDED because they align cleanly with RFC 8707 resource indicators and per-Card RFC 9728 metadata.
+
+The platform MUST validate that the authenticated operator owns the Card in context. Ownership alone is not enough: the credential MUST also be bound to that Card (§5.2, §4.6.2).
 
 ### 5.2 Authentication
 
-Tool calls MUST include a Bearer token in the `Authorization` header:
+Tool calls MUST include a Bearer access token in the `Authorization` header:
 
 ```
-Authorization: Bearer <jwt-or-oauth-token>
+Authorization: Bearer <access-token>
 ```
+
+The access token is an MCP credential issued by the platform authorization server (§4.6). It is not an operator session token.
 
 The platform MUST validate:
+
 1. Token signature and expiry
-2. Token's subject matches the Card's `operator_id`
-3. Token's scopes include the required permission for the requested tool
+2. Token audience or resource binding matches the MCP protected-resource identifier for this request ([RFC 8707](https://www.rfc-editor.org/rfc/rfc8707), §4.6.2, §5.8), and the token's Card identifier matches the Card in context (URL path or validated claim on a platform-wide endpoint)
+3. Token subject matches the Card's `operator_id`
+4. Token scopes include the exact scope required for the requested tool (§5.4)
+
+MCP access tokens MUST be distinct from session tokens. The platform MUST enforce that distinction in one of these ways:
+
+- sign MCP access tokens with a key that is not used to sign session tokens, or
+- require every MCP access token to carry both an `aud` claim bound to the Card resource and a `typ` claim that session tokens do not use
+
+Both `aud` and `typ` are mandatory when the platform chooses the second option. The MCP endpoint MUST reject session tokens. Session endpoints MUST reject MCP access tokens.
+
+The platform MUST NOT pass a received access token, refresh token, or session token through to another service. A downstream call MUST use a credential issued for that hop.
+
+An invalid or expired access token MUST be rejected with HTTP `401`. The response MUST include a `WWW-Authenticate` challenge whose scheme is `Bearer`, whose `error` is `invalid_token`, and which includes a `resource_metadata` parameter set to the protected-resource metadata URL for the MCP resource addressed (§5.8). The platform MUST NOT use HTTP `403` for an invalid or expired token, and MUST NOT report that failure as a JSON-RPC error with HTTP `200`.
+
+When the token is valid and is for this Card, but does not include a required scope, the platform SHOULD reject the call with HTTP `403` and a `WWW-Authenticate` challenge of `error="insufficient_scope"`, a `scope` parameter naming the scope required to step up, and the same `resource_metadata` parameter. That challenge is the recommended step-up signal, including when the missing scope is the platform's **commit**-group scope (for example `app:commit`). The platform MUST NOT answer an insufficient-scope failure with HTTP `200` when it rejects the call.
+
+HTTP `401` and `403` responses under this section SHOULD include the trace identifier from §12.7 in the `X-Request-Id` response header. They MUST NOT require the client to send any non-MCP request headers beyond those defined by the negotiated MCP revision and the MCP authorization specification.
+
+```
+HTTP/1.1 401 Unauthorized
+WWW-Authenticate: Bearer error="invalid_token", resource_metadata="https://platform.example/.well-known/oauth-protected-resource/mcp/card-uuid"
+X-Request-Id: 7c1a
+```
+
+```
+HTTP/1.1 403 Forbidden
+WWW-Authenticate: Bearer error="insufficient_scope", scope="app:commit", resource_metadata="https://platform.example/.well-known/oauth-protected-resource/mcp/card-uuid"
+X-Request-Id: 7c1a
+```
 
 ### 5.3 Delegation and Authority Chain
 
@@ -254,14 +373,23 @@ Platforms MUST validate Card ownership and credential scope before executing a t
 
 ### 5.4 Scope Model
 
-AICP defines two base scopes:
+AICP requires three **scope groups** — **read**, **write**, and **commit** — implemented with platform-chosen OAuth scope strings. The strings MUST be listed in RFC 9728 `scopes_supported` for the MCP resource (§5.8). Scopes MUST NOT overlap in meaning: read covers non-mutating access; write covers non-committing mutations; commit covers binding actions (bids, phase changes, delivery).
 
-| Scope | Permits |
-|-------|---------|
-| `app:read` | Read-only tools: examining Card state, listing agreements, checking gates, retrieving history |
-| `app:write` | Mutation tools: updating Card, submitting artifacts, advancing phases, modifying agreements |
+**Example names** (legacy APP / Agent Port Protocol era, not required): `app:read`, `app:write`, and `app:commit`.
 
-Platforms MAY define additional fine-grained scopes (e.g., `app:admin`, `app:billing`).
+| Example scope | Group | Permits |
+|---------------|-------|---------|
+| `app:read` | read | Read-only tools: examining Card state, listing agreements, checking gates, retrieving history |
+| `app:write` | write | Mutations that do not commit the Card: updating Card metadata and other non-binding edits |
+| `app:commit` | commit | Bids, phase changes, and delivery: submitting a bid, advancing a phase, submitting artifacts, submitting a delivery manifest |
+
+Scopes MUST be matched exactly within a platform's vocabulary. A write-group scope MUST NOT imply read or commit, and a commit-group scope MUST NOT imply read or write. The platform MUST NOT treat possession of one scope as possession of another.
+
+The **commit**-group scope MUST NOT be granted by default. It MUST NOT appear in a default scope list, and it MUST NOT be pre-selected on a consent screen. A token MUST include the commit-group scope only after the operator has **explicitly opted in** on the consent screen for that Card (including when the user selects commit at consent time).
+
+Every access token MUST be bound to a single Card (§4.6.2). Consent MUST be collected per Card. A grant for one Card MUST NOT authorize a client for any other Card, and the consent interaction MUST identify the Card being authorized.
+
+Platforms MAY define additional fine-grained scopes beyond the three groups. A scope that names an administrator does not waive §12.6.
 
 ### 5.5 Phase-Gated Tool Exposure
 
@@ -279,12 +407,16 @@ The set of available tools changes based on the Card's status and the active agr
 
 Platforms MUST implement at least these three phases. Platforms MAY define additional phases for more granular tool gating within agreement lifecycles (see Layer 4).
 
+When the projected tool set changes (Card status, agreement, or phase), platforms SHOULD send MCP `notifications/tools/list_changed` to connected clients. If the server advertises `tools.listChanged: true` in its MCP capabilities, it MUST emit that notification whenever the projection changes. Platforms MUST NOT advertise `listChanged: true` without honoring it.
+
 ### 5.6 Tool Injection vs. Tool Discovery
 
-The distinction between AICP and MCP is directional:
+Both AICP and MCP use the same client-driven discovery primitive: the agent calls **`tools/list`**. MCP servers MAY also expose `tools.listChanged` so clients refresh when the catalog changes.
 
-- **MCP**: The agent (client) connects to a tool server and discovers what's available. The tool set is server-defined but static per session. The agent drives.
-- **AICP**: The platform (server) controls which tools are available based on the agent's identity and state. The tool set is dynamic — it changes as the agent's state changes. The platform drives.
+The AICP difference is **state-dependent projection**, not a different transport or discovery method:
+
+- **Typical MCP server**: `tools/list` returns the tools the server chooses to expose; the catalog may change, and MCP provides `listChanged` notifications when it does.
+- **AICP platform**: `tools/list` returns a **projection** filtered by Card identity and lifecycle state. The client still calls `tools/list`; the platform controls which tools appear.
 
 In AICP, the MCP `tools/list` response is a **function of identity and lifecycle state**:
 
@@ -306,6 +438,33 @@ AICP does not mandate specific tool names — platforms choose names that fit th
 | `artifact.*` | Deliverable management | submit, retrieve, delete artifacts |
 | `history.*` | Performance and history | retrieve metrics, view past work |
 | `communication.*` | Messaging between parties | send message, read messages |
+
+### 5.8 Protected Resource Metadata
+
+The platform MUST publish OAuth 2.0 Protected Resource Metadata ([RFC 9728](https://www.rfc-editor.org/rfc/rfc9728)) for each MCP resource it exposes.
+
+**Per-Card metadata (RECOMMENDED)** — protected-resource identifier is the per-Card URL from §5.1. Insert `/.well-known/oauth-protected-resource` between the origin and the resource path:
+
+```
+GET {platform_url}/.well-known/oauth-protected-resource/mcp/{card_id}
+```
+
+The document's `resource` value MUST equal `{platform_url}/mcp/{card_id}`. One Card's metadata document MUST NOT be served as the metadata for a different Card.
+
+**Platform-wide metadata (optional)** — when §5.1 uses a single `{platform_url}/mcp` resource, metadata MAY be served at `{platform_url}/.well-known/oauth-protected-resource/mcp` with `resource` equal to that URL. Card binding MUST still be enforced on every request via token claims (§4.6.2, §5.2).
+
+In either layout, `authorization_servers` MUST list the platform authorization server (§4.6). `scopes_supported` MUST list the platform's read, write, and commit scope strings (§5.4). The example below uses legacy `app:*` names:
+
+```json aicp:none
+{
+  "resource": "https://platform.example/mcp/card-uuid",
+  "authorization_servers": ["https://platform.example"],
+  "scopes_supported": ["app:read", "app:write", "app:commit"],
+  "bearer_methods_supported": ["header"]
+}
+```
+
+The `resource_metadata` parameter of the challenges in §5.2 MUST be the absolute URL of the metadata document for the MCP resource that was addressed.
 
 ---
 
@@ -515,22 +674,93 @@ The specific mechanism is platform-defined. AICP only specifies that the Port ab
 
 ### 10.1 MCP Compliance
 
-AICP's tool injection layer (Layer 2) uses the **Model Context Protocol** as its transport. Specifically:
+AICP's tool injection layer (Layer 2) uses the **Model Context Protocol** as its transport. AICP does not define a transport above MCP. Card-scoped endpoints MUST be ordinary MCP servers: **Streamable HTTP** (and MAY **stdio** where MCP allows it). AICP MUST NOT define a custom transport, custom JSON-RPC methods, or client request headers beyond those in the negotiated MCP revision and the MCP authorization specification.
 
-- The platform exposes an MCP server (Streamable HTTP or SSE transport)
-- Tools are defined using MCP's `tools/list` and `tools/call` methods
-- Input schemas use JSON Schema as defined by MCP
-- Error codes follow MCP's JSON-RPC 2.0 error model
+Every AICP requirement that touches MCP MUST be expressible with standard MCP mechanisms only: **tools**, **resources**, **prompts**, **capabilities**, **`_meta`**, the MCP authorization framework (OAuth 2.1, [RFC 9728](https://www.rfc-editor.org/rfc/rfc9728) protected-resource metadata, [RFC 8707](https://www.rfc-editor.org/rfc/rfc8707) resource indicators), and standard JSON-RPC errors. Where AICP needs additional metadata (for example Card phase hints or trace correlation on MCP messages), platforms MUST place it in **optional**, namespaced `_meta` keys under the `ai.crewport.aicp/` prefix, or in the MCP **`experimental`** capability map under the same prefix. Vanilla MCP clients (Claude, Cursor, ChatGPT, and similar) MUST still connect, authenticate, list tools, and call tools on an AICP server without implementing those extensions.
 
-AICP is transport-agnostic above the MCP layer. Any valid MCP transport works.
+#### Version window
+
+| AICP spec | Target MCP revision | Legacy MCP revision | Rule |
+|-----------|---------------------|------------------------|------|
+| **0.x** (this document) | [`2026-07-28`](https://modelcontextprotocol.io/specification/2026-07-28) — implementations **SHOULD** support it on every Card-scoped endpoint | [`2025-06-18`](https://modelcontextprotocol.io/specification/2025-06-18) — implementations **MUST** accept it via standard MCP version negotiation | **Dual-era** servers advertise additional revisions in `mcp_protocol_fallbacks` (§10.3). A **`2025-06-18`-only** server sets `mcp_protocol_version` to `2025-06-18` and omits fallbacks or leaves the array empty |
+| **1.0** (future) | `2026-07-28` — **MUST** | `2025-06-18` — **MAY** be dropped | No change to OAuth, scope, or Card-binding rules; only the minimum legacy revision tightens |
+
+Through AICP **0.x**, version negotiation MUST use only mechanisms defined by MCP:
+
+- **Modern (`2026-07-28`)**: per-request `_meta["io.modelcontextprotocol/protocolVersion"]`, the `MCP-Protocol-Version` HTTP header on Streamable HTTP (same value as `_meta`), `server/discover` (platforms implementing this revision **MUST** implement it; clients **MAY** call it before other requests), and `UnsupportedProtocolVersionError` (`-32022`) with `error.data.supported` and `error.data.requested` as specified by that revision.
+- **Legacy (`2025-06-18`)**: the `initialize` request/result **`protocolVersion`** exchange, then the `MCP-Protocol-Version` header on subsequent Streamable HTTP requests as specified by that revision. There is no `server/discover` and no per-request `_meta` protocol version on legacy sessions. An unsupported or mismatched `MCP-Protocol-Version` on those requests MUST receive HTTP `400` per MCP `2025-06-18`. Platforms MUST NOT use `-32022` unless they implement modern `2026-07-28` per-request mode.
+
+A platform MUST NOT invent alternate version-negotiation channels (for example a required AICP-specific header or JSON-RPC method).
+
+#### Revision `2026-07-28` (modern)
+
+When the client speaks `2026-07-28`, version agreement is per request. There is no session `initialize` handshake for that mode. The following rules apply to modern requests, not to an `initialize` request that selects an advertised legacy fallback:
+
+- The request MUST declare its protocol version in `_meta["io.modelcontextprotocol/protocolVersion"]`.
+- On HTTP, the same value MUST be sent in the `MCP-Protocol-Version` header. If the header is missing, or it disagrees with `_meta`, the platform MUST reject the request with HTTP `400`.
+- Platforms that implement MCP **`2026-07-28`** MUST implement `server/discover`. The result MUST list every protocol revision that platform supports on Card MCP endpoints, including `2026-07-28` when implemented. Platforms that implement only legacy revisions MUST NOT advertise `2026-07-28` or `server/discover` behavior they do not provide.
+- If the platform does not implement the requested revision, it MUST respond with HTTP `400` and JSON-RPC error `-32022` (`UnsupportedProtocolVersionError`). `error.data.supported` MUST list the revisions the server accepts; `error.data.requested` MUST be the revision the client sent. The client retries with a mutually supported revision, or stops.
+
+```json aicp:none
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "error": {
+    "code": -32022,
+    "message": "Unsupported protocol version",
+    "data": {
+      "supported": ["2026-07-28", "2025-06-18"],
+      "requested": "2025-03-26"
+    }
+  }
+}
+```
+
+#### Revision `2025-06-18` (legacy fallback)
+
+For AICP **0.x**, every Card-scoped MCP endpoint MUST accept clients that negotiate **`2025-06-18`** using the lifecycle and Streamable HTTP rules from that revision, including session `initialize`, `notifications/initialized`, optional `Mcp-Session-Id`, and the `MCP-Protocol-Version` header tied to the negotiated version. Version agreement uses standard `initialize` negotiation; invalid `MCP-Protocol-Version` values on subsequent HTTP requests MUST fail with HTTP `400` as in MCP `2025-06-18`, not with `-32022`.
+
+Dual-era rules (platforms that implement both `2026-07-28` and one or more legacy revisions):
+
+- Every legacy revision the platform implements besides the value of `mcp_protocol_version` MUST be listed in `mcp_protocol_fallbacks` (§10.3). For AICP **0.x** dual-era platforms, that array MUST include `2025-06-18`.
+- When the platform implements `2026-07-28`, every fallback revision MUST also appear in the `supportedVersions` (or equivalent) list returned by `server/discover` and in `error.data.supported` from `-32022`.
+- A request that carries modern per-request `_meta["io.modelcontextprotocol/protocolVersion"]` MUST be served under `2026-07-28`. The platform MUST NOT silently downgrade it onto a legacy revision.
+- An `initialize` request on a dual-era endpoint MUST be served under the negotiated legacy revision when that revision is an advertised fallback. The platform MUST NOT apply the modern per-request rules to that legacy session.
+- A modern-only platform (AICP **1.0+** only) MAY reject `initialize` with a JSON-RPC error that names the revisions it supports; through AICP **0.x**, rejecting `2025-06-18` after a successful `initialize` negotiation is non-compliant.
+
+#### MCP compatibility matrix
+
+The table below maps **AICP-Core** MCP-layer requirements to each revision. Enrollment HTTP APIs (§4.1, §10.2) are unchanged across rows.
+
+| AICP-Core requirement | MCP `2026-07-28` | MCP `2025-06-18` | Degradation on `2025-06-18` |
+|----------------------|------------------|------------------|-----------------------------|
+| Card MCP resource URL (§5.1; per-Card RECOMMENDED) | Required | Required | Platform-wide `/mcp` permitted when Card claim enforced |
+| OAuth 2.1 + PKCE `S256`, RFC 8707 resource binding, RFC 9728 metadata (§4.6, §5.2, §5.8) | Required (MCP auth spec for that revision) | Required (MCP auth spec for that revision) | None; scope strings are platform-defined but MUST expose read/write/commit groups in metadata |
+| HTTP `401` / `403` + `WWW-Authenticate` (`invalid_token`, `insufficient_scope`, `resource_metadata`) (§5.2) | Required (`403` step-up SHOULD when scope missing) | Required (same) | None |
+| Phase-gated `tools/list` / `tools/call` + `tools/list_changed` when `listChanged` advertised (§5.5–§5.6) | Required | Required | None; projection is server-side behavior |
+| Distinct MCP vs session tokens, no passthrough (§5.2) | Required | Required | None |
+| Per-request `_meta` protocol version + matching `MCP-Protocol-Version` | Required in modern mode | Not used; `initialize` + header on session instead | Legacy clients do not send modern `_meta`; server uses negotiated session version |
+| `server/discover` | Required when `2026-07-28` is implemented | Not available | Legacy clients rely on `initialize` negotiation only |
+| `UnsupportedProtocolVersionError` (`-32022`) | Required in modern (`2026-07-28`) mode only | Not used; `initialize` negotiation plus HTTP `400` on bad `MCP-Protocol-Version` | No `-32022`; initialize mismatch uses that revision's JSON-RPC errors |
+| Optional `ai.crewport.aicp/*` `_meta` / `experimental` hints | MAY be omitted by clients | MAY be omitted by clients | AICP-specific hints unavailable unless client reads optional `_meta` |
+
+#### Core MCP surface
+
+In all revisions:
+
+- Tools MUST be exposed only with MCP `tools/list` and `tools/call`.
+- Tool input schemas MUST be JSON Schema as required by the negotiated revision.
+- Method errors MUST use MCP's JSON-RPC 2.0 error model. Authentication and scope failures (§5.2) are HTTP `401` and `403` responses. They MUST NOT be downgraded to a JSON-RPC error on HTTP `200`.
+- Platforms MUST NOT add required fields to standard MCP error `data` objects beyond those defined by MCP for that error. Optional trace correlation for MCP JSON-RPC MAY appear in `_meta["ai.crewport.aicp/traceId"]` when the platform implements that extension; it MUST NOT be required for interoperability.
 
 ### 10.2 HTTP API
 
 The enrollment, discovery, and engagement layers use standard HTTP APIs:
 
 - JSON request/response bodies
-- Bearer token authentication
+- Bearer token authentication, under the rules in §4.6 and §5.2 when the resource is a Card-scoped MCP endpoint
 - Standard HTTP status codes
+- The trace identifier from §12.7 on every response
 - WebSocket or SSE for real-time updates (OPTIONAL)
 
 ### 10.3 Platform Capability Advertisement
@@ -548,12 +778,18 @@ GET {platform_url}/.well-known/aicp.json
   "profiles": ["market", "lifecycle", "history"],
   "enrollment_url": "{platform_url}/app/register",
   "mcp_url_template": "{platform_url}/mcp/{card_id}",
+  "mcp_protocol_version": "2026-07-28",
+  "mcp_protocol_fallbacks": ["2025-06-18"],
   "oauth_providers": ["github"],
   "supported_classes": [
     {"id": "class-web-app", "name": "Web Application"}
   ]
 }
 ```
+
+`mcp_protocol_version` MUST name an MCP revision the platform **actually implements** on its Card MCP endpoints. When the platform implements `2026-07-28`, this field SHOULD be `2026-07-28`. A platform that implements only `2025-06-18` MUST set this field to `2025-06-18`. The platform MUST NOT advertise a revision in `mcp_protocol_version` or `mcp_protocol_fallbacks` unless that revision is implemented (§10.1).
+
+On **dual-era** platforms, `mcp_protocol_fallbacks` MUST list every other implemented MCP revision negotiated via standard MCP rules (§10.1). For AICP **0.x** dual-era platforms, the array MUST include `2025-06-18`. A **`2025-06-18`-only** platform MAY omit `mcp_protocol_fallbacks` or set it to an empty array. At AICP **1.0**, dual-era platforms MAY drop legacy entries. The platform MUST NOT honor a revision that is not named in `mcp_protocol_version` or listed in `mcp_protocol_fallbacks` when dual-era.
 
 This enables automated agent onboarding — an agent can discover an AICP platform's capabilities and enrollment endpoint programmatically.
 
@@ -565,9 +801,9 @@ This enables automated agent onboarding — an agent can discover an AICP platfo
 
 | Aspect | MCP | AICP |
 |--------|-----|-----|
-| Direction | Client → Server (agent discovers tools) | Server → Client (platform injects tools) |
+| Tool discovery | Client calls `tools/list`; optional `tools/list_changed` when catalog changes | Same MCP primitives; catalog is a **state-dependent projection** by Card and lifecycle |
 | Identity | None (connection-level only) | Platform-issued Card |
-| Tool set | Static per server | Dynamic (function of identity + phase) |
+| Tool set | Server-defined; may change over time | Server-defined projection; changes with Card status and agreement phase |
 | Lifecycle | None | Phased agreements with gates |
 | Multiplexing | N/A | One operator → many Cards |
 
@@ -600,14 +836,19 @@ The three protocols operate at different levels of the agent stack and compose n
 ### 12.1 Identity Security
 
 - Card IDs MUST be cryptographically random (UUID v4 or equivalent)
-- Registration tokens MUST be cryptographically random with bounded TTL
-- OAuth tokens MUST follow OAuth 2.1 security best practices (PKCE, short-lived access tokens, secure refresh)
+- Registration tokens MUST be cryptographically random with bounded TTL (§4.1)
+- The platform authorization server MUST meet §4.6 (OAuth 2.1, PKCE `S256`, authorization-code lifetime, refresh-token rotation)
+- MCP access tokens MUST be distinct from session tokens, and MUST NOT be passed through to another service (§5.2)
+
+The OAuth flow MUST NOT bypass multi-factor authentication. Where the operator account or platform policy requires a second factor, every enrollment sign-in and every authentication at the platform authorization server MUST collect that factor before issuing an authorization code, a token, or a Card. The platform MUST NOT provide a grant type, shortcut, or impersonation path that completes those flows without that factor.
 
 ### 12.2 Scope Enforcement
 
-- Tool calls MUST be validated against the token's scope before execution
+- Tool calls MUST be validated against the token's exact scope before execution (§5.4)
+- The commit-group scope MUST NOT be inferred from any other scope, and MUST NOT be granted by default or pre-selected on consent
 - Phase-gated tools MUST verify the agreement's current phase before allowing the operation
 - Card ownership MUST be validated on every tool call (authenticated operator owns the Card)
+- The token MUST be bound to the Card in context (§5.2). An invalid or expired token is HTTP `401`; a valid token that lacks scope SHOULD receive HTTP `403` with `insufficient_scope` when the platform rejects the call
 
 ### 12.3 Artifact Security
 
@@ -638,6 +879,36 @@ An audit event SHOULD include:
 - Correlation identifier for joining related events across systems
 
 The normative JSON Schema for audit records is provided in `spec/schemas/audit-event.schema.json`.
+
+Administrative reads of user content are not covered by the SHOULD in this section. They are requirement R1 in §12.6, and the audit event type is `admin_content_read`. When an audit event is produced from an HTTP request, its `correlation_id` MUST be the trace identifier from §12.7.
+
+### 12.6 Administrative Access
+
+A **tenant** is an operator account or, when the platform groups operators into an organization, that organization. **User content** is material a party supplied: agreement text, bids, messages, artifacts, delivery manifests, and Card descriptions.
+
+An administrative read is a read that uses an administrative privilege to see user content the caller is not entitled to see as a party to that content. The platform MUST NOT complete an administrative read unless a party to that content has issued a consent grant and the grant has not expired. The grant MUST name the granting party, the content it covers, and an expiry timestamp. The platform MUST NOT treat a grant that omits an expiry as consent. The platform MUST refuse the read when the current time is at or after that expiry.
+
+**R1.** Every administrative read of user content MUST be audited. The platform MUST durably record an `admin_content_read` audit event before the content is returned, and MUST NOT return the content if that record cannot be written. The event MUST identify the administrator (`operator_id`), the Card whose content was read (`actor_card_id`), the consent grant (`metadata.consent_grant_id`), and the trace identifier (`correlation_id`). `decision` MUST be `recorded`.
+
+Administrator status MUST NOT authorize a cross-tenant write. A write whose target is owned by another tenant MUST satisfy the same ownership and scope checks that apply to the owning party. The caller's administrative role MUST NOT, by itself, satisfy those checks.
+
+### 12.7 Trace Identifiers and Logging
+
+The platform MUST assign exactly one trace identifier to each HTTP request. For **AICP HTTP APIs** (enrollment, marketplace, federation, and similar routes in §10.2), the platform MUST return that identifier in the `X-Request-Id` response header. JSON error bodies on those routes SHOULD include the same value in a `trace_id` field when the response is JSON.
+
+For **MCP JSON-RPC** on Card-scoped endpoints, the platform MUST NOT require clients to send custom trace headers. The platform MAY echo a trace identifier in the optional `_meta["ai.crewport.aicp/traceId"]` field on MCP responses (including JSON-RPC errors) when it implements that extension. MCP `401`/`403` responses SHOULD still include `X-Request-Id` as an HTTP response header. The platform MUST NOT add required non-standard fields to MCP-standard `error.data` objects (for example `UnsupportedProtocolVersionError`).
+
+When the incoming `X-Request-Id` contains only ASCII letters, digits, and hyphens and is at most 128 characters, the platform SHOULD adopt it as the trace identifier. Otherwise the platform MUST generate one. The platform MUST NOT replace a trace identifier it has already associated with the request.
+
+The platform MUST NOT write any of the following to logs:
+
+- access tokens, refresh tokens, client secrets, or other credentials
+- authorization codes
+- OAuth `state` values, including the registration token when it is carried as state
+- PKCE code verifiers and code challenges
+- personally identifiable information, including a natural person's name, email address, or other direct identifier
+
+Request logs for authorization, consent, callback, and error routes MUST omit the query string. Logs MAY include `client_id`, Card ID, trace identifier, HTTP method, and path.
 
 ---
 
@@ -671,7 +942,7 @@ AICP defines conformance levels so implementations can adopt the architecture in
 
 | Level | Required Layers / Profiles | Description |
 |-------|----------------------------|-------------|
-| **AICP-Core** | Layer 1 Enrollment; Layer 2 Tool Injection | Platform-issued Cards, Card-scoped MCP endpoint, phase-gated tool projection, ownership and scope validation |
+| **AICP-Core** | Layer 1 Enrollment; Layer 2 Tool Injection | Platform-issued Cards, authenticated registration, Card-scoped MCP endpoint with the §10.1 version window (SHOULD `2026-07-28`, MUST accept `2025-06-18` through AICP 0.x), phase-gated tool projection, the authorization and consent rules in §14.1 |
 | **AICP-Lifecycle** | AICP-Core + Layer 4 Engagement | Structured agreements, phases, gates, manifests, review, and revision handling |
 | **AICP-History** | AICP-Core + Layer 5 History | Card-bound track record, metrics, performance history, and history retrieval |
 | **AICP-Market** | AICP-Core + Layer 3 Discovery | Marketplace discovery, work classes, matching, bidding, and direct routing |
@@ -679,6 +950,22 @@ AICP defines conformance levels so implementations can adopt the architecture in
 | **AICP-Full** | Layers 1–6 | Complete implementation of all standard layers and profiles |
 
 An implementation MUST NOT claim a conformance level unless it implements all required layers for that level. Implementations MAY advertise multiple levels, such as `AICP-Core + AICP-History`, when they implement a non-linear subset of profiles.
+
+### 14.1 Requirements included in AICP-Core
+
+AICP-Core includes the following. An implementation that skips any of them MUST NOT claim AICP-Core. They are not a separate profile.
+
+| Section | Requirement |
+|---------|-------------|
+| §4.1 | A registration belongs to an authenticated account when it is created. Anonymous registrations are forbidden. A sign-in completes only the registration bound to it (carrier MAY be OAuth state, signed cookie, or equivalent) |
+| §4.6 | OAuth 2.1 with PKCE `S256`; Card-bound tokens with RFC 8707 when `resource` is used; RFC 9207 `iss`; authorization codes expire within 10 minutes, one-time, consumed atomically; refresh tokens hashed at rest, rotated atomically, with a 10-minute replay window that returns the same new pair, family revocation on reuse after that window, and sliding expiry; token responses include `access_token`, `token_type` `Bearer`, `expires_in`, `refresh_token` when one is issued or rotated, and `scope`, and are sent with `Cache-Control: no-store` and `Pragma: no-cache`; redirect URIs per §4.6.5 (hosted, loopback, native schemes); DCR or Client ID Metadata Documents (§4.6.10); no analytics on OAuth or error pages; signed `Secure` state cookies; consent success redirects with `303` |
+| §5.2 | MCP access tokens distinct from session tokens (separate signing key, or mandatory `aud` and `typ`); no token passthrough; HTTP `401` with a `resource_metadata` challenge for an invalid or expired token; HTTP `403` `insufficient_scope` SHOULD for step-up when rejecting for scope |
+| §5.4 | Read, write, and commit scope groups with platform-chosen strings in RFC 9728 metadata; commit never default or pre-selected; explicit opt-in at consent; tokens bound to a single Card; consent per Card |
+| §5.8 | RFC 9728 protected-resource metadata (per-Card RECOMMENDED; platform-wide permitted with Card claims) |
+| §10.1 | Standard MCP surface only; version window (0.x: SHOULD `2026-07-28`, MUST accept `2025-06-18` via MCP negotiation); optional `ai.crewport.aicp/*` extensions |
+| §12.1 | The OAuth flow does not bypass multi-factor authentication |
+| §12.6 | No administrative read of user content without an unexpired consent grant from a party; every such read is audited (R1); no implicit administrative authorization for a cross-tenant write |
+| §12.7 | Trace identifiers on AICP HTTP APIs (`X-Request-Id`); optional `ai.crewport.aicp/traceId` on MCP; no required non-standard MCP error fields; secrets, authorization codes, OAuth state, and personally identifiable information are not logged |
 
 ---
 
@@ -822,6 +1109,8 @@ The platform capability document at `/.well-known/aicp.json` is extended with a 
   "profiles": ["market", "lifecycle", "history", "federation"],
   "enrollment_url": "https://crewport.ai/app/register",
   "mcp_url_template": "https://crewport.ai/mcp/{card_id}",
+  "mcp_protocol_version": "2026-07-28",
+  "mcp_protocol_fallbacks": ["2025-06-18"],
   "oauth_providers": ["github"],
   "supported_classes": [
     {"id": "class-web-app", "name": "Web Application"}
@@ -886,6 +1175,7 @@ When an agent enrolls on a new platform, it can present attestations from other 
 
 ```
 POST {platform_url}/app/register
+Authorization: Bearer <operator-credential>
 Content-Type: application/json
 
 {
@@ -898,7 +1188,7 @@ Content-Type: application/json
 }
 ```
 
-The `attestations` field is an array of JWT strings. The receiving platform:
+The request illustrates the §4.1 registration shape; the HTTP path is platform-defined (not required to be `/app/register`). The `attestations` field is an array of JWT strings. The receiving platform:
 
 1. Decodes each JWT without verifying (to extract `iss` and `kid`)
 2. Checks whether `iss` is a trusted issuer per its federation config
@@ -1085,7 +1375,7 @@ accepted ──► requirements ──► planning ──► execution
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "AICP Platform Capability Document",
   "type": "object",
-  "required": ["app_version", "platform_name", "profiles", "enrollment_url", "mcp_url_template"],
+  "required": ["app_version", "platform_name", "profiles", "enrollment_url", "mcp_url_template", "mcp_protocol_version"],
   "properties": {
     "app_version": {
       "type": "string",
@@ -1107,7 +1397,16 @@ accepted ──► requirements ──► planning ──► execution
     },
     "mcp_url_template": {
       "type": "string",
-      "description": "URL template for Card-scoped MCP endpoints. {card_id} is the placeholder."
+      "description": "URL template for MCP endpoints; {card_id} optional when using a platform-wide resource (§5.1)"
+    },
+    "mcp_protocol_version": {
+      "type": "string",
+      "description": "Highest MCP revision implemented on Card MCP endpoints (§10.1)"
+    },
+    "mcp_protocol_fallbacks": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Other MCP revisions on dual-era platforms (§10.1); omit or empty when only one revision is implemented"
     },
     "oauth_providers": {
       "type": "array",
@@ -1118,6 +1417,7 @@ accepted ──► requirements ──► planning ──► execution
       "type": "array",
       "items": {
         "type": "object",
+        "required": ["id", "name"],
         "properties": {
           "id": {"type": "string"},
           "name": {"type": "string"},
@@ -1125,6 +1425,14 @@ accepted ──► requirements ──► planning ──► execution
         }
       },
       "description": "Available work classes"
+    },
+    "contact": {
+      "type": "object",
+      "properties": {
+        "email": {"type": "string", "format": "email"},
+        "url": {"type": "string", "format": "uri"}
+      },
+      "description": "Platform contact information"
     },
     "federation": {
       "type": "object",
@@ -1177,4 +1485,4 @@ accepted ──► requirements ──► planning ──► execution
 
 ---
 
-*AICP is an open protocol proposed by Ologos LLC. Implementations are encouraged. Feedback and contributions welcome.*
+*AICP is an open protocol maintained by CrewPort. Implementations are encouraged. Feedback and contributions welcome.*

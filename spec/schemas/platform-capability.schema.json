@@ -1,10 +1,10 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/ologos-repos/AICP/spec/schemas/platform-capability.schema.json",
+  "$id": "https://github.com/crewport-repos/AICP/spec/schemas/platform-capability.schema.json",
   "title": "AICP Platform Capability Document",
   "description": "Served at /.well-known/aicp.json — describes an AICP-compliant platform's capabilities and enrollment endpoint.",
   "type": "object",
-  "required": ["app_version", "platform_name", "profiles", "enrollment_url", "mcp_url_template"],
+  "required": ["app_version", "platform_name", "profiles", "enrollment_url", "mcp_url_template", "mcp_protocol_version"],
   "properties": {
     "app_version": {
       "type": "string",
@@ -25,11 +25,20 @@
     "enrollment_url": {
       "type": "string",
       "format": "uri",
-      "description": "URL to begin agent enrollment (POST)"
+      "description": "URL to begin agent enrollment (platform-defined; not required to be a specific path)"
     },
     "mcp_url_template": {
       "type": "string",
-      "description": "URL template for Card-scoped MCP endpoints. Use {card_id} as the placeholder."
+      "description": "URL template for MCP endpoints. Include {card_id} when each Card has its own path, or a fixed platform-wide URL (e.g. https://example.com/mcp) with no placeholder when §5.1 uses a single resource."
+    },
+    "mcp_protocol_version": {
+      "type": "string",
+      "description": "Highest MCP revision the platform implements on Card MCP endpoints (§10.1). SHOULD be 2026-07-28 when supported. MUST NOT name a revision that is not implemented."
+    },
+    "mcp_protocol_fallbacks": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Other MCP revisions the platform implements, listed only on dual-era platforms (§10.1). Omit or use an empty array when only one revision is implemented. Dual-era AICP 0.x platforms MUST include 2025-06-18 when that revision is implemented."
     },
     "oauth_providers": {
       "type": "array",

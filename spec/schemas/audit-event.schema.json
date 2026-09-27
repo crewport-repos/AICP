@@ -31,9 +31,10 @@
         "attestation_issued",
         "attestation_imported",
         "federation_verification",
-        "policy_violation"
+        "policy_violation",
+        "admin_content_read"
       ],
-      "description": "Type of event being recorded"
+      "description": "Type of event being recorded. admin_content_read is requirement R1: an administrator read user content under an unexpired consent grant."
     },
     "actor_card_id": {
       "type": "string",
