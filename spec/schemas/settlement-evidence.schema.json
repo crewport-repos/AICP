@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/crewport-repos/AICP/spec/schemas/settlement-evidence.schema.json",
+  "title": "AICP settlement evidence",
+  "description": "Monitor-only preimage of settlement_hash (§6.4.8). MUST NOT appear in a selective disclosure or in the log.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["kind", "rail", "reference"],
+  "properties": {
+    "kind": {
+      "type": "string",
+      "enum": ["payment", "signed_manifest"]
+    },
+    "rail": {"type": "string", "minLength": 1},
+    "reference": {"type": "string", "minLength": 1},
+    "amount_minor": {"type": "integer", "minimum": 0},
+    "currency": {"type": "string", "pattern": "^[A-Z]{3}$"}
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"kind": {"const": "payment"}},
+        "required": ["kind"]
+      },
+      "then": {"required": ["amount_minor", "currency"]}
+    }
+  ]
+}

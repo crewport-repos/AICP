@@ -5,8 +5,7 @@
   "description": "One append-only entry in an issuer transparency log (§6.4.2). Leaf bytes are the RFC 8785 encoding of this object. No raw PII.",
   "oneOf": [
     {"$ref": "#/$defs/attestation"},
-    {"$ref": "#/$defs/revocation"},
-    {"$ref": "#/$defs/correction"},
+    {"$ref": "#/$defs/revocation_or_correction"},
     {"$ref": "#/$defs/subject_index"}
   ],
   "$defs": {
@@ -43,30 +42,13 @@
         }
       ]
     },
-    "revocation": {
+    "revocation_or_correction": {
       "type": "object",
       "additionalProperties": false,
       "required": ["v", "entry_type", "iss", "sub", "jti", "iat", "target_jti", "target_index", "reason", "detail_commit"],
       "properties": {
         "v": {"const": 1},
-        "entry_type": {"const": "revocation"},
-        "iss": {"type": "string", "format": "uri"},
-        "sub": {"type": "string", "minLength": 1},
-        "jti": {"type": "string", "minLength": 1},
-        "iat": {"type": "integer", "minimum": 0},
-        "target_jti": {"type": "string", "minLength": 1},
-        "target_index": {"type": "integer", "minimum": 0},
-        "reason": {"type": "string", "enum": ["outcome_reversed", "dispute_upheld", "error", "other"]},
-        "detail_commit": {"$ref": "#/$defs/hash"}
-      }
-    },
-    "correction": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["v", "entry_type", "iss", "sub", "jti", "iat", "target_jti", "target_index", "reason", "detail_commit"],
-      "properties": {
-        "v": {"const": 1},
-        "entry_type": {"const": "correction"},
+        "entry_type": {"type": "string", "enum": ["revocation", "correction"]},
         "iss": {"type": "string", "format": "uri"},
         "sub": {"type": "string", "minLength": 1},
         "jti": {"type": "string", "minLength": 1},

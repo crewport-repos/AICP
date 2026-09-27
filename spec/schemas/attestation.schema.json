@@ -40,12 +40,17 @@
       "type": "object",
       "description": "Inclusion of this attestation's transparency-log entry (§6.4.5). Required for verifiable-reputation verification; ignored by base verification except that the signature still covers it.",
       "additionalProperties": false,
-      "required": ["log_id", "index", "tree_size", "root_hash", "inclusion_path"],
+      "required": ["log_id", "index", "tree_size", "root_hash", "inclusion_path", "entry_jti"],
       "properties": {
         "log_id": {"type": "string", "format": "uri"},
         "index": {"type": "integer", "minimum": 0},
         "tree_size": {"type": "integer", "minimum": 1},
         "root_hash": {"type": "string", "pattern": "^[A-Za-z0-9_-]{43}$"},
+        "entry_jti": {
+          "type": "string",
+          "minLength": 1,
+          "description": "jti of the log entry at index. Not required to equal the JWS jti (§6.4.5)."
+        },
         "inclusion_path": {
           "type": "array",
           "items": {"type": "string", "pattern": "^[A-Za-z0-9_-]{43}$"}

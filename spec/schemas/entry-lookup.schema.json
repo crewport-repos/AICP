@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/crewport-repos/AICP/spec/schemas/entry-lookup.schema.json",
+  "title": "AICP log entry lookup response",
+  "description": "Response from entry_url_template (§6.4.11). The entry bytes are what the verifier hashes. sth is the compact JWS for this tree_size. A body with no verifying proof MUST be ignored.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["index", "entry", "inclusion_path", "tree_size", "sth"],
+  "properties": {
+    "index": {"type": "integer", "minimum": 0},
+    "entry": {"$ref": "#/$defs/entry"},
+    "inclusion_path": {
+      "type": "array",
+      "items": {"type": "string", "pattern": "^[A-Za-z0-9_-]{43}$"}
+    },
+    "tree_size": {"type": "integer", "minimum": 0},
+    "sth": {"type": "string", "minLength": 1}
+  },
+  "$defs": {
+    "hash": {"type": "string", "pattern": "^[A-Za-z0-9_-]{43}$"},
+    "entry": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["v", "entry_type", "iss", "sub", "jti", "iat", "event", "detail_commit", "counterparty_id"],
+          "properties": {
+            "v": {"const": 1},
+            "entry_type": {"const": "attestation"},
+            "iss": {"type": "string", "minLength": 1},
+            "sub": {"type": "string", "minLength": 1},
+            "jti": {"type": "string", "minLength": 1},
+            "iat": {"type": "integer", "minimum": 0},
+            "event": {"type": "string", "enum": ["contract_completed", "outcome", "rating", "dispute_result"]},
+            "detail_commit": {"$ref": "#/$defs/hash"},
+            "counterparty_id": {"type": "string", "minLength": 1},
+            "settlement_hash": {"$ref": "#/$defs/hash"},
+            "target_jti": {"type": "string", "minLength": 1},
+            "target_index": {"type": "integer", "minimum": 0}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["v", "entry_type", "iss", "sub", "jti", "iat", "target_jti", "target_index", "reason", "detail_commit"],
+          "properties": {
+            "v": {"const": 1},
+            "entry_type": {"type": "string", "enum": ["revocation", "correction"]},
+            "iss": {"type": "string", "minLength": 1},
+            "sub": {"type": "string", "minLength": 1},
+            "jti": {"type": "string", "minLength": 1},
+            "iat": {"type": "integer", "minimum": 0},
+            "target_jti": {"type": "string", "minLength": 1},
+            "target_index": {"type": "integer", "minimum": 0},
+            "reason": {"type": "string", "enum": ["outcome_reversed", "dispute_upheld", "error", "other"]},
+            "detail_commit": {"$ref": "#/$defs/hash"}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["v", "entry_type", "iss", "sub", "jti", "iat", "count", "indices", "history_root"],
+          "properties": {
+            "v": {"const": 1},
+            "entry_type": {"const": "subject_index"},
+            "iss": {"type": "string", "minLength": 1},
+            "sub": {"type": "string", "minLength": 1},
+            "jti": {"type": "string", "minLength": 1},
+            "iat": {"type": "integer", "minimum": 0},
+            "count": {"type": "integer", "minimum": 1},
+            "indices": {"type": "array", "minItems": 1, "items": {"type": "integer", "minimum": 0}},
+            "history_root": {"$ref": "#/$defs/hash"}
+          }
+        }
+      ]
+    }
+  }
+}

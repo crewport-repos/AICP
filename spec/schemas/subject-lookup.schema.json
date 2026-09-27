@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/crewport-repos/AICP/spec/schemas/subject-lookup.schema.json",
+  "title": "AICP subject lookup response",
+  "description": "Response from subject_url_template (§6.4.11). history_proof and disclosures use the reputation-presentation shape. sth is the compact JWS the proof was built against.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["sub", "tree_size", "sth", "history_proof", "disclosures"],
+  "properties": {
+    "sub": {"type": "string", "minLength": 1},
+    "tree_size": {"type": "integer", "minimum": 0},
+    "sth": {"type": "string", "minLength": 1},
+    "history_proof": {
+      "type": "object",
+      "oneOf": [
+        {
+          "required": [
+            "checkpoint",
+            "map_index",
+            "map_size",
+            "map_inclusion_path",
+            "index_entry",
+            "index_entry_inclusion_path",
+            "entries"
+          ]
+        },
+        {"required": ["non_inclusion", "entries"]}
+      ]
+    },
+    "disclosures": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["index", "salt", "detail"],
+        "properties": {
+          "index": {"type": "integer", "minimum": 0},
+          "salt": {"type": "string", "pattern": "^[A-Za-z0-9_-]{22,}$"},
+          "detail": {"type": "object"}
+        }
+      }
+    }
+  }
+}

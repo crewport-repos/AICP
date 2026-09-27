@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/crewport-repos/AICP/spec/schemas/subject-checkpoint.schema.json",
-  "title": "AICP Subject Map Leaf",
-  "description": "One leaf of the per-subject Merkle map committed in an STH (§6.4.6). Leaves are sorted by sub, UTF-8 bytewise, and hashed with RFC 9162.",
+  "title": "AICP sorted subject tree leaf",
+  "description": "One leaf of the sorted subject tree committed in an STH (§6.4.6). Leaves are sorted by sub as raw UTF-8 bytes, with no Unicode normalization, and hashed with RFC 9162. The wire names subject_map_root and subject_map_size name this tree.",
   "type": "object",
   "additionalProperties": false,
   "required": ["v", "sub", "count", "history_root", "index_entry", "latest_entry"],

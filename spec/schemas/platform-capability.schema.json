@@ -150,6 +150,25 @@
         "verifiable_reputation": {
           "type": "boolean",
           "description": "True when this issuer implements AICP Identity Format verifiable reputation (§6.4)."
+        },
+        "rs256_transition": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Issuer-specific RS256 exception for base Card attestations (§6.3.3). A JWS evaluated at the verifiable-reputation level, and every STH, MUST NOT use this exception.",
+          "required": ["kids", "sunset"],
+          "properties": {
+            "kids": {
+              "type": "array",
+              "minItems": 1,
+              "items": {"type": "string", "minLength": 1},
+              "description": "JWKS kids that may still sign base attestations with RS256."
+            },
+            "sunset": {
+              "type": "string",
+              "format": "date-time",
+              "description": "RFC 3339 instant after which RS256 attestations MUST be rejected."
+            }
+          }
         }
       },
       "allOf": [

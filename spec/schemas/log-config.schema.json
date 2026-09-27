@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/crewport-repos/AICP/spec/schemas/log-config.schema.json",
+  "title": "AICP reputation log configuration",
+  "description": "Body of GET /.well-known/aicp-log (§6.4.11). This URL is log_id. Every URL and URL template MUST be https and same-origin with the issuer.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "log_id",
+    "sth_url",
+    "hash_alg",
+    "sth_version",
+    "tree_alg",
+    "sth_max_age_seconds",
+    "mmd_seconds",
+    "sth_publish_interval_seconds",
+    "entry_url_template",
+    "subject_url_template",
+    "consistency_url_template",
+    "anti_sybil_policy_url",
+    "signing_key_url"
+  ],
+  "properties": {
+    "log_id": {"type": "string", "format": "uri"},
+    "sth_url": {"type": "string", "format": "uri"},
+    "hash_alg": {"const": "SHA-256"},
+    "sth_version": {"const": 1},
+    "tree_alg": {"const": "rfc9162"},
+    "sth_max_age_seconds": {"const": 86400},
+    "mmd_seconds": {"const": 3600},
+    "sth_publish_interval_seconds": {
+      "const": 43200,
+      "description": "Issuers MUST publish an STH at least this often. Re-signing an unchanged tree is allowed."
+    },
+    "entry_url_template": {
+      "type": "string",
+      "minLength": 1,
+      "description": "MUST accept a tree_size query parameter, for example ?tree_size={tree_size}."
+    },
+    "subject_url_template": {
+      "type": "string",
+      "minLength": 1,
+      "description": "MUST accept a tree_size query parameter."
+    },
+    "consistency_url_template": {
+      "type": "string",
+      "minLength": 1,
+      "description": "MUST accept first, second, and tree_size query parameters."
+    },
+    "anti_sybil_policy_url": {"type": "string", "format": "uri"},
+    "signing_key_url": {"type": "string", "format": "uri"}
+  }
+}

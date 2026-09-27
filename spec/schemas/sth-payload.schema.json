@@ -7,7 +7,7 @@
   "additionalProperties": false,
   "required": [
     "aud", "exp", "hash_alg", "iat", "iss", "jti", "kid", "log_id",
-    "root_hash", "sth_version", "subject_map_root", "timestamp", "tree_size"
+    "root_hash", "sth_version", "subject_map_root", "subject_map_size", "timestamp", "tree_size"
   ],
   "properties": {
     "aud": {"type": "string", "format": "uri", "description": "MUST equal log_id."},
@@ -21,6 +21,11 @@
     "root_hash": {"type": "string", "pattern": "^[A-Za-z0-9_-]{43}$"},
     "sth_version": {"const": 1},
     "subject_map_root": {"type": "string", "pattern": "^[A-Za-z0-9_-]{43}$"},
+    "subject_map_size": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Leaf count of the sorted subject tree. Verifiers MUST use this value, not a presenter's map_size."
+    },
     "timestamp": {"type": "integer", "minimum": 0},
     "tree_size": {"type": "integer", "minimum": 0}
   }

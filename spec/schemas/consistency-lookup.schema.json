@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/crewport-repos/AICP/spec/schemas/consistency-lookup.schema.json",
+  "title": "AICP consistency lookup response",
+  "description": "Response from consistency_url_template (§6.4.11). consistency_path is RFC 9162 PROOF(first, D_second), without the power-of-two prepended first hash. An optional sth is the compact JWS the verifier may adopt when it is fresh and consistent.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["first", "second", "consistency_path"],
+  "properties": {
+    "first": {"type": "integer", "minimum": 0},
+    "second": {"type": "integer", "minimum": 1},
+    "consistency_path": {
+      "type": "array",
+      "items": {"type": "string", "pattern": "^[A-Za-z0-9_-]{43}$"}
+    },
+    "sth": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Optional bundled signed tree head."
+    }
+  }
+}

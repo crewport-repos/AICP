@@ -27,11 +27,11 @@ def sha256(data: bytes) -> bytes:
 
 
 def canon(obj: object) -> bytes:
-    """RFC 8785 for the JSON subset used in log entries.
+    """Informative ASCII stand-in for RFC 8785.
 
-    Objects, arrays, strings, integers, and booleans only. No floats.
-    ASCII strings with no controls match RFC 8785 when keys are sorted and
-    separators have no whitespace.
+    RFC 8785 is normative. This sorted-keys encoding is equivalent only for
+    ASCII strings that need no escaping. Objects, arrays, strings, integers,
+    and booleans only. No floats.
     """
     return json.dumps(
         obj, sort_keys=True, separators=(",", ":"), ensure_ascii=False
@@ -183,8 +183,15 @@ def detail_commit(salt: bytes, detail: object) -> str:
     return b64url(sha256(body))
 
 
-def settlement_hash(evidence: str) -> str:
-    return b64url(sha256(evidence.encode("utf-8")))
+def settlement_hash(salt: bytes, evidence: object) -> str:
+    """§6.4.8: base64url(SHA-256("aicp-settlement-v1" || 0x00 || salt || 0x00 || JCS(evidence))).
+
+    One salt of at least 16 bytes is reused for every attestation of that settlement.
+    """
+    if len(salt) < 16:
+        raise ValueError("settlement salt must be at least 16 bytes")
+    body = b"aicp-settlement-v1\x00" + salt + b"\x00" + canon(evidence)
+    return b64url(sha256(body))
 
 
 def self_check() -> None:
