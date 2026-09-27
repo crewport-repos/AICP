@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/crewport-repos/AICP/spec/schemas/log-entry.schema.json",
+  "title": "AICP Reputation Log Entry",
+  "description": "One append-only entry in an issuer transparency log (§6.4.2). Leaf bytes are the RFC 8785 encoding of this object. No raw PII.",
+  "oneOf": [
+    {"$ref": "#/$defs/attestation"},
+    {"$ref": "#/$defs/revocation"},
+    {"$ref": "#/$defs/correction"},
+    {"$ref": "#/$defs/subject_index"}
+  ],
+  "$defs": {
+    "hash": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{43}$",
+      "description": "base64url (no padding) encoding of 32 bytes (RFC 4648 §5)."
+    },
+    "attestation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["v", "entry_type", "iss", "sub", "jti", "iat", "event", "detail_commit", "counterparty_id"],
+      "properties": {
+        "v": {"const": 1},
+        "entry_type": {"const": "attestation"},
+        "iss": {"type": "string", "format": "uri"},
+        "sub": {"type": "string", "minLength": 1, "description": "Issuer-scoped Card id. Not an email or legal name."},
+        "jti": {"type": "string", "minLength": 1},
+        "iat": {"type": "integer", "minimum": 0},
+        "event": {"type": "string", "enum": ["contract_completed", "outcome", "rating", "dispute_result"]},
+        "detail_commit": {"$ref": "#/$defs/hash"},
+        "counterparty_id": {"type": "string", "minLength": 1, "description": "Issuer-scoped pseudonymous client id."},
+        "settlement_hash": {"$ref": "#/$defs/hash"},
+        "target_jti": {"type": "string", "minLength": 1},
+        "target_index": {"type": "integer", "minimum": 0}
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {"event": {"enum": ["contract_completed", "outcome", "dispute_result"]}},
+            "required": ["event"]
+          },
+          "then": {"required": ["settlement_hash"]}
+        }
+      ]
+    },
+    "revocation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["v", "entry_type", "iss", "sub", "jti", "iat", "target_jti", "target_index", "reason", "detail_commit"],
+      "properties": {
+        "v": {"const": 1},
+        "entry_type": {"const": "revocation"},
+        "iss": {"type": "string", "format": "uri"},
+        "sub": {"type": "string", "minLength": 1},
+        "jti": {"type": "string", "minLength": 1},
+        "iat": {"type": "integer", "minimum": 0},
+        "target_jti": {"type": "string", "minLength": 1},
+        "target_index": {"type": "integer", "minimum": 0},
+        "reason": {"type": "string", "enum": ["outcome_reversed", "dispute_upheld", "error", "other"]},
+        "detail_commit": {"$ref": "#/$defs/hash"}
+      }
+    },
+    "correction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["v", "entry_type", "iss", "sub", "jti", "iat", "target_jti", "target_index", "reason", "detail_commit"],
+      "properties": {
+        "v": {"const": 1},
+        "entry_type": {"const": "correction"},
+        "iss": {"type": "string", "format": "uri"},
+        "sub": {"type": "string", "minLength": 1},
+        "jti": {"type": "string", "minLength": 1},
+        "iat": {"type": "integer", "minimum": 0},
+        "target_jti": {"type": "string", "minLength": 1},
+        "target_index": {"type": "integer", "minimum": 0},
+        "reason": {"type": "string", "enum": ["outcome_reversed", "dispute_upheld", "error", "other"]},
+        "detail_commit": {"$ref": "#/$defs/hash"}
+      }
+    },
+    "subject_index": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["v", "entry_type", "iss", "sub", "jti", "iat", "count", "indices", "history_root"],
+      "properties": {
+        "v": {"const": 1},
+        "entry_type": {"const": "subject_index"},
+        "iss": {"type": "string", "format": "uri"},
+        "sub": {"type": "string", "minLength": 1},
+        "jti": {"type": "string", "minLength": 1},
+        "iat": {"type": "integer", "minimum": 0},
+        "count": {"type": "integer", "minimum": 1},
+        "indices": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "integer", "minimum": 0}
+        },
+        "history_root": {"$ref": "#/$defs/hash"}
+      }
+    }
+  }
+}

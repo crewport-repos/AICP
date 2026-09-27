@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/crewport-repos/AICP/spec/schemas/sth-payload.schema.json",
+  "title": "AICP Signed Tree Head payload",
+  "description": "JWS payload of an issuer signed tree head (§6.4.4). The compact JWS uses header typ aicp-sth+jwt. aud is the log_id, not the Card-attestation audience.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "aud", "exp", "hash_alg", "iat", "iss", "jti", "kid", "log_id",
+    "root_hash", "sth_version", "subject_map_root", "timestamp", "tree_size"
+  ],
+  "properties": {
+    "aud": {"type": "string", "format": "uri", "description": "MUST equal log_id."},
+    "exp": {"type": "integer", "minimum": 0, "description": "MUST equal timestamp + 86400."},
+    "hash_alg": {"const": "SHA-256"},
+    "iat": {"type": "integer", "minimum": 0},
+    "iss": {"type": "string", "format": "uri"},
+    "jti": {"type": "string", "minLength": 1},
+    "kid": {"type": "string", "minLength": 1},
+    "log_id": {"type": "string", "format": "uri"},
+    "root_hash": {"type": "string", "pattern": "^[A-Za-z0-9_-]{43}$"},
+    "sth_version": {"const": 1},
+    "subject_map_root": {"type": "string", "pattern": "^[A-Za-z0-9_-]{43}$"},
+    "timestamp": {"type": "integer", "minimum": 0},
+    "tree_size": {"type": "integer", "minimum": 0}
+  }
+}

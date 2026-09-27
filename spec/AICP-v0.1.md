@@ -1,10 +1,10 @@
 # AICP: Agent Identity Card Protocol
 
-**Version**: 0.2.0-draft
+**Version**: 0.3.0-draft
 **Status**: Proposal
 **Authors**: CrewPort
 **Date**: 2026-03-14
-**Revised**: 2026-09-27 — reposition as MCP identity profile plus portable identity format; dual conformance classes; federation in normative identity format
+**Revised**: 2026-09-27 — verifiable reputation (§6.4): issuer transparency log, per-subject completeness, append-only revocation; base Identity Format unchanged
 **Repository**: https://github.com/crewport-repos/AICP
 
 ---
@@ -15,7 +15,7 @@ The Agent Identity Card Protocol (AICP) standardizes two complementary pieces of
 
 1. **AICP MCP Profile (normative Part A)** — An MCP profile for **platform-issued agent identity**: OAuth enrollment, binding an agent to a **Card**, Card-scoped (or platform-wide) MCP resources, OAuth scopes partitioned into **read**, **write**, and **commit**, and **tool projection** through standard MCP `tools/list` and `notifications/tools/list_changed`. The profile interoperates with **unmodified MCP `2025-06-18` clients** and retains all normative authorization, registration, consent, and administrative-access requirements from AICP 0.1.
 
-2. **AICP Identity Format (normative Part B)** — A **portable agent identity and reputation format**: the **Card** schema, the `/.well-known/aicp.json` capability document, and **federation** (platform signing keys, signed attestations, verification). Attestation signing is specified precisely (JWS, key discovery, rotation, revocation) so a second platform can verify claims without shared secrets.
+2. **AICP Identity Format (normative Part B)** — A **portable agent identity and reputation format**: the **Card** schema, the `/.well-known/aicp.json` capability document, and **federation** (platform signing keys, signed attestations, verification). Attestation signing is specified precisely (JWS, key discovery, rotation, key revocation) so a second platform can verify claims without shared secrets. At the **verifiable reputation** level (§6.4), those claims are also backed by an append-only Merkle log: inclusion, a fresh signed tree head, per-subject completeness, and append-only revocation, so a verifier can detect omitted or withdrawn history.
 
 **Informative optional profiles** (non-normative) describe domain patterns many platforms use: marketplace discovery and bidding, phased agreement lifecycles, and Card-bound work history. Tool names in those profiles are **examples** only.
 
@@ -30,7 +30,7 @@ This document specifies:
 | Part | Conformance class | Contents |
 |------|-------------------|----------|
 | **Part A** | **AICP MCP Profile** | Enrollment (§5.1), Card-scoped MCP and OAuth (§5.2–§5.6), MCP transport rules (§5.7), and the security requirements that apply to MCP and enrollment HTTP (§8) |
-| **Part B** | **AICP Identity Format** | Card document schema (§6.1), platform capability document (§6.2), federation and attestation signing (§6.3) |
+| **Part B** | **AICP Identity Format** | Card document schema (§6.1), platform capability document (§6.2), federation and attestation signing (§6.3), and verifiable reputation (§6.4, additional level) |
 
 An implementation MAY claim one or both conformance classes. Claiming a class requires every requirement marked for that class in §3.
 
@@ -63,7 +63,7 @@ Domain-model terms used in informative profiles (Port, Agreement, Class, Tract, 
 | Class | Summary | Normative sections |
 |-------|---------|-------------------|
 | **AICP MCP Profile** | Platform-issued Cards, OAuth 2.1 authorization server, Card-bound MCP access tokens, read/write/commit scopes, phase-aware `tools/list` projection, MCP `2025-06-18` acceptance through 0.x | §5, §5.7, §8 (MCP-related rows), §3.2 |
-| **AICP Identity Format** | Card schema, `/.well-known/aicp.json`, JWKS publication, JWS attestations, verification and federation policy | §6, §8 (federation rows) |
+| **AICP Identity Format** | Card schema, `/.well-known/aicp.json`, JWKS, JWS attestations. **Base** verifies signatures and holder binding. **Verifiable reputation** also verifies the issuer log | §6.1–§6.3 and §8 (federation rows) for base; §6.4 in addition when that level is claimed |
 
 ### 3.2 AICP MCP Profile requirements
 
@@ -83,6 +83,10 @@ An implementation MUST NOT claim **AICP MCP Profile** unless it implements all o
 
 ### 3.3 AICP Identity Format requirements
 
+The class has two levels. **Base** is the claim "AICP Identity Format". **Verifiable reputation** is an additional claim. An implementation MUST NOT claim the additional level unless it also meets base. It MAY claim base alone.
+
+#### 3.3.1 Base
+
 An implementation MUST NOT claim **AICP Identity Format** unless it implements all of the following:
 
 | Section | Requirement |
@@ -90,7 +94,20 @@ An implementation MUST NOT claim **AICP Identity Format** unless it implements a
 | §6.1 | Card documents match the normative schema |
 | §6.2 | Serves `/.well-known/aicp.json` matching the platform-capability schema |
 | §6.3 | Publishes JWKS; issues attestations as JWS per §6.3.4.1; verifies peer attestations; implements declared `federation_policy` |
+| §6.4.10 | Base verification only. Aggregate `claims` are presented as issuer-asserted, not as a complete history |
 | §8.5 | Audit events for governance (SHOULD) where identity actions are recorded |
+
+#### 3.3.2 Verifiable reputation
+
+An implementation MUST NOT claim **AICP Identity Format (verifiable reputation)** unless it implements base and all of the following:
+
+| Section | Requirement |
+|---------|-------------|
+| §6.4.2–§6.4.4 | Issuer appends every reputation attestation to the log and publishes a signed tree head within the MMD; verifier rejects an STH older than 86400 seconds |
+| §6.4.5–§6.4.7 | Verifier checks inclusion, consistency against STHs it holds, per-subject completeness at the fresh STH, and append-only revocation or correction status |
+| §6.4.8 | Scores stay per issuer; distinct `settlement_hash` values; anti-Sybil policy published |
+| §6.4.9 | Log entries are salted commitments; adverse entries fail closed if undisclosed |
+| §6.4.10 | The verifiable-reputation check list, not the base list alone |
 
 ### 3.4 Specification maturity
 
@@ -589,7 +606,7 @@ AICP Card identity has these properties that distinguish it from other protocol 
 | **Persistence** | Platform-stored, survives sessions | None | Agent-hosted |
 | **Multiplexing** | Multiple Cards per operator | N/A | One card per agent |
 | **History binding** | Platform-tracked per Card | None | None |
-| **Verifiability** | Platform-attested | N/A | Self-attested |
+| **Verifiability** | Platform-attested; log-backed at the verifiable-reputation level (§6.4) | N/A | Self-attested |
 
 
 
@@ -603,7 +620,7 @@ GET {platform_url}/.well-known/aicp.json
 
 ```json aicp:instance=platform-capability
 {
-  "app_version": "0.2.0-draft",
+  "app_version": "0.3.0-draft",
   "platform_name": "Example Platform",
   "profiles": ["market", "lifecycle", "history"],
   "enrollment_url": "{platform_url}/app/register",
@@ -697,7 +714,7 @@ Attestations MUST use **JWS Compact Serialization** ([RFC 7515](https://www.rfc-
 
 **Rotation:** Issuers MAY publish multiple keys in JWKS. New attestations SHOULD use the newest active `kid`. Verifiers MUST accept signatures from any key present in the cached JWKS until cache expiry.
 
-**Revocation:** Removing a `kid` from JWKS revokes all attestations signed with that key. Issuers SHOULD use short `exp` (RECOMMENDED ≤ 180 days) and refresh attestations regularly. Receiving platforms MAY maintain a local denylist of `jti` or `(iss, sub, iat)` tuples for compromised attestations; such denylists are platform-defined and not part of the wire format.
+**Key revocation:** Removing a `kid` from JWKS revokes all attestations signed with that key. Issuers SHOULD use short `exp` (RECOMMENDED ≤ 180 days) and refresh attestations regularly. Receiving platforms MAY maintain a local denylist of `jti` or `(iss, sub, iat)` tuples for compromised attestations; such denylists are platform-defined and not part of the wire format. Withdrawing one reputation entry without rotating keys is an append-only log revocation (§6.4.7), not a JWKS change.
 
 **Verification steps (normative):**
 
@@ -707,6 +724,7 @@ Attestations MUST use **JWS Compact Serialization** ([RFC 7515](https://www.rfc-
 4. Validate payload: `exp` / `iat` with ≤ 5 minutes skew; `sub` identifies the Card on the issuer platform.
 5. Validate `aud` and `jti` (§6.3.4.1).
 6. Apply federation policy (`open`, `allowlist`, or `registry`) and `attribute_filter` before importing claims.
+7. At the verifiable-reputation level, continue with §6.4.10. Base verification stops here.
 
 **Replay and holder binding (normative):**
 
@@ -777,7 +795,7 @@ Custom claims SHOULD be namespaced to avoid collision: `x-{platform}-{claim_name
 - Attestations SHOULD be refreshed periodically (RECOMMENDED: weekly or after each completed agreement).
 - Receiving platforms MUST check `exp` and reject expired attestations.
 - Receiving platforms SHOULD fetch the issuer's JWKS to verify the signature on every attestation. Caching the JWKS is acceptable within the cache headers' lifetime.
-- Revocation: a platform can revoke an attestation by removing the signing key (`kid`) from its JWKS. Receiving platforms that re-fetch the JWKS will fail verification.
+- Key revocation: a platform can revoke every attestation signed by a key by removing that `kid` from its JWKS. Receiving platforms that re-fetch the JWKS will fail verification. Revoking a single reputation entry is §6.4.7.
 
 ### 6.3.5 Federation Configuration
 
@@ -785,7 +803,7 @@ The platform capability document at `/.well-known/aicp.json` is extended with a 
 
 ```json aicp:instance=platform-capability
 {
-  "app_version": "0.2.0-draft",
+  "app_version": "0.3.0-draft",
   "platform_name": "CrewPort",
   "profiles": ["market", "lifecycle", "history"],
   "enrollment_url": "https://crewport.ai/app/register",
@@ -814,7 +832,11 @@ The platform capability document at `/.well-known/aicp.json` is extended with a 
       }
     ],
     "attestation_endpoint": "https://crewport.ai/app/attestations/{card_id}",
-    "federation_contact": "federation@crewport.ai"
+    "federation_contact": "federation@crewport.ai",
+    "log_url": "https://crewport.ai/.well-known/aicp-log",
+    "sth_url": "https://crewport.ai/.well-known/aicp-sth",
+    "anti_sybil_policy_url": "https://crewport.ai/.well-known/aicp-anti-sybil",
+    "verifiable_reputation": true
   }
 }
 ```
@@ -829,6 +851,10 @@ The platform capability document at `/.well-known/aicp.json` is extended with a 
 | `registry_url` | string (URI) | Conditional | Required when `federation_policy` is `registry`. URL of the shared trust registry. |
 | `attestation_endpoint` | string | Yes | URL template for retrieving attestations for a Card. `{card_id}` is the placeholder. |
 | `federation_contact` | string | No | Contact for federation partnership inquiries |
+| `log_url` | string (URI) | Conditional | Required when `verifiable_reputation` is `true`. Log configuration document (§6.4.11) |
+| `sth_url` | string (URI) | Conditional | Required when `verifiable_reputation` is `true`. Current signed tree head |
+| `anti_sybil_policy_url` | string (URI) | Conditional | Required when `verifiable_reputation` is `true`. Anti-Sybil policy (§6.4.8) |
+| `verifiable_reputation` | boolean | No | `true` when the issuer implements §6.4. Omit or `false` for base only |
 
 #### 6.3.5.2 Federation Policies
 
@@ -967,6 +993,341 @@ Registry governance is out of scope for AICP. Registries MAY be operated by anyo
 
 ---
 
+### 6.4 Verifiable Reputation
+
+Issuer-signed aggregate `claims` (§6.3.4.2) tell a verifier what the issuer says. They do not let the verifier prove that a negative attestation was not left out, that an entry was not later revoked, or that two verifiers saw the same history. This section makes reputation **provable**: every attestation the issuer counts is appended to a public Merkle log, a signed tree head commits to that log and to a per-subject index, and verifiers check inclusion, freshness, completeness, and revocation before they count an entry.
+
+§6.4 is an additional conformance level of **AICP Identity Format**, not a replacement for §6.3 and not part of the informative marketplace or lifecycle profiles (Appendices A and B).
+
+#### 6.4.1 Levels
+
+| Level | Who claims it | What "reputation" means |
+|-------|---------------|-------------------------|
+| **Base** | "AICP Identity Format" | JWS verification per §6.3.4.1. Aggregate `claims` are **issuer-asserted**. A base verifier MUST label them as such and MUST NOT describe them as a complete or revocation-checked history. |
+| **Verifiable reputation** | "AICP Identity Format (verifiable reputation)" | Base, plus this section. Counts shown to a user come only from log entries that pass §6.4.10. The JWS `claims` object MUST NOT be added into those counts. |
+
+An issuer sets `federation.verifiable_reputation` to `true` only when it meets the issuer requirements in this section. A verifier MUST NOT apply this level to an issuer that does not advertise it, and MUST NOT fall back to aggregate `claims` when a verifiable-reputation check fails for an issuer that does.
+
+#### 6.4.2 Log entries
+
+Each issuer keeps one **append-only** log of reputation records. The log is a sequence of entries numbered from index `0`. An issuer MUST NOT delete, reorder, or rewrite an entry after it has published a signed tree head whose `tree_size` is greater than that entry's index.
+
+The leaf input `d[i]` is the [RFC 8785](https://www.rfc-editor.org/rfc/rfc8785) JSON Canonicalization Scheme encoding (UTF-8, no insignificant whitespace) of one JSON object. Entries in this specification use only objects, arrays, strings, integers, and the constants required below — no floating-point numbers — so that encoding matches `json.dumps` with sorted keys and separators `(',', ':')` for those values. Hashes that travel inside JSON are **base64url without padding** ([RFC 4648](https://www.rfc-editor.org/rfc/rfc4648) §5) of the raw 32-byte digest.
+
+`entry_type` is one of:
+
+| `entry_type` | Role |
+|--------------|------|
+| `attestation` | One reputation event about `sub`: contract completed, outcome, rating, or dispute result. |
+| `revocation` | Append-only withdrawal of an earlier attestation. Does not remove the target. |
+| `correction` | Append-only replacement of the target's disclosed detail. Does not remove the target. |
+| `subject_index` | Checkpoint that commits to every attestation, revocation, and correction for one `sub` so far. |
+
+Common rules:
+
+- `v` MUST be `1`.
+- `iss` MUST be the issuer origin, the same value as the attestation JWS `iss`.
+- `sub` MUST be the issuer-scoped Card identifier. It MUST NOT be an email address, telephone number, legal name, or other direct personal identifier. Card ids MUST be unguessable (§8.1); a UUID is the RECOMMENDED form.
+- `jti` MUST be unique among all entries in this log.
+- `iat` is Unix seconds. Each new entry's `iat` MUST be greater than or equal to the `iat` of the preceding entry.
+- The normative schema is `spec/schemas/log-entry.schema.json`.
+
+An `attestation` entry MUST include `event` (`contract_completed`, `outcome`, `rating`, or `dispute_result`), `detail_commit` (§6.4.9), and `counterparty_id` (§6.4.8). Events `contract_completed`, `outcome`, and `dispute_result` MUST include `settlement_hash`. A `rating` MAY omit `settlement_hash` and SHOULD set `target_index` to the economic attestation it rates.
+
+A `revocation` or `correction` MUST name `target_jti` and `target_index` of an earlier entry in this log with the same `sub` and `entry_type` `attestation`, and MUST include `reason` (`outcome_reversed`, `dispute_upheld`, `error`, or `other`) and its own `detail_commit`.
+
+A `subject_index` lists `indices` (strictly increasing log indexes) of every `attestation`, `revocation`, and `correction` for that `sub` with index less than this checkpoint, and `count` equal to the length of `indices`. `history_root` is defined in §6.4.6. After the issuer appends an attestation, revocation, or correction, it MUST append a new `subject_index` for that `sub` before it publishes a signed tree head that includes the new reputation entry. Other subjects' entries MAY be interleaved between them. An issuer MUST NOT publish a tree head in which any reputation entry is absent from the latest `subject_index` for its `sub` inside that tree.
+
+Issuers MAY derive each published entry from an internal hash-chained audit table (each row committing to the previous row). The published bytes MUST be this canonical entry, not the raw audit row. The internal chain does not substitute for the Merkle tree head in §6.4.3. CrewPort's planned source is its hash-chained `audit_events` table (§9).
+
+```json aicp:instance=log-entry
+{
+  "counterparty_id": "cp-alice",
+  "detail_commit": "xbvWfWmu5wP6sGU_hfXgJjtfPklEFzLBOaMKjCP1eew",
+  "entry_type": "attestation",
+  "event": "contract_completed",
+  "iat": 1700000000,
+  "iss": "https://platform.example",
+  "jti": "jti-rep-001",
+  "settlement_hash": "WummGT5NQCOwmlFbi-QyI_ZDhOmapgWq4RJIGrUS-pU",
+  "sub": "card-test-001",
+  "v": 1
+}
+```
+
+```json aicp:instance=log-entry
+{
+  "detail_commit": "e8jAmBrd5lW6p_8FlRwKuX7zcJ42lD6dQm_DGIHqvkw",
+  "entry_type": "revocation",
+  "iat": 1700000200,
+  "iss": "https://platform.example",
+  "jti": "jti-rev-001",
+  "reason": "outcome_reversed",
+  "sub": "card-test-001",
+  "target_index": 0,
+  "target_jti": "jti-rep-001",
+  "v": 1
+}
+```
+
+```json aicp:instance=log-entry
+{
+  "count": 2,
+  "entry_type": "subject_index",
+  "history_root": "Qmu_pPD2QRyNzc7MEf7UWeO4j_XvW_H7pd_F6BERh8M",
+  "iat": 1700000200,
+  "indices": [0, 4],
+  "iss": "https://platform.example",
+  "jti": "jti-idx-001-2",
+  "sub": "card-test-001",
+  "v": 1
+}
+```
+
+The three objects above are entries `0`, `4`, and `5` of the normative vector log (`spec/test-vectors/reputation-vectors.json`).
+
+#### 6.4.3 Merkle tree
+
+The log tree is the Merkle tree defined in [RFC 9162](https://www.rfc-editor.org/rfc/rfc9162) §2.1. `HASH` is SHA-256 ([RFC 6234](https://www.rfc-editor.org/rfc/rfc6234)). For an ordered list of leaf inputs `D`:
+
+- `MTH({}) = SHA-256("")` (the SHA-256 digest of the empty string).
+- `MTH({d}) = SHA-256(0x00 || d)`.
+- For `n > 1`, let `k` be the largest power of two strictly smaller than `n`. `MTH(D) = SHA-256(0x01 || MTH(D[0:k]) || MTH(D[k:n]))`.
+
+`||` is byte concatenation. The `0x00` / `0x01` prefixes are the RFC 9162 domain separation and MUST be used. The tree size need not be a power of two; the shape is fixed by the size alone.
+
+`root_hash` in a signed tree head is `MTH` of `d[0] .. d[tree_size - 1]`.
+
+#### 6.4.4 Signed tree head
+
+A **signed tree head (STH)** is a JWS ([RFC 7515](https://www.rfc-editor.org/rfc/rfc7515)) in compact serialization. The protected header MUST include `alg` (`ES256` or `EdDSA` only; the RS256 transition exception in §6.3.3 does **not** apply to STHs), `typ` = `aicp-sth+jwt`, and `kid` matching the payload and the issuer JWKS. The payload MUST be RFC 8785 canonical JSON with these fields:
+
+| Field | Requirement |
+|-------|-------------|
+| `sth_version` | `1` |
+| `iss` | Issuer origin |
+| `log_id` | Absolute URL of the log configuration document (§6.4.11). Same origin as `iss`. |
+| `aud` | MUST equal `log_id`. This is not a Card attestation; Card attestations still require `aud` = `iss` (§6.3.4.1). |
+| `iat`, `jti`, `kid` | As in §6.3.4.1, identifying this STH |
+| `timestamp` | Unix seconds when this STH was produced |
+| `exp` | MUST equal `timestamp + 86400` |
+| `tree_size` | Number of log entries committed |
+| `hash_alg` | `SHA-256` |
+| `root_hash` | base64url of the RFC 9162 `MTH` for `tree_size` |
+| `subject_map_root` | base64url of the per-subject map root (§6.4.6) for this `tree_size` |
+
+Verifiers MUST verify the JWS with the JWKS rules in §6.3.3, including the 24-hour JWKS cache cap. They MUST reject an STH whose `timestamp` is more than **`STH_MAX_AGE` = 86400 seconds** before the verifier's current time, or whose `timestamp` is more than 300 seconds in the future. The 300-second skew is the same bound as §6.3.4.1. They MUST reject an STH whose `tree_size` is less than a `tree_size` the verifier has already accepted for that `log_id` (rollback).
+
+Issuers MUST publish a fresh STH at least every 86400 seconds while the log is non-empty. **Maximum merge delay (MMD)** is **3600 seconds**: an entry MUST be included in some published STH within 3600 seconds of being appended. Issuers MUST NOT publish an STH that violates the subject-index invariant in §6.4.2.
+
+```json aicp:instance=sth-payload
+{
+  "aud": "https://platform.example/.well-known/aicp-log",
+  "exp": 1700086700,
+  "hash_alg": "SHA-256",
+  "iat": 1700000300,
+  "iss": "https://platform.example",
+  "jti": "sth-size-6",
+  "kid": "test-es256-01",
+  "log_id": "https://platform.example/.well-known/aicp-log",
+  "root_hash": "Ot0RerfZxYNQirZwwr1Aaml7zLlMnGwe0sm0SEI72Jk",
+  "sth_version": 1,
+  "subject_map_root": "vMOWn4VwQOZpvkvI0CT1NxGpTb31t-fi-0XlNoX5aK0",
+  "timestamp": 1700000300,
+  "tree_size": 6
+}
+```
+
+That payload is the size-6 STH in the test vectors (signature checked by CI; not repeated here). The normative schema is `spec/schemas/sth-payload.schema.json`.
+
+#### 6.4.5 Inclusion and consistency
+
+**Inclusion.** The proof that leaf index `m` is in a tree of size `n` is `PATH(m, D_n)` from RFC 9162 §2.1.3.1: an ordered array of node hashes, from the leaf toward the root. Verifiers MUST run the algorithm in RFC 9162 §2.1.3.2 and accept the proof only when it reproduces `root_hash`. The array is encoded as base64url strings.
+
+Each Card attestation JWS that is evaluated at verifiable-reputation level MUST contain `log_proof`. The object below is the proof carried by vector `revoked-jti-rep-001`: inclusion of index 0 in the size-4 tree, which does not yet contain the revocation. A verifier MUST roll that proof forward to the fresh STH (§6.4.10 steps 5–7) rather than scoring from `tree_size` 4.
+
+```json aicp:none
+{
+  "log_proof": {
+    "log_id": "https://platform.example/.well-known/aicp-log",
+    "index": 0,
+    "tree_size": 4,
+    "root_hash": "PJvOQAZJKs7KwVS5WsCoK9PIqJejR0NbgVush1Tyal0",
+    "inclusion_path": [
+      "jAQpKkzV-K6k_RovLFHmcARg8muXr64oIF5LubFj28k",
+      "J-FWoCAcRNBcFXKnsp-1dNa36HfZjq4OPma7M-ke8Qc"
+    ]
+  }
+}
+```
+
+`log_proof.index` MUST identify an `attestation` entry whose `jti`, `sub`, and `iss` equal the JWS claims. `inclusion_path` MUST be `PATH` for that index in the tree of `log_proof.tree_size`, and `root_hash` MUST be that tree's `MTH`. The proof MAY be against an STH older than the one the verifier fetches. It MUST NOT be against a tree larger than the fetched STH.
+
+**Consistency.** A consistency proof between tree sizes `first` and `second` (`0 < first < second`) is `PROOF(first, D)` from RFC 9162 §2.1.4.1. Verifiers MUST run RFC 9162 §2.1.4.2. When `first` is a power of two, that algorithm prepends the first root to the proof; issuers MUST NOT include that prepended hash in the published array. A verifier that has accepted two STHs for the same `log_id` MUST verify a consistency proof between them when `tree_size` differs, and MUST treat a failed proof as a split view: it MUST stop trusting new attestations from that issuer until the issuer presents a consistent pair. Verifiers SHOULD retain STHs they have verified and SHOULD accept an STH co-signed or countersigned by an independent witness they already trust. A multi-party gossip protocol for witnesses is **not** specified in this version; pairwise consistency on STHs the verifier actually holds is the required detection mechanism.
+
+The normative vector `inclusion-entry-0` is `PATH` for index `0` in the size-6 tree. `consistency-4-to-6` is `PROOF(4, D_6)`. Size 4 is a power of two, so verification prepends the size-4 root. Both proofs MUST verify against the signed roots in the vector file.
+
+#### 6.4.6 History completeness
+
+Omitting a negative entry is the failure mode aggregate claims cannot catch. Completeness is proved per subject, up to a specific STH, with two commitments that the STH signature covers:
+
+1. **History root.** For a subject, take the `attestation`, `revocation`, and `correction` entries in increasing log index (not `subject_index` entries). `history_root` is the RFC 9162 `MTH` of those entries' canonical leaf inputs. It is a second tree with the same hash rules; it is not a subtree of the main log unless the entries happen to form a prefix.
+2. **Subject map.** One leaf per subject that has at least one reputation entry, sorted by `sub` in UTF-8 byte order. The leaf input is the RFC 8785 encoding of a checkpoint object (schema `spec/schemas/subject-checkpoint.schema.json`):
+
+| Field | Meaning |
+|-------|---------|
+| `v` | `1` |
+| `sub` | Card id |
+| `count` | Length of the subject's reputation-entry list |
+| `history_root` | As above |
+| `index_entry` | Log index of the `subject_index` entry that carries this `history_root` and `indices` |
+| `latest_entry` | Greatest index in that list |
+
+`subject_map_root` is the RFC 9162 `MTH` of those leaf inputs in sorted order. An empty map (no subjects) has `subject_map_root = SHA-256("")`, the same empty-tree digest as §6.4.3.
+
+A **subject history proof** for `sub` at an STH of size `n` contains:
+
+- the checkpoint object, its `map_index` in the sorted map, `map_size`, and `map_inclusion_path` (`PATH` into `subject_map_root`)
+- the `subject_index` log entry at `checkpoint.index_entry` and its inclusion path into `root_hash`
+- each reputation entry named by `indices`, in that order, each with an inclusion path into `root_hash`
+- selective disclosures (§6.4.9) for the entries the verifier must open
+
+The verifier MUST accept the proof only when all of the following hold against the **same** STH:
+
+1. The checkpoint's inclusion proof reproduces `subject_map_root`, and the checkpoint's `sub` is the subject being presented.
+2. The `subject_index` entry is included at `index_entry`, its `sub`, `count`, `history_root`, and `indices` match the checkpoint, and `indices` equals the indexes of the presented reputation entries in order.
+3. Every presented reputation entry is included at its stated index, has `entry_type` of `attestation`, `revocation`, or `correction`, and has the same `sub`.
+4. The RFC 9162 `MTH` of those entries' canonical bytes equals `history_root`.
+
+A presenter who drops a revocation changes `history_root` and the `indices` list, which no longer matches the signed map. A proof against an older STH that predates the revocation is not sufficient: §6.4.10 requires the fresh STH.
+
+To show that a subject has **no** entries in this STH, the presenter supplies a non-inclusion proof: inclusion of the neighboring map leaves (the greatest `sub` strictly less than the claimed id, and the least `sub` strictly greater, either of which MAY be absent at an edge) demonstrating that no leaf equals the claimed `sub`. Verifiers MAY accept that proof. The test vectors cover a non-empty subject, not the empty case.
+
+Across two consistent STHs, for every `sub` present in the earlier map, the later `indices` list MUST begin with the earlier list (append-only history). Verifiers that hold both STHs MUST reject the issuer on a violation, the same as a failed consistency proof.
+
+#### 6.4.7 Revocation and correction
+
+Negative and corrective facts are new log entries. The target entry stays in the tree so older inclusion proofs still verify; they stop being positive reputation.
+
+**Status** of an attestation at index `i` with `jti` `J`, given the subject's accepted history at the fresh STH (entries in increasing index order):
+
+1. If any later entry has `entry_type` `revocation` and (`target_index` = `i` or `target_jti` = `J`), the status is **`revoked`**. Revocation is terminal: a correction does not resurrect it.
+2. Otherwise, if any later entry has `entry_type` `correction` and the same target match, the status is **`corrected`**. The effective detail is the opened detail of the **latest** matching correction. Verifiers MUST NOT also count the original detail.
+3. Otherwise the status is **`active`**.
+
+Verifiers MUST NOT count a `revoked` attestation toward reputation. They MUST NOT treat a valid JWS, an unexpired `exp`, or a successful inclusion proof as overriding a revocation in the fresh history. Key removal from JWKS (§6.3.4.1) remains the mechanism for a compromised signing key; it is independent of per-entry revocation.
+
+**Status lookup.** The log configuration document publishes URL templates for entry, subject, and consistency reads (§6.4.11). A lookup response MUST include the entry or proof and the current STH compact JWS. Clients MUST apply §6.4.10 to that STH and proof. A lookup body without a verifying proof MUST be ignored. Lookups are a convenience for monitors; the subject's history proof is what a presenter supplies at enrollment.
+
+The vector `revoked-jti-rep-001` is the Card attestation for `jti-rep-001`. Its JWS checks out at the **base** level and its `log_proof` includes the entry in the size-4 tree, which is **before** the revocation at index `4`. A verifiable-reputation verifier fetches the size-6 STH, checks consistency from 4 to 6, evaluates completeness at size 6, and MUST yield status `revoked`.
+
+#### 6.4.8 Per-issuer scoring and Sybil resistance
+
+Reputation is a statement by one issuer about one Card. Verifiers MUST attribute every counted entry to its `iss`. They MUST NOT merge, average, or otherwise combine scores from different issuers into one number. A display that covers more than one issuer MUST show each issuer's figures separately, each labeled with that `iss` value. Provenance is part of the result, not a footnote that can be dropped.
+
+Within a single issuer, after status is applied:
+
+- Count a completed contract only for an attestation whose status is `active`, or whose status is `corrected` and whose latest correction detail has `outcome` equal to `fulfilled`, and whose `event` is `contract_completed` or `outcome`.
+- The displayed completed-contract count MUST be the number of **distinct** `settlement_hash` values among those entries, not the raw entry count.
+- The verifier MUST also display `distinct_counterparties`, the number of distinct `counterparty_id` values among those same entries.
+- `dispute_result` entries are adverse context. They MUST be shown with the issuer and MUST NOT be folded into the completed-contract count.
+- JWS aggregate `claims` MUST NOT be summed into these figures.
+
+**Sybil controls.** Wash-trading is repeating fake work between identities the issuer controls. The log does not make a dishonest issuer honest, but it makes the pattern public and expensive when settlement is real:
+
+- `counterparty_id` MUST be an issuer-generated pseudonym, stable for that client on that issuer, and MUST NOT be a raw email, legal name, or an identifier the issuer uses for the same party at other issuers.
+- `settlement_hash` MUST be base64url(SHA-256(UTF-8 evidence)) where the evidence string is the issuer's canonical reference to a payment or settlement it processed or observed (amount, currency, and a rail reference). The evidence string MUST NOT appear in the log. Issuers MUST be able to produce the preimage to a monitor under the published anti-Sybil policy. Reusing one settlement across many attestations does not increase the distinct-hash count above.
+- An issuer that claims this level MUST publish an anti-Sybil policy JSON document at `federation.anti_sybil_policy_url`:
+
+```json aicp:none
+{
+  "policy_id": "aicp-antisybil-1",
+  "economic_events_require_settlement": true,
+  "summary": "Economic attestations carry an issuer-scoped counterparty id and a settlement hash. Verifiers count distinct settlement hashes."
+}
+```
+
+`economic_events_require_settlement` MUST be `true`. `policy_id` and `summary` MUST be present. Verifiers SHOULD fetch the policy and show it next to the issuer's score. They MUST still enforce the distinct-`settlement_hash` rule even if they cannot fetch the policy.
+
+#### 6.4.9 Privacy
+
+The log is public. It MUST NOT carry raw personally identifiable information.
+
+- Details (notes, amounts, outcome text, and anything that is not the fixed entry fields) MUST be committed, not written in the clear. `detail_commit` = base64url(SHA-256(`aicp-detail-v1` || `0x00` || `salt` || `0x00` || RFC8785(`detail`))). `salt` MUST be at least 16 bytes from a CSPRNG. `detail` is a JSON object with no floating-point numbers.
+- The salt and `detail` are revealed only in a **selective disclosure** the subject (or the issuer, at the subject's request) hands to a verifier. A disclosure is `{ "index", "salt", "detail" }` with `salt` base64url-encoded. The verifier recomputes `detail_commit` and MUST reject the presentation on mismatch.
+- Names, email addresses, phone numbers, postal addresses, and payment-account identifiers MUST NOT appear in any log field, including `sub` and `counterparty_id`.
+- Existence of an entry is not private. Completeness is there so a subject cannot hide a dispute or a revocation by withholding it. Withholding the salt does not remove the entry from the history root.
+
+**Fail closed.** If the accepted history contains a `revocation`, a `correction`, or an attestation whose `event` is `dispute_result`, and the presentation does not open that entry's `detail_commit`, the verifier MUST reject the presentation as incomplete. It MUST NOT score the subject as if that entry were absent.
+
+#### 6.4.10 What verifiers check
+
+**Base level** (stops here for issuers that do not advertise verifiable reputation, and for implementations that do not claim the level):
+
+1. Perform §6.3.4.1 (JWS, `alg`, `kid`, JWKS cache ≤ 24 hours, `aud`, `jti` replay cache, `iat` / `exp` with ≤ 300 seconds skew, `(iss, sub)` bound to at most one local Card).
+2. If `log_proof` is present, it is covered by the signature and otherwise ignored.
+3. Present `claims` as issuer-asserted, labeled with `iss`. Do not call them complete.
+
+**Verifiable reputation** (every step; a failure rejects the attestation as reputation evidence, except status `revoked` or `corrected`, which is a successful evaluation of a negative or replacement fact):
+
+1. Perform the base check. The signature MUST still verify.
+2. Require `log_proof`. Fetch `/.well-known/aicp-log` for `iss` (§6.4.11) and require `log_proof.log_id` to equal that document's `log_id`.
+3. Fetch the current STH from `sth_url`. Verify §6.4.4, including `STH_MAX_AGE`.
+4. Resolve the log entry at `log_proof.index` (from the history proof or a lookup). Check `entry_type`, `jti`, `sub`, and `iss` against the JWS. Verify inclusion of that entry under `log_proof.root_hash`.
+5. If the current STH `tree_size` equals `log_proof.tree_size`, require the roots to be equal.
+6. If the current STH `tree_size` is greater, require a consistency proof from `log_proof.tree_size` to the current size (carried with the presentation or fetched from the log) and require it to verify against the two roots. If the current `tree_size` is smaller, reject.
+7. Verify the subject history proof (§6.4.6) for this `sub` against the **current** STH, not against the embedded older tree.
+8. Open disclosures (§6.4.9), including the fail-closed rule for revocations, corrections, and dispute results.
+9. Apply status (§6.4.7). A `revoked` attestation MUST NOT be counted. A `corrected` one counts only under §6.4.8.
+10. Score with §6.4.8. Do not merge this issuer's score with any other issuer's score.
+
+Step 6 is what makes a stale inclusion proof harmless. The vector `revoked-jti-rep-001` is constructed so that base verification and the embedded size-4 inclusion both succeed, and only steps 6–9 report `revoked`.
+
+#### 6.4.11 Publication
+
+Well-known URIs are used in the sense of [RFC 8615](https://www.rfc-editor.org/rfc/rfc8615). These suffixes are **not** registered with IANA in this draft. Both URLs MUST be same-origin with `iss` and served over HTTPS.
+
+| URL | Body |
+|-----|------|
+| `GET /.well-known/aicp-log` | Log configuration (below). This URL is `log_id`. |
+| `GET /.well-known/aicp-sth` | `{ "sth": "<compact JWS>", "tree_size": <integer> }` for the current STH. |
+
+`federation.log_url`, `federation.sth_url`, and `federation.anti_sybil_policy_url` MUST point at these resources when `verifiable_reputation` is `true` (`sth_url` at the STH document, `log_url` at the configuration document). `signing_key_url` remains the JWKS.
+
+```json aicp:none
+{
+  "log_id": "https://platform.example/.well-known/aicp-log",
+  "sth_url": "https://platform.example/.well-known/aicp-sth",
+  "hash_alg": "SHA-256",
+  "sth_version": 1,
+  "tree_alg": "rfc9162",
+  "sth_max_age_seconds": 86400,
+  "mmd_seconds": 3600,
+  "entry_url_template": "https://platform.example/.well-known/aicp-log/entries/{index}",
+  "subject_url_template": "https://platform.example/.well-known/aicp-log/subjects/{sub}",
+  "consistency_url_template": "https://platform.example/.well-known/aicp-log/consistency?first={first}&second={second}",
+  "anti_sybil_policy_url": "https://platform.example/.well-known/aicp-anti-sybil",
+  "signing_key_url": "https://platform.example/.well-known/jwks.json"
+}
+```
+
+`sth_max_age_seconds` MUST be 86400 and `mmd_seconds` MUST be 3600 for version 1. Entry and subject responses MUST include the bytes the verifier hashes, the relevant inclusion path, and the current STH JWS. The consistency response MUST be `{ "first", "second", "consistency_path" }` with `consistency_path` equal to RFC 9162 `PROOF(first, D_second)`.
+
+#### 6.4.12 Test vectors
+
+Normative vectors live in [`spec/test-vectors/reputation-vectors.json`](spec/test-vectors/reputation-vectors.json). Keys and salts are **TEST ONLY** (`test-keys.json` and the fixed salts in `tools/gen-vectors.py`). Regenerate reputation vectors with `python tools/gen-vectors.py --only reputation`. CI runs `python tools/check-spec.py --check vectors`, which checks:
+
+| Vector id | What it proves |
+|-----------|----------------|
+| `inclusion-entry-0` | RFC 9162 inclusion of log index 0 under the size-6 STH |
+| `consistency-4-to-6` | RFC 9162 consistency between the size-4 and size-6 signed roots, and append-only subject histories |
+| `completeness-card-test-001` | The subject map leaf, the `subject_index` at index 5, and entries 0 and 4 are the full history of `card-test-001` at size 6; disclosures open both `detail_commit` values |
+| `revoked-jti-rep-001` | The JWS passes base verification with an inclusion proof against the pre-revocation size-4 tree; the fresh size-6 history yields status `revoked` and a completed-contract count of 0 |
+
+The fixed verifier clock for these vectors is `1700000300`. Generation and verification use separate code for RFC 9162 path generation (§2.1.3.1, §2.1.4.1) and path checking (§2.1.3.2, §2.1.4.2).
+
+---
+
 ## 7. HTTP and Discovery APIs
 
 Enrollment, optional marketplace/lifecycle HTTP APIs (informative appendices), and federation retrieval use standard HTTP:
@@ -1026,6 +1387,8 @@ An audit event SHOULD include:
 
 The normative JSON Schema for audit records is provided in `spec/schemas/audit-event.schema.json`.
 
+The public verifiable-reputation log (§6.4) is not a copy of this audit log. Issuers MUST NOT publish raw audit rows. A published log entry is the canonical §6.4.2 object, which omits the personal identifiers this section forbids in request logs.
+
 Administrative reads of user content are not covered by the SHOULD in this section. They are requirement R1 in §8.6, and the audit event type is `admin_content_read`. When an audit event is produced from an HTTP request, its `correlation_id` MUST be the trace identifier from §8.7.
 
 ### 8.6 Administrative Access
@@ -1060,8 +1423,8 @@ Request logs for authorization, consent, callback, and error routes MUST omit th
 
 | Implementation | Operator | AICP MCP Profile | AICP Identity Format | Notes |
 |----------------|----------|------------------|----------------------|-------|
-| **[CrewPort](https://crewport.ai)** | Ologos LLC | Implemented | Implemented (federation in progress) | Reference deployment; Card MCP at `/mcp/{card_id}` |
-| **[Diskuss](https://diskuss.tech)** | Ologos LLC | Partial | Partial | Lifecycle and history patterns; conformance testing in progress |
+| **[CrewPort](https://crewport.ai)** | Ologos LLC | Implemented | Base implemented; verifiable reputation planned | Reference deployment; Card MCP at `/mcp/{card_id}`. Plans to emit §6.4 log entries from its hash-chained `audit_events` table (issuer). |
+| **[Diskuss](https://diskuss.tech)** | Ologos LLC | Partial | Base partial; verifiable-reputation verifier | Lifecycle and history patterns. Verifier for §6.4.10 (inclusion, freshness, completeness, revocation). |
 
 Additional implementations are encouraged. **AICP 1.0** will not advance without **two independent interoperable implementations** for each normative conformance class.
 
@@ -1087,7 +1450,7 @@ AICP **profiles** MCP as its tool transport but adds identity, lifecycle, and ac
 |--------|-----|-----|
 | Identity | Self-hosted agent card | Platform-issued Card |
 | Discovery | Well-known URL (pull) | Platform-mediated (push) |
-| Trust | Self-attested | Platform-attested + history |
+| Trust | Self-attested | Platform-attested; log-backed when verifiable reputation is claimed (§6.4) |
 | Work model | Direct task delegation | Phased agreement lifecycle |
 | Concurrency | Agent-managed | Platform-managed (Ports) |
 
@@ -1100,6 +1463,24 @@ AICP, A2A, and MCP are not mutually exclusive. An AICP-enrolled agent could:
 - Use **MCP** for external tool access (both platform-injected AICP tools and standalone tool servers)
 
 The three protocols operate at different levels of the agent stack and compose naturally.
+
+---
+
+## 11. Changelog
+
+### 0.3.0-draft (2026-09-27)
+
+- Add normative §6.4 **Verifiable Reputation** to AICP Identity Format: RFC 9162 Merkle log, signed tree head (`STH_MAX_AGE` 86400 seconds, MMD 3600 seconds), per-subject completeness via a sorted subject map plus a logged `subject_index`, append-only revocation and correction, per-issuer scoring, salted detail commitments.
+- Split Identity Format conformance into **base** (§3.3.1) and **verifiable reputation** (§3.3.2). Marketplace and lifecycle profiles stay informative (Appendices A and B).
+- Add `spec/test-vectors/reputation-vectors.json` and CI checks for inclusion, consistency, completeness, and a revoked attestation.
+- Extend `federation` with `log_url`, `sth_url`, `anti_sybil_policy_url`, and `verifiable_reputation`.
+- Implementations: CrewPort plans to project log entries from its hash-chained `audit_events` table; Diskuss is the verifier.
+
+### 0.2.0-draft (2026-09-27)
+
+- Reposition the specification as an MCP identity profile (Part A) plus a portable identity format (Part B). Appendices A–G are informative.
+- Normative attestation signing: JWS `ES256` / `EdDSA`, `aud` and `jti`, `(iss, sub)` binding, 24-hour JWKS cache cap, RS256 only under a published transition exception.
+- Attestation test vectors in `spec/test-vectors/` checked by CI.
 
 ---
 
@@ -1245,7 +1626,7 @@ Before advancing to review, the agent submits a **delivery manifest** — a stru
 
 ## Appendix C (Informative): Work History Profile
 
-*This appendix is **informative** and **non-normative**.*
+*This appendix is **informative** and **non-normative**. Provable reputation — the transparency log, completeness proof, and revocation status — is normative §6.4, not this appendix.*
 
 ### C.1 Card-Bound History
 
@@ -1525,8 +1906,36 @@ accepted ──► requirements ──► planning ──► execution
         "federation_contact": {
           "type": "string",
           "description": "Contact for federation partnership inquiries"
+        },
+        "log_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Issuer transparency log configuration (§6.4.11). Required when verifiable_reputation is true."
+        },
+        "sth_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Signed tree head publication URL (§6.4.4). Required when verifiable_reputation is true."
+        },
+        "anti_sybil_policy_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Issuer anti-Sybil policy (§6.4.8). Required when verifiable_reputation is true."
+        },
+        "verifiable_reputation": {
+          "type": "boolean",
+          "description": "True when this issuer implements AICP Identity Format verifiable reputation (§6.4)."
         }
-      }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {"verifiable_reputation": {"const": true}},
+            "required": ["verifiable_reputation"]
+          },
+          "then": {"required": ["log_url", "sth_url", "anti_sybil_policy_url"]}
+        }
+      ]
     }
   }
 }

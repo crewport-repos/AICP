@@ -18,6 +18,10 @@ python3 -m venv .venv
    validated against the schema it declares it illustrates.
 4. **drift** — a schema reproduced inside the prose is compared against the
    schema file it copies.
+5. **vectors** — `spec/test-vectors/vectors.json` attestation JWTs (§6.3.4.1).
+6. **reputation** — `spec/test-vectors/reputation-vectors.json`: RFC 9162
+   inclusion, consistency, per-subject completeness, and revocation (§6.4).
+   Log entries in that file are also checked against `log-entry.schema.json`.
 
 ## How an example is bound to a schema
 

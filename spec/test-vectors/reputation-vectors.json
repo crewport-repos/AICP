@@ -1,0 +1,338 @@
+{
+  "description": "AICP verifiable reputation vectors (\u00a76.4). TEST ONLY salts and keys.",
+  "disclosures": [
+    {
+      "detail": {
+        "amount_minor": 5000,
+        "currency": "USD",
+        "outcome": "fulfilled"
+      },
+      "index": 0,
+      "salt": "EREREREREREREREREREREQ",
+      "settlement_evidence": "settle:platform.example:cp-alice:5000:USD:1"
+    },
+    {
+      "detail": {
+        "amount_minor": 2500,
+        "currency": "USD",
+        "outcome": "fulfilled"
+      },
+      "index": 2,
+      "salt": "IiIiIiIiIiIiIiIiIiIiIg",
+      "settlement_evidence": "settle:platform.example:cp-bob:2500:USD:1"
+    },
+    {
+      "detail": {
+        "note": "delivery-rejected",
+        "outcome": "reversed"
+      },
+      "index": 4,
+      "salt": "MzMzMzMzMzMzMzMzMzMzMw",
+      "settlement_evidence": null
+    }
+  ],
+  "entries": [
+    {
+      "counterparty_id": "cp-alice",
+      "detail_commit": "xbvWfWmu5wP6sGU_hfXgJjtfPklEFzLBOaMKjCP1eew",
+      "entry_type": "attestation",
+      "event": "contract_completed",
+      "iat": 1700000000,
+      "iss": "https://platform.example",
+      "jti": "jti-rep-001",
+      "settlement_hash": "WummGT5NQCOwmlFbi-QyI_ZDhOmapgWq4RJIGrUS-pU",
+      "sub": "card-test-001",
+      "v": 1
+    },
+    {
+      "count": 1,
+      "entry_type": "subject_index",
+      "history_root": "6hd_UaYts1miVPw1egsixV6rzhbgnUFihY-nZDSaois",
+      "iat": 1700000000,
+      "indices": [
+        0
+      ],
+      "iss": "https://platform.example",
+      "jti": "jti-idx-001-1",
+      "sub": "card-test-001",
+      "v": 1
+    },
+    {
+      "counterparty_id": "cp-bob",
+      "detail_commit": "8-n1CYpUwHIqs3nCLHuoOjfM-TdqnAZPHHal6D-j3fw",
+      "entry_type": "attestation",
+      "event": "contract_completed",
+      "iat": 1700000100,
+      "iss": "https://platform.example",
+      "jti": "jti-rep-002",
+      "settlement_hash": "hqtuFgqg7lJYWE9839m1DJG5FXjKMqNhZgLKOVE_yCk",
+      "sub": "card-test-002",
+      "v": 1
+    },
+    {
+      "count": 1,
+      "entry_type": "subject_index",
+      "history_root": "EycBF65D5684TXCG2KKdPEY9vijw4Ten8G6oN43S-Ks",
+      "iat": 1700000100,
+      "indices": [
+        2
+      ],
+      "iss": "https://platform.example",
+      "jti": "jti-idx-002-1",
+      "sub": "card-test-002",
+      "v": 1
+    },
+    {
+      "detail_commit": "e8jAmBrd5lW6p_8FlRwKuX7zcJ42lD6dQm_DGIHqvkw",
+      "entry_type": "revocation",
+      "iat": 1700000200,
+      "iss": "https://platform.example",
+      "jti": "jti-rev-001",
+      "reason": "outcome_reversed",
+      "sub": "card-test-001",
+      "target_index": 0,
+      "target_jti": "jti-rep-001",
+      "v": 1
+    },
+    {
+      "count": 2,
+      "entry_type": "subject_index",
+      "history_root": "Qmu_pPD2QRyNzc7MEf7UWeO4j_XvW_H7pd_F6BERh8M",
+      "iat": 1700000200,
+      "indices": [
+        0,
+        4
+      ],
+      "iss": "https://platform.example",
+      "jti": "jti-idx-001-2",
+      "sub": "card-test-001",
+      "v": 1
+    }
+  ],
+  "fixed_clock_unix": 1700000300,
+  "hash_alg": "SHA-256",
+  "issuer": "https://platform.example",
+  "mmd_seconds": 3600,
+  "sth": {
+    "4": {
+      "jwt": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY1MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDEwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNCIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJQSnZPUUFaSktzN0t3VlM1V3NDb0s5UElxSmVqUjBOYmdWdXNoMVR5YWwwIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiI3LUNlN1RKandfdFIwdUJiWjdONlZ0OU96WmJqV214Q3dLaUJFYWVVVmRnIiwidGltZXN0YW1wIjoxNzAwMDAwMTAwLCJ0cmVlX3NpemUiOjR9._Qbv983aKebMYiLvTuFJ3o7N5EidwDZZQgo3vdkuz8UQourO0WUEgAQGRFp-1-lowl7sk4BgApSMxV55107kmQ",
+      "payload": {
+        "aud": "https://platform.example/.well-known/aicp-log",
+        "exp": 1700086500,
+        "hash_alg": "SHA-256",
+        "iat": 1700000100,
+        "iss": "https://platform.example",
+        "jti": "sth-size-4",
+        "kid": "test-es256-01",
+        "log_id": "https://platform.example/.well-known/aicp-log",
+        "root_hash": "PJvOQAZJKs7KwVS5WsCoK9PIqJejR0NbgVush1Tyal0",
+        "sth_version": 1,
+        "subject_map_root": "7-Ce7TJjw_tR0uBbZ7N6Vt9OzZbjWmxCwKiBEaeUVdg",
+        "timestamp": 1700000100,
+        "tree_size": 4
+      },
+      "subject_map": [
+        {
+          "count": 1,
+          "history_root": "6hd_UaYts1miVPw1egsixV6rzhbgnUFihY-nZDSaois",
+          "index_entry": 1,
+          "latest_entry": 0,
+          "sub": "card-test-001",
+          "v": 1
+        },
+        {
+          "count": 1,
+          "history_root": "EycBF65D5684TXCG2KKdPEY9vijw4Ten8G6oN43S-Ks",
+          "index_entry": 3,
+          "latest_entry": 2,
+          "sub": "card-test-002",
+          "v": 1
+        }
+      ]
+    },
+    "6": {
+      "jwt": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJPdDBSZXJmWnhZTlFpclp3d3IxQWFtbDd6TGxNbkd3ZTBzbTBTRUk3MkprIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJ2TU9XbjRWd1FPWnB2a3ZJMENUMU54R3BUYjMxdC1maS0wWGxOb1g1YUswIiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.3WtWiLRgVtioSSUzzTjcN0gifryOUtdGGsO2ENol_dfUjoMA9nT2JPFnajIvpZTW6iy-0VG1GCYwp1I_asxvTw",
+      "payload": {
+        "aud": "https://platform.example/.well-known/aicp-log",
+        "exp": 1700086700,
+        "hash_alg": "SHA-256",
+        "iat": 1700000300,
+        "iss": "https://platform.example",
+        "jti": "sth-size-6",
+        "kid": "test-es256-01",
+        "log_id": "https://platform.example/.well-known/aicp-log",
+        "root_hash": "Ot0RerfZxYNQirZwwr1Aaml7zLlMnGwe0sm0SEI72Jk",
+        "sth_version": 1,
+        "subject_map_root": "vMOWn4VwQOZpvkvI0CT1NxGpTb31t-fi-0XlNoX5aK0",
+        "timestamp": 1700000300,
+        "tree_size": 6
+      },
+      "subject_map": [
+        {
+          "count": 2,
+          "history_root": "Qmu_pPD2QRyNzc7MEf7UWeO4j_XvW_H7pd_F6BERh8M",
+          "index_entry": 5,
+          "latest_entry": 4,
+          "sub": "card-test-001",
+          "v": 1
+        },
+        {
+          "count": 1,
+          "history_root": "EycBF65D5684TXCG2KKdPEY9vijw4Ten8G6oN43S-Ks",
+          "index_entry": 3,
+          "latest_entry": 2,
+          "sub": "card-test-002",
+          "v": 1
+        }
+      ]
+    }
+  },
+  "sth_max_age_seconds": 86400,
+  "vectors": [
+    {
+      "expect": "pass",
+      "id": "inclusion-entry-0",
+      "inclusion_path": [
+        "jAQpKkzV-K6k_RovLFHmcARg8muXr64oIF5LubFj28k",
+        "J-FWoCAcRNBcFXKnsp-1dNa36HfZjq4OPma7M-ke8Qc",
+        "eIX1IRzax7hnCbH5xVtC-HmwPOdRtMypL1FZKbfmqBE"
+      ],
+      "kind": "inclusion",
+      "leaf_index": 0,
+      "tree_size": 6
+    },
+    {
+      "consistency_path": [
+        "eIX1IRzax7hnCbH5xVtC-HmwPOdRtMypL1FZKbfmqBE"
+      ],
+      "expect": "pass",
+      "first": 4,
+      "id": "consistency-4-to-6",
+      "kind": "consistency",
+      "second": 6
+    },
+    {
+      "checkpoint": {
+        "count": 2,
+        "history_root": "Qmu_pPD2QRyNzc7MEf7UWeO4j_XvW_H7pd_F6BERh8M",
+        "index_entry": 5,
+        "latest_entry": 4,
+        "sub": "card-test-001",
+        "v": 1
+      },
+      "disclosures": [
+        {
+          "detail": {
+            "amount_minor": 5000,
+            "currency": "USD",
+            "outcome": "fulfilled"
+          },
+          "index": 0,
+          "salt": "EREREREREREREREREREREQ",
+          "settlement_evidence": "settle:platform.example:cp-alice:5000:USD:1"
+        },
+        {
+          "detail": {
+            "note": "delivery-rejected",
+            "outcome": "reversed"
+          },
+          "index": 4,
+          "salt": "MzMzMzMzMzMzMzMzMzMzMw",
+          "settlement_evidence": null
+        }
+      ],
+      "expect": "pass",
+      "history": [
+        {
+          "entry": {
+            "counterparty_id": "cp-alice",
+            "detail_commit": "xbvWfWmu5wP6sGU_hfXgJjtfPklEFzLBOaMKjCP1eew",
+            "entry_type": "attestation",
+            "event": "contract_completed",
+            "iat": 1700000000,
+            "iss": "https://platform.example",
+            "jti": "jti-rep-001",
+            "settlement_hash": "WummGT5NQCOwmlFbi-QyI_ZDhOmapgWq4RJIGrUS-pU",
+            "sub": "card-test-001",
+            "v": 1
+          },
+          "inclusion_path": [
+            "jAQpKkzV-K6k_RovLFHmcARg8muXr64oIF5LubFj28k",
+            "J-FWoCAcRNBcFXKnsp-1dNa36HfZjq4OPma7M-ke8Qc",
+            "eIX1IRzax7hnCbH5xVtC-HmwPOdRtMypL1FZKbfmqBE"
+          ],
+          "index": 0
+        },
+        {
+          "entry": {
+            "detail_commit": "e8jAmBrd5lW6p_8FlRwKuX7zcJ42lD6dQm_DGIHqvkw",
+            "entry_type": "revocation",
+            "iat": 1700000200,
+            "iss": "https://platform.example",
+            "jti": "jti-rev-001",
+            "reason": "outcome_reversed",
+            "sub": "card-test-001",
+            "target_index": 0,
+            "target_jti": "jti-rep-001",
+            "v": 1
+          },
+          "inclusion_path": [
+            "J0a1odtOokKszyDtg8eRxFqXzBYPc1-lgt3NDrBv6R8",
+            "PJvOQAZJKs7KwVS5WsCoK9PIqJejR0NbgVush1Tyal0"
+          ],
+          "index": 4
+        }
+      ],
+      "id": "completeness-card-test-001",
+      "index_entry": {
+        "count": 2,
+        "entry_type": "subject_index",
+        "history_root": "Qmu_pPD2QRyNzc7MEf7UWeO4j_XvW_H7pd_F6BERh8M",
+        "iat": 1700000200,
+        "indices": [
+          0,
+          4
+        ],
+        "iss": "https://platform.example",
+        "jti": "jti-idx-001-2",
+        "sub": "card-test-001",
+        "v": 1
+      },
+      "index_entry_inclusion_path": [
+        "XaNBUHbxr9-SJ971IhYpLADan-sdqIshoSbn8JE811E",
+        "PJvOQAZJKs7KwVS5WsCoK9PIqJejR0NbgVush1Tyal0"
+      ],
+      "kind": "completeness",
+      "map_inclusion_path": [
+        "pnpV0r--A_kOq3_dSAXR8kynpx7OG1Y98cg5S_iblrk"
+      ],
+      "map_index": 0,
+      "map_size": 2,
+      "score": {
+        "active_contract_settlements": 0,
+        "distinct_counterparties": 0,
+        "revoked_jtis": [
+          "jti-rep-001"
+        ]
+      },
+      "sub": "card-test-001",
+      "tree_size": 6
+    },
+    {
+      "base_expect": "pass",
+      "consistency_path": [
+        "eIX1IRzax7hnCbH5xVtC-HmwPOdRtMypL1FZKbfmqBE"
+      ],
+      "current_tree_size": 6,
+      "expect": "revoked",
+      "id": "revoked-jti-rep-001",
+      "jwks": "jwks-es256.json",
+      "jwt": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJjbGFpbXMiOnsiY29tcGxldGlvbl9yYXRlIjoxLjAsImNvbnRyYWN0c19jb21wbGV0ZWQiOjF9LCJleHAiOjE3MDAwODY0MDAsImlhdCI6MTcwMDAwMDAwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoianRpLXJlcC0wMDEiLCJraWQiOiJ0ZXN0LWVzMjU2LTAxIiwibG9nX3Byb29mIjp7ImluY2x1c2lvbl9wYXRoIjpbImpBUXBLa3pWLUs2a19Sb3ZMRkhtY0FSZzhtdVhyNjRvSUY1THViRmoyOGsiLCJKLUZXb0NBY1JOQmNGWEtuc3AtMWROYTM2SGZaanE0T1BtYTdNLWtlOFFjIl0sImluZGV4IjowLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJQSnZPUUFaSktzN0t3VlM1V3NDb0s5UElxSmVqUjBOYmdWdXNoMVR5YWwwIiwidHJlZV9zaXplIjo0fSwic3ViIjoiY2FyZC10ZXN0LTAwMSJ9.t1QA5-6OtuRX_fvUarlkfIvZjrIMIKX8wjIcK4fe-fGl0Zkzz3V0JPidmE0kwHyTyigPHlXit6IeJ27M1WBwtA",
+      "kind": "revocation",
+      "proof_tree_size": 4,
+      "sub": "card-test-001",
+      "target_index": 0,
+      "target_jti": "jti-rep-001"
+    }
+  ]
+}

@@ -48,6 +48,9 @@ from pathlib import Path
 
 from jsonschema import Draft202012Validator
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import merkle9162 as mkl
+
 REPO = Path(__file__).resolve().parent.parent
 SPEC = REPO / "spec" / "AICP-v0.1.md"
 SCHEMA_DIR = REPO / "spec" / "schemas"
@@ -458,6 +461,414 @@ def check_vectors() -> list[str]:
     return failures
 
 
+REPUTATION_TYPES = frozenset({"attestation", "revocation", "correction"})
+
+
+def _decode_path(items: list[str]) -> list[bytes]:
+    out = []
+    for item in items:
+        raw = mkl.b64url_decode(item)
+        if len(raw) != 32:
+            raise ValueError("proof hash is not 32 bytes")
+        out.append(raw)
+    return out
+
+
+def _verify_sth(label: str, sth: dict, entries: list[dict], now: int, max_age: int, jwt_mod) -> None:
+    payload = sth["payload"]
+    token = sth["jwt"]
+    header = jwt_mod.get_unverified_header(token)
+    if header.get("alg") != "ES256" or header.get("typ") != "aicp-sth+jwt":
+        raise ValueError(f"{label}: STH header alg/typ")
+    if header.get("kid") != payload.get("kid"):
+        raise ValueError(f"{label}: STH kid mismatch")
+    jwks = json.loads((VECTORS_DIR / "jwks-es256.json").read_text())
+    key = _jwks_to_key(jwks["keys"][0], jwt_mod)
+    decoded = jwt_mod.decode(
+        token,
+        key,
+        algorithms=["ES256"],
+        audience=payload["log_id"],
+        options={"verify_exp": False, "verify_iat": False},
+    )
+    if decoded != payload:
+        raise ValueError(f"{label}: STH payload does not match signed claims")
+    if payload["aud"] != payload["log_id"] or payload["iss"] != "https://platform.example":
+        raise ValueError(f"{label}: STH iss/aud")
+    if payload["hash_alg"] != "SHA-256" or payload["sth_version"] != 1:
+        raise ValueError(f"{label}: STH alg/version")
+    if int(payload["exp"]) != int(payload["timestamp"]) + 86400:
+        raise ValueError(f"{label}: STH exp is not timestamp + 86400")
+    timestamp = int(payload["timestamp"])
+    if timestamp > now + 300 or now > timestamp + max_age + 300:
+        raise ValueError(f"{label}: STH outside freshness bound")
+    tree_size = int(payload["tree_size"])
+    encoded = [mkl.canon(e) for e in entries[:tree_size]]
+    if mkl.b64url(mkl.mth(encoded)) != payload["root_hash"]:
+        raise ValueError(f"{label}: root_hash mismatch")
+    leaves = [mkl.canon(leaf) for leaf in sth["subject_map"]]
+    if mkl.b64url(mkl.mth(leaves)) != payload["subject_map_root"]:
+        raise ValueError(f"{label}: subject_map_root mismatch")
+    derived = _derive_subject_map(entries, tree_size)
+    if derived != sth["subject_map"]:
+        raise ValueError(f"{label}: subject map is not the latest checkpoint per subject")
+
+
+def _history_root(history: list[dict]) -> str:
+    return mkl.b64url(mkl.mth([mkl.canon(e) for e in history]))
+
+
+def _derive_subject_map(entries: list[dict], tree_size: int) -> list[dict]:
+    """Latest subject_index per sub inside entries[0:tree_size], as map leaves."""
+    latest: dict[str, tuple[int, dict]] = {}
+    seen: dict[str, list[int]] = {}
+    for i, entry in enumerate(entries[:tree_size]):
+        et = entry["entry_type"]
+        sub = entry["sub"]
+        if et in REPUTATION_TYPES:
+            seen.setdefault(sub, []).append(i)
+        elif et == "subject_index":
+            latest[sub] = (i, entry)
+        else:
+            raise ValueError(f"unknown entry_type at {i}")
+    leaves = []
+    for sub in sorted(latest):
+        index_entry_i, checkpoint = latest[sub]
+        indices = list(checkpoint["indices"])
+        if indices != seen.get(sub, []):
+            raise ValueError(f"{sub}: subject_index does not list every reputation entry")
+        if checkpoint["count"] != len(indices):
+            raise ValueError(f"{sub}: count mismatch")
+        history = [entries[i] for i in indices]
+        if checkpoint["history_root"] != _history_root(history):
+            raise ValueError(f"{sub}: history_root mismatch")
+        if any(entries[i]["sub"] != sub for i in indices):
+            raise ValueError(f"{sub}: foreign subject in history")
+        leaves.append(
+            {
+                "count": checkpoint["count"],
+                "history_root": checkpoint["history_root"],
+                "index_entry": index_entry_i,
+                "latest_entry": indices[-1],
+                "sub": sub,
+                "v": 1,
+            }
+        )
+    return leaves
+
+
+def _open_disclosures(entries: list[dict], disclosures: list[dict]) -> None:
+    by_index = {d["index"]: d for d in disclosures}
+    for i, entry in enumerate(entries):
+        if "detail_commit" not in entry:
+            continue
+        if i not in by_index:
+            continue
+        disc = by_index[i]
+        salt = mkl.b64url_decode(disc["salt"])
+        got = mkl.detail_commit(salt, disc["detail"])
+        if got != entry["detail_commit"]:
+            raise ValueError(f"detail_commit mismatch at index {i}")
+        if disc.get("settlement_evidence") is not None:
+            if mkl.settlement_hash(disc["settlement_evidence"]) != entry.get("settlement_hash"):
+                raise ValueError(f"settlement_hash mismatch at index {i}")
+
+
+def _require_adverse_disclosures(history: list[dict], disclosures: list[dict]) -> None:
+    opened = {d["index"] for d in disclosures}
+    for item in history:
+        entry = item["entry"]
+        adverse = entry["entry_type"] in ("revocation", "correction") or entry.get("event") == "dispute_result"
+        if adverse and item["index"] not in opened:
+            raise ValueError(f"missing disclosure for adverse entry {item['index']}")
+
+
+def _status_of(history: list[dict], target_index: int, target_jti: str) -> str:
+    found = False
+    status = "active"
+    for item in history:
+        entry = item["entry"]
+        if item["index"] == target_index:
+            if entry.get("jti") != target_jti or entry["entry_type"] != "attestation":
+                raise ValueError("target is not the named attestation")
+            found = True
+            continue
+        if item["index"] < target_index:
+            continue
+        matches = entry.get("target_index") == target_index or entry.get("target_jti") == target_jti
+        if not matches:
+            continue
+        if entry["entry_type"] == "revocation":
+            return "revoked"
+        if entry["entry_type"] == "correction":
+            status = "corrected"
+    if not found:
+        raise ValueError("target attestation missing from history")
+    return status
+
+
+def _score(history: list[dict]) -> dict:
+    """Per-issuer score: distinct settlement hashes among non-revoked economic events."""
+    revoked_ids: set[int] = set()
+    revoked_jtis: list[str] = []
+    for item in history:
+        entry = item["entry"]
+        if entry["entry_type"] != "revocation":
+            continue
+        revoked_ids.add(int(entry["target_index"]))
+        revoked_jtis.append(entry["target_jti"])
+    settlements: set[str] = set()
+    counterparties: set[str] = set()
+    for item in history:
+        entry = item["entry"]
+        if item["index"] in revoked_ids or entry["entry_type"] != "attestation":
+            continue
+        if entry.get("event") not in ("contract_completed", "outcome"):
+            continue
+        settlements.add(entry["settlement_hash"])
+        counterparties.add(entry["counterparty_id"])
+    return {
+        "active_contract_settlements": len(settlements),
+        "distinct_counterparties": len(counterparties),
+        "revoked_jtis": revoked_jtis,
+    }
+
+
+def _verify_inclusion_of(entry: dict, index: int, tree_size: int, path_b64: list[str], root_b64: str, entries: list[dict]) -> None:
+    encoded = [mkl.canon(e) for e in entries[:tree_size]]
+    expected = [mkl.b64url(h) for h in mkl.inclusion_path(encoded, index)]
+    if path_b64 != expected:
+        raise ValueError(f"inclusion path at {index} does not match RFC 9162 PATH")
+    leaf = mkl.leaf_hash(mkl.canon(entry))
+    if mkl.canon(entry) != mkl.canon(entries[index]):
+        raise ValueError(f"entry bytes at {index} differ from the log")
+    if not mkl.verify_inclusion(index, tree_size, leaf, _decode_path(path_b64), mkl.b64url_decode(root_b64)):
+        raise ValueError(f"iterative inclusion check failed at {index}")
+
+
+def _verify_completeness(vector: dict, doc: dict) -> list[dict]:
+    entries = doc["entries"]
+    tree_size = int(vector["tree_size"])
+    sth = doc["sth"][str(tree_size)]
+    root = sth["payload"]["root_hash"]
+    checkpoint = vector["checkpoint"]
+    sub = vector["sub"]
+    if checkpoint["sub"] != sub:
+        raise ValueError("checkpoint sub mismatch")
+    map_leaves = [mkl.canon(leaf) for leaf in sth["subject_map"]]
+    if len(map_leaves) != int(vector["map_size"]):
+        raise ValueError("map_size mismatch")
+    map_root = sth["payload"]["subject_map_root"]
+    map_index = int(vector["map_index"])
+    expected_map_path = [mkl.b64url(h) for h in mkl.inclusion_path(map_leaves, map_index)]
+    if vector["map_inclusion_path"] != expected_map_path:
+        raise ValueError("subject-map inclusion path mismatch")
+    leaf = mkl.leaf_hash(mkl.canon(checkpoint))
+    if not mkl.verify_inclusion(
+        map_index,
+        int(vector["map_size"]),
+        leaf,
+        _decode_path(vector["map_inclusion_path"]),
+        mkl.b64url_decode(map_root),
+    ):
+        raise ValueError("subject-map inclusion failed")
+    if sth["subject_map"][map_index] != checkpoint:
+        raise ValueError("checkpoint is not the signed map leaf")
+    index_i = int(checkpoint["index_entry"])
+    _verify_inclusion_of(vector["index_entry"], index_i, tree_size, vector["index_entry_inclusion_path"], root, entries)
+    if vector["index_entry"]["history_root"] != checkpoint["history_root"]:
+        raise ValueError("index entry history_root disagrees with checkpoint")
+    if vector["index_entry"]["indices"] != [h["index"] for h in vector["history"]]:
+        raise ValueError("presented history does not match subject_index indices")
+    for item in vector["history"]:
+        _verify_inclusion_of(item["entry"], int(item["index"]), tree_size, item["inclusion_path"], root, entries)
+        if item["entry"]["entry_type"] not in REPUTATION_TYPES:
+            raise ValueError("history contains a non-reputation entry")
+        if item["entry"]["sub"] != sub:
+            raise ValueError("history entry sub mismatch")
+    history_entries = [h["entry"] for h in vector["history"]]
+    if _history_root(history_entries) != checkpoint["history_root"]:
+        raise ValueError("history_root does not match presented entries")
+    _open_disclosures(entries, vector["disclosures"])
+    _require_adverse_disclosures(vector["history"], vector["disclosures"])
+    return vector["history"]
+
+
+def check_reputation() -> list[str]:
+    failures: list[str] = []
+    try:
+        import jwt as jwt_mod
+    except ImportError:
+        return ["reputation: PyJWT is not installed"]
+
+    path = VECTORS_DIR / "reputation-vectors.json"
+    if not path.exists():
+        return [f"reputation: missing {path}"]
+
+    try:
+        mkl.self_check()
+    except Exception as e:
+        return [f"reputation: merkle self-check failed: {e}"]
+
+    doc = json.loads(path.read_text())
+    try:
+        log_schema = json.loads((SCHEMA_DIR / "log-entry.schema.json").read_text())
+        sth_schema = json.loads((SCHEMA_DIR / "sth-payload.schema.json").read_text())
+        map_schema = json.loads((SCHEMA_DIR / "subject-checkpoint.schema.json").read_text())
+        attest_schema = json.loads((SCHEMA_DIR / "attestation.schema.json").read_text())
+        Draft202012Validator(log_schema).validate(doc["entries"][0])
+    except Exception as e:
+        return [f"reputation: schema load failed: {e}"]
+    log_v = Draft202012Validator(log_schema)
+    sth_v = Draft202012Validator(sth_schema)
+    map_v = Draft202012Validator(map_schema)
+    attest_v = Draft202012Validator(attest_schema)
+    for i, entry in enumerate(doc["entries"]):
+        errors = sorted(log_v.iter_errors(entry), key=lambda e: list(e.path))
+        if errors:
+            return [f"reputation: entry {i} failed log-entry schema: {errors[0].message}"]
+    for label, sth in doc["sth"].items():
+        errors = sorted(sth_v.iter_errors(sth["payload"]), key=lambda e: list(e.path))
+        if errors:
+            return [f"reputation: STH {label} failed sth-payload schema: {errors[0].message}"]
+        for leaf in sth["subject_map"]:
+            errors = sorted(map_v.iter_errors(leaf), key=lambda e: list(e.path))
+            if errors:
+                return [f"reputation: subject map leaf failed schema: {errors[0].message}"]
+    now = int(doc["fixed_clock_unix"])
+    max_age = int(doc["sth_max_age_seconds"])
+    if max_age != 86400 or int(doc["mmd_seconds"]) != 3600:
+        failures.append("reputation: STH_MAX_AGE must be 86400 and MMD 3600")
+    entries = doc["entries"]
+    try:
+        _open_disclosures(entries, doc["disclosures"])
+        for label, sth in doc["sth"].items():
+            _verify_sth(f"sth-{label}", sth, entries, now, max_age, jwt_mod)
+    except Exception as e:
+        failures.append(f"reputation: log/STH precondition failed: {e}")
+        print(f"    FAIL reputation precondition: {e}")
+        return failures
+
+    print(f"[6] verifying {len(doc['vectors'])} reputation vector(s) in {path.relative_to(REPO)}")
+    by_id = {v["id"]: v for v in doc["vectors"]}
+    for vector in doc["vectors"]:
+        vid = vector["id"]
+        try:
+            kind = vector["kind"]
+            if kind == "inclusion":
+                tree_size = int(vector["tree_size"])
+                sth = doc["sth"][str(tree_size)]
+                _verify_inclusion_of(
+                    entries[int(vector["leaf_index"])],
+                    int(vector["leaf_index"]),
+                    tree_size,
+                    vector["inclusion_path"],
+                    sth["payload"]["root_hash"],
+                    entries,
+                )
+                outcome = "pass"
+            elif kind == "consistency":
+                first, second = int(vector["first"]), int(vector["second"])
+                encoded = [mkl.canon(e) for e in entries]
+                expected = [mkl.b64url(h) for h in mkl.consistency_proof(encoded, first)]
+                if vector["consistency_path"] != expected:
+                    raise ValueError("consistency path does not match RFC 9162 PROOF")
+                ok = mkl.verify_consistency(
+                    first,
+                    second,
+                    mkl.mth(encoded[:first]),
+                    mkl.mth(encoded[:second]),
+                    _decode_path(vector["consistency_path"]),
+                )
+                if not ok:
+                    raise ValueError("iterative consistency check failed")
+                if doc["sth"][str(first)]["payload"]["root_hash"] != mkl.b64url(mkl.mth(encoded[:first])):
+                    raise ValueError("first STH root mismatch")
+                if doc["sth"][str(second)]["payload"]["root_hash"] != mkl.b64url(mkl.mth(encoded[:second])):
+                    raise ValueError("second STH root mismatch")
+                # Append-only subject histories across the two signed maps.
+                early = {leaf["sub"]: leaf for leaf in doc["sth"][str(first)]["subject_map"]}
+                late = {leaf["sub"]: leaf for leaf in doc["sth"][str(second)]["subject_map"]}
+                for sub, leaf in early.items():
+                    if sub not in late or late[sub]["count"] < leaf["count"]:
+                        raise ValueError(f"subject map shrank for {sub}")
+                    early_idx = entries[leaf["index_entry"]]["indices"]
+                    late_idx = entries[late[sub]["index_entry"]]["indices"]
+                    if late_idx[: len(early_idx)] != early_idx:
+                        raise ValueError(f"subject history for {sub} is not a prefix")
+                outcome = "pass"
+            elif kind == "completeness":
+                history = _verify_completeness(vector, doc)
+                if _score(history) != vector["score"]:
+                    raise ValueError(f"score {_score(history)} != {vector['score']}")
+                outcome = "pass"
+            elif kind == "revocation":
+                jwks = json.loads((VECTORS_DIR / vector["jwks"]).read_text())
+                cache: set[str] = set()
+                verify_attestation_vector(
+                    vector["jwt"],
+                    jwks,
+                    issuer=doc["issuer"],
+                    now=now,
+                    max_skew=300,
+                    jti_cache=cache,
+                    jwt_mod=jwt_mod,
+                )
+                if vector.get("base_expect") != "pass":
+                    raise ValueError("revocation vector must record that base verification passes")
+                payload = jwt_mod.decode(vector["jwt"], options={"verify_signature": False})
+                attest_errors = sorted(attest_v.iter_errors(payload), key=lambda e: list(e.path))
+                if attest_errors:
+                    raise ValueError(f"attestation payload failed schema: {attest_errors[0].message}")
+                proof = payload["log_proof"]
+                if int(proof["tree_size"]) != int(vector["proof_tree_size"]):
+                    raise ValueError("jwt log_proof tree_size mismatch")
+                old = doc["sth"][str(vector["proof_tree_size"])]
+                current = doc["sth"][str(vector["current_tree_size"])]
+                if proof["root_hash"] != old["payload"]["root_hash"]:
+                    raise ValueError("embedded proof root is not the older STH")
+                _verify_inclusion_of(
+                    entries[int(proof["index"])],
+                    int(proof["index"]),
+                    int(proof["tree_size"]),
+                    proof["inclusion_path"],
+                    proof["root_hash"],
+                    entries,
+                )
+                encoded = [mkl.canon(e) for e in entries]
+                expected = [mkl.b64url(h) for h in mkl.consistency_proof(encoded, int(vector["proof_tree_size"]))]
+                if vector["consistency_path"] != expected:
+                    raise ValueError("presented consistency path mismatch")
+                if not mkl.verify_consistency(
+                    int(vector["proof_tree_size"]),
+                    int(vector["current_tree_size"]),
+                    mkl.b64url_decode(old["payload"]["root_hash"]),
+                    mkl.b64url_decode(current["payload"]["root_hash"]),
+                    _decode_path(vector["consistency_path"]),
+                ):
+                    raise ValueError("consistency from embedded tree to current STH failed")
+                history = _verify_completeness(by_id["completeness-card-test-001"], doc)
+                status = _status_of(history, int(vector["target_index"]), vector["target_jti"])
+                if status != "revoked":
+                    raise ValueError(f"expected revoked, got {status}")
+                # The fresh tree is what scoring uses; the embedded pre-revocation tree must not win.
+                if _score(history)["active_contract_settlements"] != 0:
+                    raise ValueError("revoked settlement was still counted")
+                outcome = "revoked"
+            else:
+                raise ValueError(f"unknown kind {kind}")
+        except Exception as e:
+            outcome = f"error:{e}"
+
+        if outcome == vector["expect"]:
+            print(f"    ok   {vid}: {outcome}")
+        else:
+            failures.append(f"reputation:{vid}: expected {vector['expect']} but got {outcome}")
+            print(f"    FAIL {vid}: expected {vector['expect']} but got {outcome}")
+
+    return failures
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument(
@@ -477,6 +888,7 @@ def main() -> int:
         failures += check_drift(blocks, schemas)
     if args.check in ("vectors", "all"):
         failures += check_vectors()
+        failures += check_reputation()
 
     print()
     if failures:
@@ -484,7 +896,7 @@ def main() -> int:
         for f in failures:
             print(f"  - {f}")
         return 1
-    print("PASSED — the spec agrees with its schemas.")
+    print("PASSED — schema, example, drift, and vector checks succeeded.")
     return 0
 
 

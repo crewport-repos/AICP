@@ -8,7 +8,7 @@
   "properties": {
     "app_version": {
       "type": "string",
-      "description": "AICP specification version implemented (e.g., '0.2.0-draft')"
+      "description": "AICP specification version implemented (e.g., '0.3.0-draft')"
     },
     "platform_name": {
       "type": "string",
@@ -131,8 +131,36 @@
         "federation_contact": {
           "type": "string",
           "description": "Contact email or URL for federation partnership inquiries"
+        },
+        "log_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Issuer transparency log configuration (§6.4.11). Required when verifiable_reputation is true."
+        },
+        "sth_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Signed tree head publication URL (§6.4.4). Required when verifiable_reputation is true."
+        },
+        "anti_sybil_policy_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Issuer anti-Sybil policy (§6.4.8). Required when verifiable_reputation is true."
+        },
+        "verifiable_reputation": {
+          "type": "boolean",
+          "description": "True when this issuer implements AICP Identity Format verifiable reputation (§6.4)."
         }
-      }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {"verifiable_reputation": {"const": true}},
+            "required": ["verifiable_reputation"]
+          },
+          "then": {"required": ["log_url", "sth_url", "anti_sybil_policy_url"]}
+        }
+      ]
     }
   }
 }
