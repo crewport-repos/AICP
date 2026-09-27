@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/crewport-repos/AICP/spec/schemas/anti-sybil-policy.schema.json",
   "title": "AICP anti-Sybil policy",
-  "description": "Issuer policy for settlement evidence (§6.4.8). The settlement requirement is per evidence kind.",
+  "description": "Issuer policy for settlement evidence (§6.4.8). requirements_by_kind is a monitor check. Verifiers do not see evidence kind; they count distinct settlement_hash values.",
   "type": "object",
   "additionalProperties": false,
   "required": ["policy_id", "summary", "requirements_by_kind"],

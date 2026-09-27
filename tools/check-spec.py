@@ -660,10 +660,9 @@ def _decode_sth(token: str, jwks: dict, now: int, jwt_mod) -> dict:
 
 
 def _accept_sth(store: dict[str, list[dict]], sth: dict) -> None:
+    """Persist a fresh STH. Same-size disagreement is a fork. A smaller tree is not."""
     previous = store.setdefault(sth["log_id"], [])
     for old in previous:
-        if sth["tree_size"] < old["tree_size"]:
-            raise ReputationFailure("split_view")
         if sth["tree_size"] == old["tree_size"]:
             same = (
                 sth["root_hash"] == old["root_hash"]
@@ -675,6 +674,30 @@ def _accept_sth(store: dict[str, list[dict]], sth: dict) -> None:
     if any(old.get("jti") == sth.get("jti") for old in previous):
         return
     previous.append(sth)
+
+
+def _reconcile_older(held: list[dict], current: dict, path: list[str] | None) -> None:
+    """A smaller consistent STH is ignored. A failed proof between two held STHs is a fork.
+
+    Missing proof does not freeze: an older STH alone is not split_view.
+    """
+    older = [sth for sth in held if sth["tree_size"] < current["tree_size"]]
+    if not older or not path:
+        return
+    try:
+        nodes = _decode_path(path)
+    except ReputationFailure:
+        raise ReputationFailure("split_view") from None
+    current_root = mkl.b64url_decode(current["root_hash"])
+    for sth in older:
+        if not mkl.verify_consistency(
+            sth["tree_size"],
+            current["tree_size"],
+            mkl.b64url_decode(sth["root_hash"]),
+            current_root,
+            nodes,
+        ):
+            raise ReputationFailure("split_view")
 
 
 def _verify_leaf(index: int, tree_size: int, entry: dict, path: list[str], root_b64: str, code: str) -> None:
@@ -881,7 +904,9 @@ def evaluate_presentation(
     log_ids = {sth["log_id"] for sth in decoded}
     if len(log_ids) != 1:
         raise ReputationFailure("log_unreachable")
-    current = max(store[next(iter(log_ids))], key=lambda item: (item["timestamp"], item["tree_size"]))
+    held = store[next(iter(log_ids))]
+    current = max(held, key=lambda item: (item["tree_size"], item["timestamp"]))
+    _reconcile_older(held, current, presentation.get("consistency_path"))
     history_proof = presentation["history_proof"]
     if "non_inclusion" in history_proof:
         _verify_history(history_proof, current, presentation.get("disclosures") or [], earlier_indices)

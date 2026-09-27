@@ -548,6 +548,20 @@ def write_reputation_vectors(es_priv, rsa_priv, out: Path, iss: str, fixed_iat: 
     behind["consistency_path"] = cons46
     behind["attestation"] = jwt1_size6  # log_proof.tree_size 6 > current 4
 
+    # Smaller STH whose root is not the size-6 prefix. The honest 4→6 path fails.
+    fork4_payload = copy.deepcopy(sth4["payload"])
+    fork4_payload["root_hash"] = corrupt(fork4_payload["root_hash"])
+    fork4_payload["jti"] = "sth-size-4-fork"
+    fork4_jwt = sign_sth(fork4_payload, es_priv)
+    rollback_pres = copy.deepcopy(pres_consistency)
+    rollback_pres["attestation"] = card_jws(
+        es_priv, iss, "card-test-002", "jti-pres-rollback", "jti-rep-002", 2, 4, root4,
+        path_at(encoded4, 4, 2), fixed_iat, fixed_exp,
+    )
+
+    staple_revoked = copy.deepcopy(pres_revoked)
+    staple_revoked["sth"] = sth4["jwt"]
+
     vectors = [
         {
             "expect": "pass",
@@ -568,6 +582,15 @@ def write_reputation_vectors(es_priv, rsa_priv, out: Path, iss: str, fixed_iat: 
         },
         {
             "expect": "pass",
+            "held_sths": [sth6["jwt"], sth4["jwt"]],
+            "id": "sth-order-6-then-4",
+            "presentation": pres_consistency,
+            "prior_history_proof": hp2_at4,
+            "score": {"active_contract_settlements": 1, "distinct_counterparties": 1, "revoked_jtis": []},
+            "status": "active",
+        },
+        {
+            "expect": "pass",
             "held_sths": [sth6["jwt"]],
             "id": "completeness-card-test-001",
             "presentation": pres_complete,
@@ -580,6 +603,14 @@ def write_reputation_vectors(es_priv, rsa_priv, out: Path, iss: str, fixed_iat: 
             "held_sths": [sth6["jwt"]],
             "id": "revoked-jti-rep-001",
             "presentation": pres_revoked,
+            "score": {"active_contract_settlements": 0, "distinct_counterparties": 0, "revoked_jtis": ["jti-rep-001"]},
+        },
+        {
+            "base_expect": "pass",
+            "expect": "revoked",
+            "held_sths": [sth6["jwt"]],
+            "id": "staple-older-sth-revoked",
+            "presentation": staple_revoked,
             "score": {"active_contract_settlements": 0, "distinct_counterparties": 0, "revoked_jtis": ["jti-rep-001"]},
         },
         {
@@ -611,10 +642,10 @@ def write_reputation_vectors(es_priv, rsa_priv, out: Path, iss: str, fixed_iat: 
             "presentation": {"disclosures": [], "history_proof": {"entries": [], "non_inclusion": {"sub": "card-test-000"}}, "sth": sth0["jwt"]},
         },
         reject("reject-bad-inclusion", "inclusion_failed", bad_incl),
-        reject("reject-bad-consistency", "consistency_failed", bad_cons, held=[sth4["jwt"], sth6["jwt"]]),
+        reject("reject-bad-consistency", "consistency_failed", bad_cons, held=[sth6["jwt"]]),
         reject("reject-stale-sth", "sth_stale", stale_pres, held=[stale_jwt]),
         reject("reject-future-sth", "sth_stale", future_pres, held=[future_jwt]),
-        reject("reject-rollback", "split_view", pres_inclusion, held=[sth6["jwt"], sth4["jwt"]]),
+        reject("reject-rollback", "split_view", rollback_pres, held=[sth6["jwt"], fork4_jwt]),
         reject("reject-same-size-fork", "split_view", pres_inclusion, held=[sth6["jwt"], fork_jwt]),
         reject("reject-sth-rs256", "sth_alg", {**pres_inclusion, "sth": rs_jwt}, held=[rs_jwt]),
         reject("reject-sth-hs256", "sth_alg", {**pres_inclusion, "sth": hs_jwt}, held=[hs_jwt]),

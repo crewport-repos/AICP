@@ -1127,7 +1127,7 @@ A **signed tree head (STH)** is a JWS ([RFC 7515](https://www.rfc-editor.org/rfc
 | `subject_map_root` | base64url of the sorted subject tree root (§6.4.6) for this `tree_size`. The issuer asserts this value. Only a full-log monitor confirms that it was derived from the log. |
 | `subject_map_size` | Leaf count of that sorted subject tree. Verifiers MUST use this signed value. A presenter's `map_size` that differs is `map_proof_failed` (§6.4.13). |
 
-Verifiers MUST verify the JWS with the JWKS rules in §6.3.3, including the 24-hour JWKS cache cap. They MUST reject an STH when `now > timestamp + 86400 + 300` or when `timestamp > now + 300`. Equality at the old edge (`now == timestamp + 86400 + 300`) is acceptable. `86400` is **`STH_MAX_AGE`**. The 300-second skew is the same bound as §6.3.4.1. A stale or future STH is retryable `sth_stale` (§6.4.13). They MUST reject an STH whose `tree_size` is less than a `tree_size` the verifier has already accepted for that `log_id` (rollback). That rejection is `split_view`.
+Verifiers MUST verify the JWS with the JWKS rules in §6.3.3, including the 24-hour JWKS cache cap. They MUST reject an STH when `now > timestamp + 86400 + 300` or when `timestamp > now + 300`. Equality at the old edge (`now == timestamp + 86400 + 300`) is acceptable. `86400` is **`STH_MAX_AGE`**. The 300-second skew is the same bound as §6.3.4.1. A stale or future STH is retryable `sth_stale` (§6.4.13). A smaller `tree_size` than one already accepted for that `log_id` is not a split view. Classify by size (§6.4.5): the current STH is the greatest `tree_size`. An older STH whose consistency proof shows it is a prefix of that tree is ignored and MUST NOT freeze the issuer. `split_view` is only a same-size disagreement, or a consistency proof that fails between two held STHs.
 
 An equal `tree_size` MUST carry an identical `root_hash`, `subject_map_root`, and `subject_map_size`. Re-signing an unchanged tree (a new `jti` and `timestamp`, same three commitments) is allowed. A same-size STH that disagrees on any of those three commitments is a split view.
 
@@ -1208,11 +1208,11 @@ The object below is the payload of vector `revoked-jti-rep-001`. Its `log_proof`
 }
 ```
 
-**Consistency.** A consistency proof between tree sizes `first` and `second` (`0 < first < second`) is `PROOF(first, D)` from RFC 9162 §2.1.4.1. Verifiers MUST run RFC 9162 §2.1.4.2. When `first` is a power of two, that algorithm prepends the first root to the proof; issuers MUST NOT include that prepended hash in the published array. A verifier that has accepted two STHs for the same `log_id` MUST verify a consistency proof between them when `tree_size` differs.
+**Consistency.** A consistency proof between tree sizes `first` and `second` (`0 < first < second`) is `PROOF(first, D)` from RFC 9162 §2.1.4.1. Verifiers MUST run RFC 9162 §2.1.4.2. When `first` is a power of two, that algorithm prepends the first root to the proof; issuers MUST NOT include that prepended hash in the published array. A verifier that has accepted two STHs for the same `log_id` MUST verify a consistency proof between them when `tree_size` differs. The current STH is the one with the greatest `tree_size`. When the proof verifies, the smaller STH is an older consistent tree: the verifier MUST ignore it and MUST NOT freeze imports. When the proof fails, the result is `split_view`.
 
-**What the verifier keeps.** Verifiers MUST persist every accepted STH, per `log_id`. A failed consistency proof, a rollback, or a same-size disagreement (§6.4.4) is a **split view**. The evidence is the two signed STHs. Verifiers MUST freeze imports from that issuer until they hold a consistent pair, and SHOULD publish the two STHs. An optional `GET /.well-known/aicp-sth-seen` returns a JSON object whose keys are `log_id` values and whose values are the latest compact STH this party accepted (`spec/schemas/sth-seen.schema.json`). Verifiers SHOULD cross-check each `log_id` through a second path at least every `STH_MAX_AGE`. Co-signatures and witnesses, when used, follow [C2SP tlog-cosignature](https://c2sp.org/tlog-cosignature) and [C2SP tlog-witness](https://c2sp.org/tlog-witness). This version does not require either profile. Two deployments run by the same operator are not independent witnesses for each other (§9).
+**What the verifier keeps.** Verifiers MUST persist every accepted STH, per `log_id`. A split view is a same-size disagreement (§6.4.4) or a consistency proof that fails between two held STHs. The evidence is the two signed STHs. Verifiers MUST freeze imports from that issuer until they hold a consistent pair, and SHOULD publish the two STHs. An older STH that is a consistent prefix is not a split view. An optional `GET /.well-known/aicp-sth-seen` returns a JSON object whose keys are `log_id` values and whose values are the latest compact STH this party accepted (`spec/schemas/sth-seen.schema.json`). Verifiers SHOULD cross-check each `log_id` through a second path at least every `STH_MAX_AGE`. Co-signatures and witnesses, when used, follow [C2SP tlog-cosignature](https://c2sp.org/tlog-cosignature) and [C2SP tlog-witness](https://c2sp.org/tlog-witness). This version does not require either profile. Two deployments run by the same operator are not independent witnesses for each other (§9).
 
-A presenter MAY staple an STH on the presentation. The verifier MUST consistency-check it against STHs it already holds and MUST use it only when it is fresh (§6.4.4) and consistent. A stapled STH that fails those checks is ignored when the verifier already holds a fresh consistent STH, and is fatal when it is the only candidate (§6.4.10).
+A presenter MAY staple an STH on the presentation. The verifier MUST compare it with STHs it already holds. A stapled STH with the same `tree_size` and a different `root_hash`, `subject_map_root`, or `subject_map_size` is signed fork evidence: the result is `split_view`, and the verifier MUST NOT ignore it. A stapled STH with a smaller `tree_size` whose consistency proof to the larger STH verifies is an older consistent tree: ignore it and do not freeze. A stapled STH with a smaller `tree_size` whose consistency proof fails is `split_view`, and the verifier MUST NOT ignore it. A stapled STH outside the freshness window is ignored when another fresh STH is held, and is `sth_stale` when it is the only candidate (§6.4.10).
 
 The normative vector `inclusion-entry-0` is inclusion of index `2` under the size-6 STH. `consistency-4-to-6` is `PROOF(4, D_6)` from a size-4 `log_proof` up to the size-6 STH. Size 4 is a power of two, so verification prepends the size-4 root. Both proofs MUST verify against the signed roots in the vector file.
 
@@ -1373,7 +1373,7 @@ Within a single issuer, after status is applied:
 
 - `counterparty_id` MUST be an issuer-generated pseudonym, stable for that client on that issuer, and MUST NOT be a raw email, legal name, or an identifier the issuer uses for the same party at other issuers. The same `counterparty_id` on several entries links those entries to one client (§6.4.9).
 - `settlement_hash` = base64url(SHA-256(`aicp-settlement-v1` || `0x00` || `settlement_salt` || `0x00` || JCS(`evidence`))). `settlement_salt` MUST be at least 16 bytes from a CSPRNG. One salt is chosen per settlement and reused for every attestation of that settlement. A new salt per attestation is a different hash and MUST NOT be used to inflate the distinct-hash count.
-- `evidence` is a JSON object, schema `spec/schemas/settlement-evidence.schema.json`: `kind` (`payment` or `signed_manifest`), `rail`, `reference`, and for `payment` also `amount_minor` and `currency`. `signed_manifest` is the issuer's reference to an issuer-signed result manifest (for example a Diskuss bout manifest at `/api/v1/bouts/{id}/manifest`). The anti-Sybil settlement requirement is **per kind**: a `payment` hash does not satisfy a policy that requires `signed_manifest`, and the reverse. Evidence MUST NOT appear in the log and MUST NOT appear in a selective disclosure. It is monitor-only. Issuers MUST be able to produce `settlement_salt` and `evidence` to a monitor under the published policy.
+- `evidence` is a JSON object, schema `spec/schemas/settlement-evidence.schema.json`: `kind` (`payment` or `signed_manifest`), `rail`, `reference`, and for `payment` also `amount_minor` and `currency`. `signed_manifest` is the issuer's reference to an issuer-signed result manifest (for example a Diskuss bout manifest at `/api/v1/bouts/{id}/manifest`). The anti-Sybil settlement requirement is **per kind**, and that check is a **monitor** duty: a monitor that has the evidence MUST reject a `payment` preimage where the policy requires `signed_manifest`, and the reverse. `kind` is not a log field and not a disclosure field. Verifiers MUST NOT infer it and MUST NOT reject a presentation for lack of a kind. Evidence MUST NOT appear in the log and MUST NOT appear in a selective disclosure. Issuers MUST be able to produce `settlement_salt` and `evidence` to a monitor under the published policy.
 
 ```json aicp:instance=settlement-evidence
 {
@@ -1410,11 +1410,11 @@ Within a single issuer, after status is applied:
     "payment": "A payment or settlement the issuer processed or observed, committed with one salt reused for that settlement.",
     "signed_manifest": "The issuer-signed result manifest named by reference, for example a Diskuss bout manifest."
   },
-  "summary": "Economic attestations carry an issuer-scoped counterparty id and a per-kind settlement hash. Verifiers count distinct settlement hashes."
+  "summary": "Economic attestations carry an issuer-scoped counterparty id and a settlement hash. Verifiers count distinct settlement hashes. Monitors check evidence kind."
 }
 ```
 
-Verifiers SHOULD fetch the policy and show it next to the issuer's score. They MUST still enforce the distinct-`settlement_hash` rule and the per-kind requirement even if they cannot fetch the policy.
+Verifiers SHOULD fetch the policy and show it next to the issuer's score. They MUST enforce the distinct-`settlement_hash` rule even if they cannot fetch the policy. They MUST NOT enforce `requirements_by_kind`: the kind is only in the monitor-only evidence. Monitors MUST apply `requirements_by_kind` when the issuer produces that evidence.
 
 #### 6.4.9 Privacy
 
@@ -1441,7 +1441,7 @@ Verifiers MUST run these steps in order and MUST return the first failure. That 
 
 1. Perform the base JWS check, except the `jti` cache write. The signature MUST still verify. `alg` MUST be `ES256` or `EdDSA`. The RS256 transition exception MUST NOT be applied.
 2. Require `log_proof`, including `entry_jti`. Fetch `/.well-known/aicp-log` for `iss` (§6.4.11) and require `log_proof.log_id` to equal that document's `log_id`. Do not require the JWS `jti` to equal `entry_jti`.
-3. Take the newest fresh STH the verifier holds for that `log_id`. Sources are `sth_url`, an STH bundled in an entry, subject, or consistency lookup, and a stapled presentation `sth`. Lookup URL templates MUST be called with `tree_size` when the verifier is pinning a tree. A stapled STH is eligible only when it is fresh and consistent with STHs already held (§6.4.5). Accepting a candidate that rolls the tree back or disagrees at the same size is `split_view`. If every candidate fails freshness or signature checks, the result is the last of those errors (`sth_stale`, `sth_alg`, or `sth_typ`). If no candidate was supplied, the result is `log_unreachable`.
+3. Take the fresh STH with the greatest `tree_size` for that `log_id` (latest `timestamp` breaks a tie). Sources are `sth_url`, an STH bundled in an entry, subject, or consistency lookup, and a stapled presentation `sth`. Lookup URL templates MUST be called with `tree_size` when the verifier is pinning a tree. A same-size disagreement is `split_view` and MUST NOT be ignored (§6.4.5). A smaller STH with a verifying consistency proof is ignored and does not freeze the issuer. A smaller STH whose consistency proof fails is `split_view`. A smaller STH with no proof yet is ignored and does not freeze the issuer. If every candidate fails freshness or signature checks, the result is the last of those errors (`sth_stale`, `sth_alg`, or `sth_typ`). If no candidate was supplied, the result is `log_unreachable`.
 4. If the current STH `tree_size` is less than `log_proof.tree_size`, stop with retryable `sth_behind`. `Retry-After` MUST be less than or equal to MMD (3600 seconds).
 5. If the current STH `tree_size` equals `log_proof.tree_size`, require the roots to be equal. A mismatch is `split_view`. If the current tree is larger, require `consistency_path` and require it to verify against the two roots (`consistency_failed` otherwise).
 6. Verify the subject history proof (§6.4.6) for this `sub` against the **current** STH, including the signed `subject_map_size`, the `subject_index` inclusion, the history-root recompute, the checkpoint structural checks, and the disclosures (§6.4.9). Ignore per-entry `inclusion_path`.
@@ -1607,9 +1607,11 @@ Normative vectors live in [`spec/test-vectors/reputation-vectors.json`](spec/tes
 | Vector id | Expect | What it proves |
 |-----------|--------|----------------|
 | `inclusion-entry-0` | pass | Inclusion of log index 2 under the size-6 STH; history root and sorted subject tree; status `active`; one counted settlement |
-| `consistency-4-to-6` | pass | Consistency from a size-4 `log_proof` to the size-6 STH, and an append-only prefix against a size-4 history proof the verifier already holds |
+| `consistency-4-to-6` | pass | Consistency from a size-4 `log_proof` to the size-6 STH, held in order `[4, 6]`, and an append-only prefix against a size-4 history proof |
+| `sth-order-6-then-4` | pass | The same consistent pair held in order `[6, 4]`. The size-4 STH is ignored. The result stays pass, not `split_view` |
 | `completeness-card-test-001` | pass, status `revoked` | Full history of `card-test-001` at size 6, both disclosures open, completed-contract count 0 |
 | `revoked-jti-rep-001` | revoked | Base JWS and size-4 inclusion succeed; steps 5–9 yield `revoked` |
+| `staple-older-sth-revoked` | revoked | Stapling a fresh consistent size-4 STH beside the size-6 head still yields `revoked` |
 | `corrected-fulfilled` | pass, status `corrected` | Latest correction `outcome` `fulfilled` counts |
 | `corrected-not` | pass, status `corrected` | Latest correction `outcome` `reversed` does not count |
 | `non-inclusion-pass` | pass | Left-edge non-inclusion for a `sub` before the first leaf |
@@ -1618,7 +1620,7 @@ Normative vectors live in [`spec/test-vectors/reputation-vectors.json`](spec/tes
 | `reject-bad-consistency` | `consistency_failed` | Consistency path does not link the two roots |
 | `reject-stale-sth` | `sth_stale` | STH older than clock − 86400 − 300 |
 | `reject-future-sth` | `sth_stale` | STH more than 300 seconds in the future |
-| `reject-rollback` | `split_view` | A smaller `tree_size` after a larger accepted STH |
+| `reject-rollback` | `split_view` | A size-4 STH whose root is not the size-6 prefix; the consistency proof between those two held STHs fails |
 | `reject-same-size-fork` | `split_view` | Equal `tree_size`, different `root_hash` |
 | `reject-sth-rs256` | `sth_alg` | STH signed `RS256` |
 | `reject-sth-hs256` | `sth_alg` | STH signed `HS256` |
@@ -1646,7 +1648,7 @@ Import APIs MUST use these codes. Retryable codes are HTTP `503` with `Retry-Aft
 | Retryable | `log_unreachable` | No STH could be fetched or stapled |
 | Terminal | `inclusion_failed` | Log inclusion proof failed |
 | Terminal | `consistency_failed` | Consistency proof failed |
-| Terminal | `split_view` | Rollback, same-size fork, or a history that shrank |
+| Terminal | `split_view` | Same-size fork, a failed consistency proof between two held STHs, or a history that shrank. An older consistent STH is not a split view |
 | Terminal | `map_proof_failed` | Sorted subject tree proof failed, including a `map_size` mismatch or a bad non-inclusion proof |
 | Terminal | `history_incomplete` | History entries do not match `indices` or `history_root` |
 | Terminal | `history_malformed` | Revocation or correction target does not match one attestation on both `target_index` and `target_jti` |
@@ -1752,8 +1754,8 @@ Request logs for authorization, consent, callback, and error routes MUST omit th
 
 | Implementation | Operator | AICP MCP Profile | AICP Identity Format | Notes |
 |----------------|----------|------------------|----------------------|-------|
-| **[CrewPort](https://crewport.ai)** | Ologos LLC | Implemented | Base implemented; verifiable reputation planned | Reference deployment; Card MCP at `/mcp/{card_id}`. Plans to emit §6.4 log entries from its hash-chained `audit_events` table (issuer). |
-| **[Diskuss](https://diskuss.tech)** | Ologos LLC | Partial | Base partial; verifiable-reputation verifier planned | Lifecycle and history patterns. A §6.4.10 verifier is planned, not shipped. CrewPort and Diskuss share an operator, so neither is an independent witness for the other's log. |
+| **[CrewPort](https://crewport.ai)** | CrewPortAi, Inc. | Implemented | Base implemented; verifiable reputation planned | Reference deployment; Card MCP at `/mcp/{card_id}`. Plans to emit §6.4 log entries from its hash-chained `audit_events` table (issuer). |
+| **[Diskuss](https://diskuss.tech)** | CrewPortAi, Inc. | Partial | Base partial; verifiable-reputation verifier planned | Lifecycle and history patterns. A §6.4.10 verifier is planned, not shipped. CrewPort and Diskuss share an operator, so neither is an independent witness for the other's log. |
 
 Additional implementations are encouraged. **AICP 1.0** will not advance without **two independent interoperable implementations** for each normative conformance class.
 
@@ -1804,7 +1806,9 @@ The three protocols operate at different levels of the agent stack and compose n
 - Add `spec/test-vectors/reputation-vectors.json` and CI checks for inclusion, consistency, completeness, and a revoked attestation.
 - Extend `federation` with `log_url`, `sth_url`, `anti_sybil_policy_url`, and `verifiable_reputation`.
 - Implementations: CrewPort plans to project log entries from its hash-chained `audit_events` table. Diskuss as a verifiable-reputation verifier is planned. The two deployments share an operator and are not independent witnesses for each other.
-- Review of the verifier rules: sign `subject_map_size`; one non-inclusion algorithm; presentation wire format and lookup schemas; salted `settlement_hash` with per-kind evidence (`payment`, `signed_manifest`); `entry_jti` separate from the JWS `jti`; revocation matches `target_index` and `target_jti` together; import versus display freshness; minimal STH retention and split-view freeze; result codes (`422` terminal, `503` retryable). Negative vectors are graded from the presentation and held STHs only.
+- Review of the verifier rules: sign `subject_map_size`; one non-inclusion algorithm; presentation wire format and lookup schemas; salted `settlement_hash` with monitor-only per-kind evidence (`payment`, `signed_manifest`); `entry_jti` separate from the JWS `jti`; revocation matches `target_index` and `target_jti` together; import versus display freshness; minimal STH retention and split-view freeze; result codes (`422` terminal, `503` retryable). Negative vectors are graded from the presentation and held STHs only.
+- `alg` `Ed25519` is rejected. Version 0.2.0-draft allowed that name; this revision accepts only `EdDSA` ([RFC 8037](https://www.rfc-editor.org/rfc/rfc8037)) for Ed25519 keys.
+- An older STH that is a consistent prefix of a larger held STH is ignored and does not freeze the issuer. `split_view` is a same-size root disagreement or a consistency proof that fails between two held STHs.
 
 ### 0.2.0-draft (2026-09-27)
 
