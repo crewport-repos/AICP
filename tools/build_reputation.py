@@ -372,6 +372,12 @@ def write_reputation_vectors(es_priv, rsa_priv, out: Path, iss: str, fixed_iat: 
         es_priv, iss, "card-test-002", "jti-pres-bad-cons", "jti-rep-002", 2, 4, root4,
         path_at(encoded4, 4, 2), fixed_iat, fixed_exp,
     )
+    bad_cons_undecodable = copy.deepcopy(pres_consistency)
+    bad_cons_undecodable["consistency_path"] = ["a"]
+    bad_cons_undecodable["attestation"] = card_jws(
+        es_priv, iss, "card-test-002", "jti-pres-bad-cons-b64", "jti-rep-002", 2, 4, root4,
+        path_at(encoded4, 4, 2), fixed_iat, fixed_exp,
+    )
 
     stale_payload = copy.deepcopy(sth6["payload"])
     stale_payload["timestamp"] = CLOCK - MAX_AGE - SKEW - 1
@@ -678,7 +684,7 @@ def write_reputation_vectors(es_priv, rsa_priv, out: Path, iss: str, fixed_iat: 
         reject("reject-log-unreachable", "log_unreachable", {k: v for k, v in pres_inclusion.items() if k != "sth"}, held=[]),
         {
             "expect": "pass",
-            "held_sths": [sth4["jwt"], sth6["jwt"]],
+            "held_sths": [fork4_jwt, sth6["jwt"]],
             "id": "ignore-no-issuer-proof",
             "issuer_proof_overrides": {"4,6": None},
             "presentation": pres_inclusion,
@@ -689,16 +695,24 @@ def write_reputation_vectors(es_priv, rsa_priv, out: Path, iss: str, fixed_iat: 
             "reject-issuer-proof-empty",
             "split_view",
             pres_inclusion,
-            held=[sth4["jwt"], sth6["jwt"]],
+            held=[fork4_jwt, sth6["jwt"]],
             extra={"issuer_proof_overrides": {"4,6": []}},
+        ),
+        reject(
+            "reject-issuer-proof-bad-length",
+            "split_view",
+            pres_inclusion,
+            held=[sth4["jwt"], sth6["jwt"]],
+            extra={"issuer_proof_overrides": {"4,6": ["!!!"]}},
         ),
         reject(
             "reject-issuer-proof-undecodable",
             "split_view",
             pres_inclusion,
             held=[sth4["jwt"], sth6["jwt"]],
-            extra={"issuer_proof_overrides": {"4,6": ["!!!"]}},
+            extra={"issuer_proof_overrides": {"4,6": ["a"]}},
         ),
+        reject("reject-presenter-consistency-undecodable", "consistency_failed", bad_cons_undecodable),
         reject(
             "reject-shrunk-history",
             "history_malformed",
