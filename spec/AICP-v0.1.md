@@ -1649,11 +1649,11 @@ Import APIs MUST use these codes. Retryable codes are HTTP `503` with `Retry-Aft
 | Retryable | `sth_behind` | Current `tree_size` is less than `log_proof.tree_size` |
 | Retryable | `log_unreachable` | No STH could be fetched or stapled |
 | Terminal | `inclusion_failed` | Log inclusion proof failed |
-| Terminal | `consistency_failed` | Consistency proof failed |
+| Terminal | `consistency_failed` | Presenter `consistency_path` failed verification in §6.4.10 step 5 |
 | Terminal | `split_view` | Same-size fork, or a failed issuer consistency proof for exactly the two held sizes. An older STH with no issuer proof, a size-0 STH, and a failed presenter path are not a split view |
 | Terminal | `map_proof_failed` | Sorted subject tree proof failed, including a `map_size` mismatch or a bad non-inclusion proof |
 | Terminal | `history_incomplete` | History entries do not match `indices` or `history_root` |
-| Terminal | `history_malformed` | Revocation or correction target does not match one attestation on both `target_index` and `target_jti` |
+| Terminal | `history_malformed` | Revocation or correction target does not match one attestation on both `target_index` and `target_jti`; or a later `indices` list for a held subject does not begin with an earlier list (§6.4.6) |
 | Terminal | `disclosure_missing` | A must-disclose entry was not opened |
 | Terminal | `disclosure_mismatch` | Salt, index, float, or `detail_commit` check failed |
 

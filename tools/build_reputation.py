@@ -676,6 +676,35 @@ def write_reputation_vectors(es_priv, rsa_priv, out: Path, iss: str, fixed_iat: 
         reject("reject-non-inclusion", "map_proof_failed", non_inc_fail),
         reject("reject-sth-behind", "sth_behind", behind, held=[sth4["jwt"]]),
         reject("reject-log-unreachable", "log_unreachable", {k: v for k, v in pres_inclusion.items() if k != "sth"}, held=[]),
+        {
+            "expect": "pass",
+            "held_sths": [sth4["jwt"], sth6["jwt"]],
+            "id": "ignore-no-issuer-proof",
+            "issuer_proof_overrides": {"4,6": None},
+            "presentation": pres_inclusion,
+            "score": {"active_contract_settlements": 1, "distinct_counterparties": 1, "revoked_jtis": []},
+            "status": "active",
+        },
+        reject(
+            "reject-issuer-proof-empty",
+            "split_view",
+            pres_inclusion,
+            held=[sth4["jwt"], sth6["jwt"]],
+            extra={"issuer_proof_overrides": {"4,6": []}},
+        ),
+        reject(
+            "reject-issuer-proof-undecodable",
+            "split_view",
+            pres_inclusion,
+            held=[sth4["jwt"], sth6["jwt"]],
+            extra={"issuer_proof_overrides": {"4,6": ["!!!"]}},
+        ),
+        reject(
+            "reject-shrunk-history",
+            "history_malformed",
+            pres_complete,
+            extra={"earlier_indices": [0, 4, 2]},
+        ),
     ]
 
     doc = {

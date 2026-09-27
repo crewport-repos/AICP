@@ -680,7 +680,8 @@ def _reconcile_older(held: list[dict], current: dict, issuer_proofs: dict[tuple[
     """Decide freeze from the issuer consistency endpoint, never from the presenter's path.
 
     Fetch a proof only for exactly the two held sizes. tree_size 0 is a prefix of every
-    later tree. No issuer proof for the pair means ignore the older STH and do not freeze.
+    later tree. A missing issuer proof for the pair means ignore the older STH and do not
+    freeze. An empty proof array is a failed proof and is `split_view`.
     """
     older = [sth for sth in held if sth["tree_size"] < current["tree_size"]]
     if not older:
@@ -690,9 +691,12 @@ def _reconcile_older(held: list[dict], current: dict, issuer_proofs: dict[tuple[
     for sth in older:
         if sth["tree_size"] == 0:
             continue
-        path = proofs.get((sth["tree_size"], current["tree_size"]))
-        if not path:
+        pair = (sth["tree_size"], current["tree_size"])
+        if pair not in proofs:
             continue
+        path = proofs[pair]
+        if not path:
+            raise ReputationFailure("split_view")
         try:
             nodes = _decode_path(path)
         except ReputationFailure:
@@ -715,6 +719,22 @@ def _issuer_consistency_proofs(entries: list[dict]) -> dict[tuple[int, int], lis
     for first in range(1, n):
         for second in range(first + 1, n + 1):
             proofs[(first, second)] = [mkl.b64url(node) for node in mkl.consistency_proof(encoded[:second], first)]
+    return proofs
+
+
+def _issuer_proofs_for_vector(entries: list[dict], vector: dict) -> dict[tuple[int, int], list[str]]:
+    """Fixture issuer proofs, with optional per-vector overrides for grading."""
+    proofs = _issuer_consistency_proofs(entries)
+    overrides = vector.get("issuer_proof_overrides")
+    if not overrides:
+        return proofs
+    for key, value in overrides.items():
+        first_s, second_s = key.split(",", 1)
+        pair = (int(first_s), int(second_s))
+        if value is None:
+            proofs.pop(pair, None)
+        else:
+            proofs[pair] = value
     return proofs
 
 
@@ -1163,7 +1183,7 @@ def check_reputation() -> list[str]:
                 jwt_mod,
                 cache,
                 earlier,
-                _issuer_consistency_proofs(doc["entries"]),
+                _issuer_proofs_for_vector(doc["entries"], vector),
             )
             if vector["expect"] == "reject":
                 outcome = "error:accepted"
