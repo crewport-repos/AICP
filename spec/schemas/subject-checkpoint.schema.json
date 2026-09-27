@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/crewport-repos/AICP/spec/schemas/subject-checkpoint.schema.json",
+  "title": "AICP sorted subject tree leaf",
+  "description": "One leaf of the sorted subject tree committed in an STH (§6.4.6). Leaves are sorted by sub as raw UTF-8 bytes, with no Unicode normalization, and hashed with RFC 9162. The wire names subject_map_root and subject_map_size name this tree.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["v", "sub", "count", "history_root", "index_entry", "latest_entry"],
+  "properties": {
+    "v": {"const": 1},
+    "sub": {"type": "string", "minLength": 1},
+    "count": {"type": "integer", "minimum": 1},
+    "history_root": {"type": "string", "pattern": "^[A-Za-z0-9_-]{43}$"},
+    "index_entry": {"type": "integer", "minimum": 0, "description": "Log index of the subject_index entry this leaf commits."},
+    "latest_entry": {"type": "integer", "minimum": 0, "description": "Log index of the newest attestation, revocation, or correction in the history."}
+  }
+}

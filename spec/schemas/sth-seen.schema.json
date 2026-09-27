@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/crewport-repos/AICP/spec/schemas/sth-seen.schema.json",
+  "title": "AICP STH seen document",
+  "description": "Optional GET /.well-known/aicp-sth-seen (§6.4.5). Each property name is a log_id. Each value is the latest compact STH this verifier accepted for that log.",
+  "type": "object",
+  "minProperties": 1,
+  "propertyNames": {"type": "string", "minLength": 1},
+  "additionalProperties": {
+    "type": "string",
+    "minLength": 1,
+    "description": "Compact JWS (typ aicp-sth+jwt) of the latest accepted STH."
+  }
+}

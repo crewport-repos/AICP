@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/crewport-repos/AICP/spec/schemas/detail.schema.json",
+  "title": "AICP reputation detail",
+  "description": "Opened detail object inside a selective disclosure (§6.4.9). No floating-point numbers. outcome is required for an outcome event to count, and for the latest correction of a counted contract (§6.4.8).",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "outcome": {
+      "type": "string",
+      "enum": ["fulfilled", "reversed"]
+    },
+    "amount_minor": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Settlement amount in minor currency units."
+    },
+    "currency": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$",
+      "description": "ISO 4217 alphabetic currency code."
+    }
+  }
+}

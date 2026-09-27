@@ -1,0 +1,2804 @@
+{
+  "description": "AICP verifiable reputation vectors (\u00a76.4). TEST ONLY salts and keys. Settlement preimages are monitor-only.",
+  "disclosures": [
+    {
+      "detail": {
+        "amount_minor": 5000,
+        "currency": "USD",
+        "outcome": "fulfilled"
+      },
+      "index": 0,
+      "salt": "EREREREREREREREREREREQ"
+    },
+    {
+      "detail": {
+        "outcome": "fulfilled"
+      },
+      "index": 2,
+      "salt": "IiIiIiIiIiIiIiIiIiIiIg"
+    },
+    {
+      "detail": {
+        "outcome": "reversed"
+      },
+      "index": 4,
+      "salt": "MzMzMzMzMzMzMzMzMzMzMw"
+    }
+  ],
+  "entries": [
+    {
+      "counterparty_id": "cp-alice",
+      "detail_commit": "xbvWfWmu5wP6sGU_hfXgJjtfPklEFzLBOaMKjCP1eew",
+      "entry_type": "attestation",
+      "event": "contract_completed",
+      "iat": 1700000000,
+      "iss": "https://platform.example",
+      "jti": "jti-rep-001",
+      "settlement_hash": "SExusiG52R4sQZFfomnIsReBC5aXmJAAhvAxBnILj5g",
+      "sub": "card-test-001",
+      "v": 1
+    },
+    {
+      "count": 1,
+      "entry_type": "subject_index",
+      "history_root": "fNCGPceb_hqxuNnxFl0P6CsUhdA8RLvQczZ2_dCSjh8",
+      "iat": 1700000000,
+      "indices": [
+        0
+      ],
+      "iss": "https://platform.example",
+      "jti": "jti-idx-001-1",
+      "sub": "card-test-001",
+      "v": 1
+    },
+    {
+      "counterparty_id": "cp-bob",
+      "detail_commit": "F0E2KvL3bPD6e9C_ZSfGP9hQLfS1fR80X2t1967QcoM",
+      "entry_type": "attestation",
+      "event": "contract_completed",
+      "iat": 1700000100,
+      "iss": "https://platform.example",
+      "jti": "jti-rep-002",
+      "settlement_hash": "Y8TYkGx3LDdROF2otphpReS0lLzaNKhekdzEwMhMrv4",
+      "sub": "card-test-002",
+      "v": 1
+    },
+    {
+      "count": 1,
+      "entry_type": "subject_index",
+      "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+      "iat": 1700000100,
+      "indices": [
+        2
+      ],
+      "iss": "https://platform.example",
+      "jti": "jti-idx-002-1",
+      "sub": "card-test-002",
+      "v": 1
+    },
+    {
+      "detail_commit": "rBRBawqQo4mnv5l2nZa2Sk2bPfbU89gQk1TYiTTvgq0",
+      "entry_type": "revocation",
+      "iat": 1700000200,
+      "iss": "https://platform.example",
+      "jti": "jti-rev-001",
+      "reason": "outcome_reversed",
+      "sub": "card-test-001",
+      "target_index": 0,
+      "target_jti": "jti-rep-001",
+      "v": 1
+    },
+    {
+      "count": 2,
+      "entry_type": "subject_index",
+      "history_root": "w6dp4j3YV1kI6MCsCiz3xbdxCpXzGKdtaMLXExWIuW4",
+      "iat": 1700000200,
+      "indices": [
+        0,
+        4
+      ],
+      "iss": "https://platform.example",
+      "jti": "jti-idx-001-2",
+      "sub": "card-test-001",
+      "v": 1
+    }
+  ],
+  "fixed_clock_unix": 1700000300,
+  "hash_alg": "SHA-256",
+  "issuer": "https://platform.example",
+  "mmd_seconds": 3600,
+  "monitor_settlements": [
+    {
+      "evidence": {
+        "amount_minor": 5000,
+        "currency": "USD",
+        "kind": "payment",
+        "rail": "example-ledger",
+        "reference": "pay-001"
+      },
+      "index": 0,
+      "settlement_salt": "oaGhoaGhoaGhoaGhoaGhoQ"
+    },
+    {
+      "evidence": {
+        "kind": "signed_manifest",
+        "rail": "diskuss",
+        "reference": "bouts/bout-001/manifest"
+      },
+      "index": 2,
+      "settlement_salt": "oqKioqKioqKioqKioqKiog"
+    }
+  ],
+  "sth": {
+    "0": {
+      "document": {
+        "sth": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwNzY0MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTY5OTk5MDAwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtMCIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiI0N0RFUXBqOEhCU2EtX1RJbVctNUpDZXVRZVJrbTVOTXBKV1pHM2hTdUZVIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiI0N0RFUXBqOEhCU2EtX1RJbVctNUpDZXVRZVJrbTVOTXBKV1pHM2hTdUZVIiwic3ViamVjdF9tYXBfc2l6ZSI6MCwidGltZXN0YW1wIjoxNjk5OTkwMDAwLCJ0cmVlX3NpemUiOjB9.ypxRrLegfRZXNSHfQHUmu9qqiPK-2BaKqfyhv65kRONhdNAHp2a-jaFuInx7zKEH0sI5ZjcnwiyHEnDKNIcA1w",
+        "tree_size": 0
+      },
+      "jwt": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwNzY0MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTY5OTk5MDAwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtMCIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiI0N0RFUXBqOEhCU2EtX1RJbVctNUpDZXVRZVJrbTVOTXBKV1pHM2hTdUZVIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiI0N0RFUXBqOEhCU2EtX1RJbVctNUpDZXVRZVJrbTVOTXBKV1pHM2hTdUZVIiwic3ViamVjdF9tYXBfc2l6ZSI6MCwidGltZXN0YW1wIjoxNjk5OTkwMDAwLCJ0cmVlX3NpemUiOjB9.ypxRrLegfRZXNSHfQHUmu9qqiPK-2BaKqfyhv65kRONhdNAHp2a-jaFuInx7zKEH0sI5ZjcnwiyHEnDKNIcA1w",
+      "payload": {
+        "aud": "https://platform.example/.well-known/aicp-log",
+        "exp": 1700076400,
+        "hash_alg": "SHA-256",
+        "iat": 1699990000,
+        "iss": "https://platform.example",
+        "jti": "sth-size-0",
+        "kid": "test-es256-01",
+        "log_id": "https://platform.example/.well-known/aicp-log",
+        "root_hash": "47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU",
+        "sth_version": 1,
+        "subject_map_root": "47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU",
+        "subject_map_size": 0,
+        "timestamp": 1699990000,
+        "tree_size": 0
+      },
+      "subject_map": []
+    },
+    "2": {
+      "document": {
+        "sth": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY0MjAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDAyMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtMiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJSeFRHNDlCakpkY1lrVDN6UHVlcC03OFhRb1lWTGVRZXNrWnNfRXV3RjZnIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJnOGZCUkxYa1p3ak9QYm84eHhaRFoxYkZ3ckl3eDFzSDJvcTVxOXRORXh3Iiwic3ViamVjdF9tYXBfc2l6ZSI6MSwidGltZXN0YW1wIjoxNzAwMDAwMDIwLCJ0cmVlX3NpemUiOjJ9.S9zpWgsMEceCbVD0ywpLoT3_oz-Xy3w312kca0WXjQovT45vZqe9AN4lOdf-Uu9pifks2vCa7AN1d_SqNJ7hag",
+        "tree_size": 2
+      },
+      "jwt": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY0MjAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDAyMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtMiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJSeFRHNDlCakpkY1lrVDN6UHVlcC03OFhRb1lWTGVRZXNrWnNfRXV3RjZnIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJnOGZCUkxYa1p3ak9QYm84eHhaRFoxYkZ3ckl3eDFzSDJvcTVxOXRORXh3Iiwic3ViamVjdF9tYXBfc2l6ZSI6MSwidGltZXN0YW1wIjoxNzAwMDAwMDIwLCJ0cmVlX3NpemUiOjJ9.S9zpWgsMEceCbVD0ywpLoT3_oz-Xy3w312kca0WXjQovT45vZqe9AN4lOdf-Uu9pifks2vCa7AN1d_SqNJ7hag",
+      "payload": {
+        "aud": "https://platform.example/.well-known/aicp-log",
+        "exp": 1700086420,
+        "hash_alg": "SHA-256",
+        "iat": 1700000020,
+        "iss": "https://platform.example",
+        "jti": "sth-size-2",
+        "kid": "test-es256-01",
+        "log_id": "https://platform.example/.well-known/aicp-log",
+        "root_hash": "RxTG49BjJdcYkT3zPuep-78XQoYVLeQeskZs_EuwF6g",
+        "sth_version": 1,
+        "subject_map_root": "g8fBRLXkZwjOPbo8xxZDZ1bFwrIwx1sH2oq5q9tNExw",
+        "subject_map_size": 1,
+        "timestamp": 1700000020,
+        "tree_size": 2
+      },
+      "subject_map": [
+        {
+          "count": 1,
+          "history_root": "fNCGPceb_hqxuNnxFl0P6CsUhdA8RLvQczZ2_dCSjh8",
+          "index_entry": 1,
+          "latest_entry": 0,
+          "sub": "card-test-001",
+          "v": 1
+        }
+      ]
+    },
+    "4": {
+      "document": {
+        "sth": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY1MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDEwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNCIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiI2V0VzVXRxN2RFNXZrOU95WkthTnY4cjM0Z1A0dG9SX1pyOERpaENjYnhNIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJMNHRQQk1EcUZRNk54Wjk0RmRrUHd4SVNCZEE5YnlKY2hwVDVZNjZDc3pnIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMTAwLCJ0cmVlX3NpemUiOjR9.76qS2G0vdrt_QACY7RK2NbGO1nSxJCWNcD9NqKz5ywewwuRyiTbeKe_FKH-gC2Mtva5SW9X0G3cA_lhwq1s1OQ",
+        "tree_size": 4
+      },
+      "jwt": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY1MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDEwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNCIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiI2V0VzVXRxN2RFNXZrOU95WkthTnY4cjM0Z1A0dG9SX1pyOERpaENjYnhNIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJMNHRQQk1EcUZRNk54Wjk0RmRrUHd4SVNCZEE5YnlKY2hwVDVZNjZDc3pnIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMTAwLCJ0cmVlX3NpemUiOjR9.76qS2G0vdrt_QACY7RK2NbGO1nSxJCWNcD9NqKz5ywewwuRyiTbeKe_FKH-gC2Mtva5SW9X0G3cA_lhwq1s1OQ",
+      "payload": {
+        "aud": "https://platform.example/.well-known/aicp-log",
+        "exp": 1700086500,
+        "hash_alg": "SHA-256",
+        "iat": 1700000100,
+        "iss": "https://platform.example",
+        "jti": "sth-size-4",
+        "kid": "test-es256-01",
+        "log_id": "https://platform.example/.well-known/aicp-log",
+        "root_hash": "6WEsUtq7dE5vk9OyZKaNv8r34gP4toR_Zr8DihCcbxM",
+        "sth_version": 1,
+        "subject_map_root": "L4tPBMDqFQ6NxZ94FdkPwxISBdA9byJchpT5Y66Cszg",
+        "subject_map_size": 2,
+        "timestamp": 1700000100,
+        "tree_size": 4
+      },
+      "subject_map": [
+        {
+          "count": 1,
+          "history_root": "fNCGPceb_hqxuNnxFl0P6CsUhdA8RLvQczZ2_dCSjh8",
+          "index_entry": 1,
+          "latest_entry": 0,
+          "sub": "card-test-001",
+          "v": 1
+        },
+        {
+          "count": 1,
+          "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+          "index_entry": 3,
+          "latest_entry": 2,
+          "sub": "card-test-002",
+          "v": 1
+        }
+      ]
+    },
+    "6": {
+      "document": {
+        "sth": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.p24k4Qh1pLCFB1j71bVl50Gdg3DYRVKqpwWe30CKLx53YqR_dh66lzuT97gS6Ih_Ima3eoTwa1X6JQp5MArwOw",
+        "tree_size": 6
+      },
+      "jwt": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.p24k4Qh1pLCFB1j71bVl50Gdg3DYRVKqpwWe30CKLx53YqR_dh66lzuT97gS6Ih_Ima3eoTwa1X6JQp5MArwOw",
+      "payload": {
+        "aud": "https://platform.example/.well-known/aicp-log",
+        "exp": 1700086700,
+        "hash_alg": "SHA-256",
+        "iat": 1700000300,
+        "iss": "https://platform.example",
+        "jti": "sth-size-6",
+        "kid": "test-es256-01",
+        "log_id": "https://platform.example/.well-known/aicp-log",
+        "root_hash": "ooaQn1E6IuZYT0-mSizWTkfI49Dff9ABHwtyUbkL5eY",
+        "sth_version": 1,
+        "subject_map_root": "ESUgaVro_a0BSmH1O_SysRjrAr0Z-o0hWuSEX-6iinM",
+        "subject_map_size": 2,
+        "timestamp": 1700000300,
+        "tree_size": 6
+      },
+      "subject_map": [
+        {
+          "count": 2,
+          "history_root": "w6dp4j3YV1kI6MCsCiz3xbdxCpXzGKdtaMLXExWIuW4",
+          "index_entry": 5,
+          "latest_entry": 4,
+          "sub": "card-test-001",
+          "v": 1
+        },
+        {
+          "count": 1,
+          "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+          "index_entry": 3,
+          "latest_entry": 2,
+          "sub": "card-test-002",
+          "v": 1
+        }
+      ]
+    }
+  },
+  "sth_max_age_seconds": 86400,
+  "vectors": [
+    {
+      "expect": "pass",
+      "held_sths": [
+        "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.p24k4Qh1pLCFB1j71bVl50Gdg3DYRVKqpwWe30CKLx53YqR_dh66lzuT97gS6Ih_Ima3eoTwa1X6JQp5MArwOw"
+      ],
+      "id": "inclusion-entry-0",
+      "presentation": {
+        "attestation": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJjbGFpbXMiOnsiY29udHJhY3RzX2NvbXBsZXRlZCI6MX0sImV4cCI6MTcwMDA4NjQwMCwiaWF0IjoxNzAwMDAwMDAwLCJpc3MiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJqdGkiOiJqdGktcHJlcy0wMDIiLCJraWQiOiJ0ZXN0LWVzMjU2LTAxIiwibG9nX3Byb29mIjp7ImVudHJ5X2p0aSI6Imp0aS1yZXAtMDAyIiwiaW5jbHVzaW9uX3BhdGgiOlsib3RkTkx4dDFmU0JXSUlsUkNVQmktZVQ5dGxRZWs3eTN3NzFoUmFOYXRtcyIsIlJ4VEc0OUJqSmRjWWtUM3pQdWVwLTc4WFFvWVZMZVFlc2tac19FdXdGNmciLCJjeUtxQnRPbmVELVRsNVZHY3gwRWVDd21yeEVDUk5ITWRsTFI3MGp2SVJVIl0sImluZGV4IjoyLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwidHJlZV9zaXplIjo2fSwic3ViIjoiY2FyZC10ZXN0LTAwMiJ9.0B7h1VFyUdNETmXjccoEC4vpswLPwLstM0EzFqagtSzR6Lhgg4ImwUmErrxaEfBqiNluQvpm8fy1Ijs3Vpyx5w",
+        "disclosures": [
+          {
+            "detail": {
+              "outcome": "fulfilled"
+            },
+            "index": 2,
+            "salt": "IiIiIiIiIiIiIiIiIiIiIg"
+          }
+        ],
+        "history_proof": {
+          "checkpoint": {
+            "count": 1,
+            "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "index_entry": 3,
+            "latest_entry": 2,
+            "sub": "card-test-002",
+            "v": 1
+          },
+          "entries": [
+            {
+              "entry": {
+                "counterparty_id": "cp-bob",
+                "detail_commit": "F0E2KvL3bPD6e9C_ZSfGP9hQLfS1fR80X2t1967QcoM",
+                "entry_type": "attestation",
+                "event": "contract_completed",
+                "iat": 1700000100,
+                "iss": "https://platform.example",
+                "jti": "jti-rep-002",
+                "settlement_hash": "Y8TYkGx3LDdROF2otphpReS0lLzaNKhekdzEwMhMrv4",
+                "sub": "card-test-002",
+                "v": 1
+              },
+              "index": 2
+            }
+          ],
+          "index_entry": {
+            "count": 1,
+            "entry_type": "subject_index",
+            "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "iat": 1700000100,
+            "indices": [
+              2
+            ],
+            "iss": "https://platform.example",
+            "jti": "jti-idx-002-1",
+            "sub": "card-test-002",
+            "v": 1
+          },
+          "index_entry_inclusion_path": [
+            "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "RxTG49BjJdcYkT3zPuep-78XQoYVLeQeskZs_EuwF6g",
+            "cyKqBtOneD-Tl5VGcx0EeCwmrxECRNHMdlLR70jvIRU"
+          ],
+          "map_inclusion_path": [
+            "i8Av8Ei4m7O2VMniJjTuqAA4UNy66MI3Id-L8UjA6s8"
+          ],
+          "map_index": 1,
+          "map_size": 2
+        },
+        "sth": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.p24k4Qh1pLCFB1j71bVl50Gdg3DYRVKqpwWe30CKLx53YqR_dh66lzuT97gS6Ih_Ima3eoTwa1X6JQp5MArwOw"
+      },
+      "score": {
+        "active_contract_settlements": 1,
+        "distinct_counterparties": 1,
+        "revoked_jtis": []
+      },
+      "status": "active"
+    },
+    {
+      "expect": "pass",
+      "held_sths": [
+        "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY1MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDEwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNCIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiI2V0VzVXRxN2RFNXZrOU95WkthTnY4cjM0Z1A0dG9SX1pyOERpaENjYnhNIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJMNHRQQk1EcUZRNk54Wjk0RmRrUHd4SVNCZEE5YnlKY2hwVDVZNjZDc3pnIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMTAwLCJ0cmVlX3NpemUiOjR9.76qS2G0vdrt_QACY7RK2NbGO1nSxJCWNcD9NqKz5ywewwuRyiTbeKe_FKH-gC2Mtva5SW9X0G3cA_lhwq1s1OQ",
+        "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.p24k4Qh1pLCFB1j71bVl50Gdg3DYRVKqpwWe30CKLx53YqR_dh66lzuT97gS6Ih_Ima3eoTwa1X6JQp5MArwOw"
+      ],
+      "id": "consistency-4-to-6",
+      "presentation": {
+        "attestation": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJjbGFpbXMiOnsiY29udHJhY3RzX2NvbXBsZXRlZCI6MX0sImV4cCI6MTcwMDA4NjQwMCwiaWF0IjoxNzAwMDAwMDAwLCJpc3MiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJqdGkiOiJqdGktcHJlcy0wMDItb2xkIiwia2lkIjoidGVzdC1lczI1Ni0wMSIsImxvZ19wcm9vZiI6eyJlbnRyeV9qdGkiOiJqdGktcmVwLTAwMiIsImluY2x1c2lvbl9wYXRoIjpbIm90ZE5MeHQxZlNCV0lJbFJDVUJpLWVUOXRsUWVrN3kzdzcxaFJhTmF0bXMiLCJSeFRHNDlCakpkY1lrVDN6UHVlcC03OFhRb1lWTGVRZXNrWnNfRXV3RjZnIl0sImluZGV4IjoyLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiI2V0VzVXRxN2RFNXZrOU95WkthTnY4cjM0Z1A0dG9SX1pyOERpaENjYnhNIiwidHJlZV9zaXplIjo0fSwic3ViIjoiY2FyZC10ZXN0LTAwMiJ9.kMIovmaP6hwVyCBakBh2Nk_sUXvXI3BlqWnmBWfKrrWiQPOevcX7yR2KOof6n-4ygWxTo5uPvcpmRYXp96SUzg",
+        "consistency_path": [
+          "cyKqBtOneD-Tl5VGcx0EeCwmrxECRNHMdlLR70jvIRU"
+        ],
+        "disclosures": [
+          {
+            "detail": {
+              "outcome": "fulfilled"
+            },
+            "index": 2,
+            "salt": "IiIiIiIiIiIiIiIiIiIiIg"
+          }
+        ],
+        "history_proof": {
+          "checkpoint": {
+            "count": 1,
+            "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "index_entry": 3,
+            "latest_entry": 2,
+            "sub": "card-test-002",
+            "v": 1
+          },
+          "entries": [
+            {
+              "entry": {
+                "counterparty_id": "cp-bob",
+                "detail_commit": "F0E2KvL3bPD6e9C_ZSfGP9hQLfS1fR80X2t1967QcoM",
+                "entry_type": "attestation",
+                "event": "contract_completed",
+                "iat": 1700000100,
+                "iss": "https://platform.example",
+                "jti": "jti-rep-002",
+                "settlement_hash": "Y8TYkGx3LDdROF2otphpReS0lLzaNKhekdzEwMhMrv4",
+                "sub": "card-test-002",
+                "v": 1
+              },
+              "index": 2
+            }
+          ],
+          "index_entry": {
+            "count": 1,
+            "entry_type": "subject_index",
+            "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "iat": 1700000100,
+            "indices": [
+              2
+            ],
+            "iss": "https://platform.example",
+            "jti": "jti-idx-002-1",
+            "sub": "card-test-002",
+            "v": 1
+          },
+          "index_entry_inclusion_path": [
+            "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "RxTG49BjJdcYkT3zPuep-78XQoYVLeQeskZs_EuwF6g",
+            "cyKqBtOneD-Tl5VGcx0EeCwmrxECRNHMdlLR70jvIRU"
+          ],
+          "map_inclusion_path": [
+            "i8Av8Ei4m7O2VMniJjTuqAA4UNy66MI3Id-L8UjA6s8"
+          ],
+          "map_index": 1,
+          "map_size": 2
+        },
+        "sth": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.p24k4Qh1pLCFB1j71bVl50Gdg3DYRVKqpwWe30CKLx53YqR_dh66lzuT97gS6Ih_Ima3eoTwa1X6JQp5MArwOw"
+      },
+      "prior_history_proof": {
+        "checkpoint": {
+          "count": 1,
+          "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+          "index_entry": 3,
+          "latest_entry": 2,
+          "sub": "card-test-002",
+          "v": 1
+        },
+        "entries": [
+          {
+            "entry": {
+              "counterparty_id": "cp-bob",
+              "detail_commit": "F0E2KvL3bPD6e9C_ZSfGP9hQLfS1fR80X2t1967QcoM",
+              "entry_type": "attestation",
+              "event": "contract_completed",
+              "iat": 1700000100,
+              "iss": "https://platform.example",
+              "jti": "jti-rep-002",
+              "settlement_hash": "Y8TYkGx3LDdROF2otphpReS0lLzaNKhekdzEwMhMrv4",
+              "sub": "card-test-002",
+              "v": 1
+            },
+            "index": 2
+          }
+        ],
+        "index_entry": {
+          "count": 1,
+          "entry_type": "subject_index",
+          "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+          "iat": 1700000100,
+          "indices": [
+            2
+          ],
+          "iss": "https://platform.example",
+          "jti": "jti-idx-002-1",
+          "sub": "card-test-002",
+          "v": 1
+        },
+        "index_entry_inclusion_path": [
+          "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+          "RxTG49BjJdcYkT3zPuep-78XQoYVLeQeskZs_EuwF6g"
+        ],
+        "map_inclusion_path": [
+          "g8fBRLXkZwjOPbo8xxZDZ1bFwrIwx1sH2oq5q9tNExw"
+        ],
+        "map_index": 1,
+        "map_size": 2
+      },
+      "score": {
+        "active_contract_settlements": 1,
+        "distinct_counterparties": 1,
+        "revoked_jtis": []
+      },
+      "status": "active"
+    },
+    {
+      "expect": "pass",
+      "held_sths": [
+        "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.p24k4Qh1pLCFB1j71bVl50Gdg3DYRVKqpwWe30CKLx53YqR_dh66lzuT97gS6Ih_Ima3eoTwa1X6JQp5MArwOw",
+        "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY1MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDEwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNCIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiI2V0VzVXRxN2RFNXZrOU95WkthTnY4cjM0Z1A0dG9SX1pyOERpaENjYnhNIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJMNHRQQk1EcUZRNk54Wjk0RmRrUHd4SVNCZEE5YnlKY2hwVDVZNjZDc3pnIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMTAwLCJ0cmVlX3NpemUiOjR9.76qS2G0vdrt_QACY7RK2NbGO1nSxJCWNcD9NqKz5ywewwuRyiTbeKe_FKH-gC2Mtva5SW9X0G3cA_lhwq1s1OQ"
+      ],
+      "id": "sth-order-6-then-4",
+      "presentation": {
+        "attestation": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJjbGFpbXMiOnsiY29udHJhY3RzX2NvbXBsZXRlZCI6MX0sImV4cCI6MTcwMDA4NjQwMCwiaWF0IjoxNzAwMDAwMDAwLCJpc3MiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJqdGkiOiJqdGktcHJlcy0wMDItb2xkIiwia2lkIjoidGVzdC1lczI1Ni0wMSIsImxvZ19wcm9vZiI6eyJlbnRyeV9qdGkiOiJqdGktcmVwLTAwMiIsImluY2x1c2lvbl9wYXRoIjpbIm90ZE5MeHQxZlNCV0lJbFJDVUJpLWVUOXRsUWVrN3kzdzcxaFJhTmF0bXMiLCJSeFRHNDlCakpkY1lrVDN6UHVlcC03OFhRb1lWTGVRZXNrWnNfRXV3RjZnIl0sImluZGV4IjoyLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiI2V0VzVXRxN2RFNXZrOU95WkthTnY4cjM0Z1A0dG9SX1pyOERpaENjYnhNIiwidHJlZV9zaXplIjo0fSwic3ViIjoiY2FyZC10ZXN0LTAwMiJ9.kMIovmaP6hwVyCBakBh2Nk_sUXvXI3BlqWnmBWfKrrWiQPOevcX7yR2KOof6n-4ygWxTo5uPvcpmRYXp96SUzg",
+        "consistency_path": [
+          "cyKqBtOneD-Tl5VGcx0EeCwmrxECRNHMdlLR70jvIRU"
+        ],
+        "disclosures": [
+          {
+            "detail": {
+              "outcome": "fulfilled"
+            },
+            "index": 2,
+            "salt": "IiIiIiIiIiIiIiIiIiIiIg"
+          }
+        ],
+        "history_proof": {
+          "checkpoint": {
+            "count": 1,
+            "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "index_entry": 3,
+            "latest_entry": 2,
+            "sub": "card-test-002",
+            "v": 1
+          },
+          "entries": [
+            {
+              "entry": {
+                "counterparty_id": "cp-bob",
+                "detail_commit": "F0E2KvL3bPD6e9C_ZSfGP9hQLfS1fR80X2t1967QcoM",
+                "entry_type": "attestation",
+                "event": "contract_completed",
+                "iat": 1700000100,
+                "iss": "https://platform.example",
+                "jti": "jti-rep-002",
+                "settlement_hash": "Y8TYkGx3LDdROF2otphpReS0lLzaNKhekdzEwMhMrv4",
+                "sub": "card-test-002",
+                "v": 1
+              },
+              "index": 2
+            }
+          ],
+          "index_entry": {
+            "count": 1,
+            "entry_type": "subject_index",
+            "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "iat": 1700000100,
+            "indices": [
+              2
+            ],
+            "iss": "https://platform.example",
+            "jti": "jti-idx-002-1",
+            "sub": "card-test-002",
+            "v": 1
+          },
+          "index_entry_inclusion_path": [
+            "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "RxTG49BjJdcYkT3zPuep-78XQoYVLeQeskZs_EuwF6g",
+            "cyKqBtOneD-Tl5VGcx0EeCwmrxECRNHMdlLR70jvIRU"
+          ],
+          "map_inclusion_path": [
+            "i8Av8Ei4m7O2VMniJjTuqAA4UNy66MI3Id-L8UjA6s8"
+          ],
+          "map_index": 1,
+          "map_size": 2
+        },
+        "sth": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.p24k4Qh1pLCFB1j71bVl50Gdg3DYRVKqpwWe30CKLx53YqR_dh66lzuT97gS6Ih_Ima3eoTwa1X6JQp5MArwOw"
+      },
+      "prior_history_proof": {
+        "checkpoint": {
+          "count": 1,
+          "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+          "index_entry": 3,
+          "latest_entry": 2,
+          "sub": "card-test-002",
+          "v": 1
+        },
+        "entries": [
+          {
+            "entry": {
+              "counterparty_id": "cp-bob",
+              "detail_commit": "F0E2KvL3bPD6e9C_ZSfGP9hQLfS1fR80X2t1967QcoM",
+              "entry_type": "attestation",
+              "event": "contract_completed",
+              "iat": 1700000100,
+              "iss": "https://platform.example",
+              "jti": "jti-rep-002",
+              "settlement_hash": "Y8TYkGx3LDdROF2otphpReS0lLzaNKhekdzEwMhMrv4",
+              "sub": "card-test-002",
+              "v": 1
+            },
+            "index": 2
+          }
+        ],
+        "index_entry": {
+          "count": 1,
+          "entry_type": "subject_index",
+          "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+          "iat": 1700000100,
+          "indices": [
+            2
+          ],
+          "iss": "https://platform.example",
+          "jti": "jti-idx-002-1",
+          "sub": "card-test-002",
+          "v": 1
+        },
+        "index_entry_inclusion_path": [
+          "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+          "RxTG49BjJdcYkT3zPuep-78XQoYVLeQeskZs_EuwF6g"
+        ],
+        "map_inclusion_path": [
+          "g8fBRLXkZwjOPbo8xxZDZ1bFwrIwx1sH2oq5q9tNExw"
+        ],
+        "map_index": 1,
+        "map_size": 2
+      },
+      "score": {
+        "active_contract_settlements": 1,
+        "distinct_counterparties": 1,
+        "revoked_jtis": []
+      },
+      "status": "active"
+    },
+    {
+      "expect": "pass",
+      "held_sths": [
+        "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwNzY0MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTY5OTk5MDAwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtMCIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiI0N0RFUXBqOEhCU2EtX1RJbVctNUpDZXVRZVJrbTVOTXBKV1pHM2hTdUZVIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiI0N0RFUXBqOEhCU2EtX1RJbVctNUpDZXVRZVJrbTVOTXBKV1pHM2hTdUZVIiwic3ViamVjdF9tYXBfc2l6ZSI6MCwidGltZXN0YW1wIjoxNjk5OTkwMDAwLCJ0cmVlX3NpemUiOjB9.ypxRrLegfRZXNSHfQHUmu9qqiPK-2BaKqfyhv65kRONhdNAHp2a-jaFuInx7zKEH0sI5ZjcnwiyHEnDKNIcA1w",
+        "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY0MjAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDAyMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtMiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJSeFRHNDlCakpkY1lrVDN6UHVlcC03OFhRb1lWTGVRZXNrWnNfRXV3RjZnIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJnOGZCUkxYa1p3ak9QYm84eHhaRFoxYkZ3ckl3eDFzSDJvcTVxOXRORXh3Iiwic3ViamVjdF9tYXBfc2l6ZSI6MSwidGltZXN0YW1wIjoxNzAwMDAwMDIwLCJ0cmVlX3NpemUiOjJ9.S9zpWgsMEceCbVD0ywpLoT3_oz-Xy3w312kca0WXjQovT45vZqe9AN4lOdf-Uu9pifks2vCa7AN1d_SqNJ7hag",
+        "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.p24k4Qh1pLCFB1j71bVl50Gdg3DYRVKqpwWe30CKLx53YqR_dh66lzuT97gS6Ih_Ima3eoTwa1X6JQp5MArwOw"
+      ],
+      "id": "older-sth-size-0-and-2",
+      "presentation": {
+        "attestation": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJjbGFpbXMiOnsiY29udHJhY3RzX2NvbXBsZXRlZCI6MX0sImV4cCI6MTcwMDA4NjQwMCwiaWF0IjoxNzAwMDAwMDAwLCJpc3MiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJqdGkiOiJqdGktcHJlcy0wMDIiLCJraWQiOiJ0ZXN0LWVzMjU2LTAxIiwibG9nX3Byb29mIjp7ImVudHJ5X2p0aSI6Imp0aS1yZXAtMDAyIiwiaW5jbHVzaW9uX3BhdGgiOlsib3RkTkx4dDFmU0JXSUlsUkNVQmktZVQ5dGxRZWs3eTN3NzFoUmFOYXRtcyIsIlJ4VEc0OUJqSmRjWWtUM3pQdWVwLTc4WFFvWVZMZVFlc2tac19FdXdGNmciLCJjeUtxQnRPbmVELVRsNVZHY3gwRWVDd21yeEVDUk5ITWRsTFI3MGp2SVJVIl0sImluZGV4IjoyLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwidHJlZV9zaXplIjo2fSwic3ViIjoiY2FyZC10ZXN0LTAwMiJ9.0B7h1VFyUdNETmXjccoEC4vpswLPwLstM0EzFqagtSzR6Lhgg4ImwUmErrxaEfBqiNluQvpm8fy1Ijs3Vpyx5w",
+        "disclosures": [
+          {
+            "detail": {
+              "outcome": "fulfilled"
+            },
+            "index": 2,
+            "salt": "IiIiIiIiIiIiIiIiIiIiIg"
+          }
+        ],
+        "history_proof": {
+          "checkpoint": {
+            "count": 1,
+            "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "index_entry": 3,
+            "latest_entry": 2,
+            "sub": "card-test-002",
+            "v": 1
+          },
+          "entries": [
+            {
+              "entry": {
+                "counterparty_id": "cp-bob",
+                "detail_commit": "F0E2KvL3bPD6e9C_ZSfGP9hQLfS1fR80X2t1967QcoM",
+                "entry_type": "attestation",
+                "event": "contract_completed",
+                "iat": 1700000100,
+                "iss": "https://platform.example",
+                "jti": "jti-rep-002",
+                "settlement_hash": "Y8TYkGx3LDdROF2otphpReS0lLzaNKhekdzEwMhMrv4",
+                "sub": "card-test-002",
+                "v": 1
+              },
+              "index": 2
+            }
+          ],
+          "index_entry": {
+            "count": 1,
+            "entry_type": "subject_index",
+            "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "iat": 1700000100,
+            "indices": [
+              2
+            ],
+            "iss": "https://platform.example",
+            "jti": "jti-idx-002-1",
+            "sub": "card-test-002",
+            "v": 1
+          },
+          "index_entry_inclusion_path": [
+            "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "RxTG49BjJdcYkT3zPuep-78XQoYVLeQeskZs_EuwF6g",
+            "cyKqBtOneD-Tl5VGcx0EeCwmrxECRNHMdlLR70jvIRU"
+          ],
+          "map_inclusion_path": [
+            "i8Av8Ei4m7O2VMniJjTuqAA4UNy66MI3Id-L8UjA6s8"
+          ],
+          "map_index": 1,
+          "map_size": 2
+        },
+        "sth": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.p24k4Qh1pLCFB1j71bVl50Gdg3DYRVKqpwWe30CKLx53YqR_dh66lzuT97gS6Ih_Ima3eoTwa1X6JQp5MArwOw"
+      },
+      "score": {
+        "active_contract_settlements": 1,
+        "distinct_counterparties": 1,
+        "revoked_jtis": []
+      },
+      "status": "active"
+    },
+    {
+      "expect": "pass",
+      "held_sths": [
+        "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.p24k4Qh1pLCFB1j71bVl50Gdg3DYRVKqpwWe30CKLx53YqR_dh66lzuT97gS6Ih_Ima3eoTwa1X6JQp5MArwOw"
+      ],
+      "id": "completeness-card-test-001",
+      "presentation": {
+        "attestation": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJjbGFpbXMiOnsiY29udHJhY3RzX2NvbXBsZXRlZCI6MX0sImV4cCI6MTcwMDA4NjQwMCwiaWF0IjoxNzAwMDAwMDAwLCJpc3MiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJqdGkiOiJqdGktcHJlcy0wMDEtZnJlc2giLCJraWQiOiJ0ZXN0LWVzMjU2LTAxIiwibG9nX3Byb29mIjp7ImVudHJ5X2p0aSI6Imp0aS1yZXAtMDAxIiwiaW5jbHVzaW9uX3BhdGgiOlsiRGdLU01mb19tU1YxcGhxWHpnNlFSdElDd0JfWXdTTzJYSkZJeEF1N2hobyIsImVaMWNjSHZTZ0lTR2NHWGYyMTR1dnRGRDJWZUJWc1p2Q3R5NUgxcERSYVEiLCJjeUtxQnRPbmVELVRsNVZHY3gwRWVDd21yeEVDUk5ITWRsTFI3MGp2SVJVIl0sImluZGV4IjowLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwidHJlZV9zaXplIjo2fSwic3ViIjoiY2FyZC10ZXN0LTAwMSJ9.Wj6VEVNr__NOsFR-gfg85HJRg_iEOohPXfO9MVuudUnVuyzODfU926mETtjI_ZE0S_UrXYtTWG3LWIqBPU5nww",
+        "disclosures": [
+          {
+            "detail": {
+              "amount_minor": 5000,
+              "currency": "USD",
+              "outcome": "fulfilled"
+            },
+            "index": 0,
+            "salt": "EREREREREREREREREREREQ"
+          },
+          {
+            "detail": {
+              "outcome": "reversed"
+            },
+            "index": 4,
+            "salt": "MzMzMzMzMzMzMzMzMzMzMw"
+          }
+        ],
+        "history_proof": {
+          "checkpoint": {
+            "count": 2,
+            "history_root": "w6dp4j3YV1kI6MCsCiz3xbdxCpXzGKdtaMLXExWIuW4",
+            "index_entry": 5,
+            "latest_entry": 4,
+            "sub": "card-test-001",
+            "v": 1
+          },
+          "entries": [
+            {
+              "entry": {
+                "counterparty_id": "cp-alice",
+                "detail_commit": "xbvWfWmu5wP6sGU_hfXgJjtfPklEFzLBOaMKjCP1eew",
+                "entry_type": "attestation",
+                "event": "contract_completed",
+                "iat": 1700000000,
+                "iss": "https://platform.example",
+                "jti": "jti-rep-001",
+                "settlement_hash": "SExusiG52R4sQZFfomnIsReBC5aXmJAAhvAxBnILj5g",
+                "sub": "card-test-001",
+                "v": 1
+              },
+              "index": 0
+            },
+            {
+              "entry": {
+                "detail_commit": "rBRBawqQo4mnv5l2nZa2Sk2bPfbU89gQk1TYiTTvgq0",
+                "entry_type": "revocation",
+                "iat": 1700000200,
+                "iss": "https://platform.example",
+                "jti": "jti-rev-001",
+                "reason": "outcome_reversed",
+                "sub": "card-test-001",
+                "target_index": 0,
+                "target_jti": "jti-rep-001",
+                "v": 1
+              },
+              "index": 4
+            }
+          ],
+          "index_entry": {
+            "count": 2,
+            "entry_type": "subject_index",
+            "history_root": "w6dp4j3YV1kI6MCsCiz3xbdxCpXzGKdtaMLXExWIuW4",
+            "iat": 1700000200,
+            "indices": [
+              0,
+              4
+            ],
+            "iss": "https://platform.example",
+            "jti": "jti-idx-001-2",
+            "sub": "card-test-001",
+            "v": 1
+          },
+          "index_entry_inclusion_path": [
+            "Wn2Ty8t_c275YBiRhxAFNX7GzuFIqbrbBi4YaNlFlmo",
+            "6WEsUtq7dE5vk9OyZKaNv8r34gP4toR_Zr8DihCcbxM"
+          ],
+          "map_inclusion_path": [
+            "9MNWZOEKSRCtXntOOww1ndN8CFOB7hKBzAlBdMV9PCw"
+          ],
+          "map_index": 0,
+          "map_size": 2
+        },
+        "sth": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.p24k4Qh1pLCFB1j71bVl50Gdg3DYRVKqpwWe30CKLx53YqR_dh66lzuT97gS6Ih_Ima3eoTwa1X6JQp5MArwOw"
+      },
+      "score": {
+        "active_contract_settlements": 0,
+        "distinct_counterparties": 0,
+        "revoked_jtis": [
+          "jti-rep-001"
+        ]
+      },
+      "status": "revoked"
+    },
+    {
+      "base_expect": "pass",
+      "expect": "revoked",
+      "held_sths": [
+        "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.p24k4Qh1pLCFB1j71bVl50Gdg3DYRVKqpwWe30CKLx53YqR_dh66lzuT97gS6Ih_Ima3eoTwa1X6JQp5MArwOw"
+      ],
+      "id": "revoked-jti-rep-001",
+      "presentation": {
+        "attestation": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJjbGFpbXMiOnsiY29udHJhY3RzX2NvbXBsZXRlZCI6MX0sImV4cCI6MTcwMDA4NjQwMCwiaWF0IjoxNzAwMDAwMDAwLCJpc3MiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJqdGkiOiJqdGktcHJlcy0wMDEiLCJraWQiOiJ0ZXN0LWVzMjU2LTAxIiwibG9nX3Byb29mIjp7ImVudHJ5X2p0aSI6Imp0aS1yZXAtMDAxIiwiaW5jbHVzaW9uX3BhdGgiOlsiRGdLU01mb19tU1YxcGhxWHpnNlFSdElDd0JfWXdTTzJYSkZJeEF1N2hobyIsImVaMWNjSHZTZ0lTR2NHWGYyMTR1dnRGRDJWZUJWc1p2Q3R5NUgxcERSYVEiXSwiaW5kZXgiOjAsImxvZ19pZCI6Imh0dHBzOi8vcGxhdGZvcm0uZXhhbXBsZS8ud2VsbC1rbm93bi9haWNwLWxvZyIsInJvb3RfaGFzaCI6IjZXRXNVdHE3ZEU1dms5T3laS2FOdjhyMzRnUDR0b1JfWnI4RGloQ2NieE0iLCJ0cmVlX3NpemUiOjR9LCJzdWIiOiJjYXJkLXRlc3QtMDAxIn0.6GIYIRLTrXe_2Js0SvA3VTzpZcszjAe9onE3u-ic7pP2bgzeEUEO9HeUPD5VDHxJ6UE4I8wNrsX3lIqMxo5hvg",
+        "consistency_path": [
+          "cyKqBtOneD-Tl5VGcx0EeCwmrxECRNHMdlLR70jvIRU"
+        ],
+        "disclosures": [
+          {
+            "detail": {
+              "amount_minor": 5000,
+              "currency": "USD",
+              "outcome": "fulfilled"
+            },
+            "index": 0,
+            "salt": "EREREREREREREREREREREQ"
+          },
+          {
+            "detail": {
+              "outcome": "reversed"
+            },
+            "index": 4,
+            "salt": "MzMzMzMzMzMzMzMzMzMzMw"
+          }
+        ],
+        "history_proof": {
+          "checkpoint": {
+            "count": 2,
+            "history_root": "w6dp4j3YV1kI6MCsCiz3xbdxCpXzGKdtaMLXExWIuW4",
+            "index_entry": 5,
+            "latest_entry": 4,
+            "sub": "card-test-001",
+            "v": 1
+          },
+          "entries": [
+            {
+              "entry": {
+                "counterparty_id": "cp-alice",
+                "detail_commit": "xbvWfWmu5wP6sGU_hfXgJjtfPklEFzLBOaMKjCP1eew",
+                "entry_type": "attestation",
+                "event": "contract_completed",
+                "iat": 1700000000,
+                "iss": "https://platform.example",
+                "jti": "jti-rep-001",
+                "settlement_hash": "SExusiG52R4sQZFfomnIsReBC5aXmJAAhvAxBnILj5g",
+                "sub": "card-test-001",
+                "v": 1
+              },
+              "index": 0
+            },
+            {
+              "entry": {
+                "detail_commit": "rBRBawqQo4mnv5l2nZa2Sk2bPfbU89gQk1TYiTTvgq0",
+                "entry_type": "revocation",
+                "iat": 1700000200,
+                "iss": "https://platform.example",
+                "jti": "jti-rev-001",
+                "reason": "outcome_reversed",
+                "sub": "card-test-001",
+                "target_index": 0,
+                "target_jti": "jti-rep-001",
+                "v": 1
+              },
+              "index": 4
+            }
+          ],
+          "index_entry": {
+            "count": 2,
+            "entry_type": "subject_index",
+            "history_root": "w6dp4j3YV1kI6MCsCiz3xbdxCpXzGKdtaMLXExWIuW4",
+            "iat": 1700000200,
+            "indices": [
+              0,
+              4
+            ],
+            "iss": "https://platform.example",
+            "jti": "jti-idx-001-2",
+            "sub": "card-test-001",
+            "v": 1
+          },
+          "index_entry_inclusion_path": [
+            "Wn2Ty8t_c275YBiRhxAFNX7GzuFIqbrbBi4YaNlFlmo",
+            "6WEsUtq7dE5vk9OyZKaNv8r34gP4toR_Zr8DihCcbxM"
+          ],
+          "map_inclusion_path": [
+            "9MNWZOEKSRCtXntOOww1ndN8CFOB7hKBzAlBdMV9PCw"
+          ],
+          "map_index": 0,
+          "map_size": 2
+        },
+        "sth": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.p24k4Qh1pLCFB1j71bVl50Gdg3DYRVKqpwWe30CKLx53YqR_dh66lzuT97gS6Ih_Ima3eoTwa1X6JQp5MArwOw"
+      },
+      "score": {
+        "active_contract_settlements": 0,
+        "distinct_counterparties": 0,
+        "revoked_jtis": [
+          "jti-rep-001"
+        ]
+      }
+    },
+    {
+      "base_expect": "pass",
+      "expect": "revoked",
+      "held_sths": [
+        "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.p24k4Qh1pLCFB1j71bVl50Gdg3DYRVKqpwWe30CKLx53YqR_dh66lzuT97gS6Ih_Ima3eoTwa1X6JQp5MArwOw"
+      ],
+      "id": "staple-older-sth-revoked",
+      "presentation": {
+        "attestation": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJjbGFpbXMiOnsiY29udHJhY3RzX2NvbXBsZXRlZCI6MX0sImV4cCI6MTcwMDA4NjQwMCwiaWF0IjoxNzAwMDAwMDAwLCJpc3MiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJqdGkiOiJqdGktcHJlcy0wMDEiLCJraWQiOiJ0ZXN0LWVzMjU2LTAxIiwibG9nX3Byb29mIjp7ImVudHJ5X2p0aSI6Imp0aS1yZXAtMDAxIiwiaW5jbHVzaW9uX3BhdGgiOlsiRGdLU01mb19tU1YxcGhxWHpnNlFSdElDd0JfWXdTTzJYSkZJeEF1N2hobyIsImVaMWNjSHZTZ0lTR2NHWGYyMTR1dnRGRDJWZUJWc1p2Q3R5NUgxcERSYVEiXSwiaW5kZXgiOjAsImxvZ19pZCI6Imh0dHBzOi8vcGxhdGZvcm0uZXhhbXBsZS8ud2VsbC1rbm93bi9haWNwLWxvZyIsInJvb3RfaGFzaCI6IjZXRXNVdHE3ZEU1dms5T3laS2FOdjhyMzRnUDR0b1JfWnI4RGloQ2NieE0iLCJ0cmVlX3NpemUiOjR9LCJzdWIiOiJjYXJkLXRlc3QtMDAxIn0.6GIYIRLTrXe_2Js0SvA3VTzpZcszjAe9onE3u-ic7pP2bgzeEUEO9HeUPD5VDHxJ6UE4I8wNrsX3lIqMxo5hvg",
+        "consistency_path": [
+          "cyKqBtOneD-Tl5VGcx0EeCwmrxECRNHMdlLR70jvIRU"
+        ],
+        "disclosures": [
+          {
+            "detail": {
+              "amount_minor": 5000,
+              "currency": "USD",
+              "outcome": "fulfilled"
+            },
+            "index": 0,
+            "salt": "EREREREREREREREREREREQ"
+          },
+          {
+            "detail": {
+              "outcome": "reversed"
+            },
+            "index": 4,
+            "salt": "MzMzMzMzMzMzMzMzMzMzMw"
+          }
+        ],
+        "history_proof": {
+          "checkpoint": {
+            "count": 2,
+            "history_root": "w6dp4j3YV1kI6MCsCiz3xbdxCpXzGKdtaMLXExWIuW4",
+            "index_entry": 5,
+            "latest_entry": 4,
+            "sub": "card-test-001",
+            "v": 1
+          },
+          "entries": [
+            {
+              "entry": {
+                "counterparty_id": "cp-alice",
+                "detail_commit": "xbvWfWmu5wP6sGU_hfXgJjtfPklEFzLBOaMKjCP1eew",
+                "entry_type": "attestation",
+                "event": "contract_completed",
+                "iat": 1700000000,
+                "iss": "https://platform.example",
+                "jti": "jti-rep-001",
+                "settlement_hash": "SExusiG52R4sQZFfomnIsReBC5aXmJAAhvAxBnILj5g",
+                "sub": "card-test-001",
+                "v": 1
+              },
+              "index": 0
+            },
+            {
+              "entry": {
+                "detail_commit": "rBRBawqQo4mnv5l2nZa2Sk2bPfbU89gQk1TYiTTvgq0",
+                "entry_type": "revocation",
+                "iat": 1700000200,
+                "iss": "https://platform.example",
+                "jti": "jti-rev-001",
+                "reason": "outcome_reversed",
+                "sub": "card-test-001",
+                "target_index": 0,
+                "target_jti": "jti-rep-001",
+                "v": 1
+              },
+              "index": 4
+            }
+          ],
+          "index_entry": {
+            "count": 2,
+            "entry_type": "subject_index",
+            "history_root": "w6dp4j3YV1kI6MCsCiz3xbdxCpXzGKdtaMLXExWIuW4",
+            "iat": 1700000200,
+            "indices": [
+              0,
+              4
+            ],
+            "iss": "https://platform.example",
+            "jti": "jti-idx-001-2",
+            "sub": "card-test-001",
+            "v": 1
+          },
+          "index_entry_inclusion_path": [
+            "Wn2Ty8t_c275YBiRhxAFNX7GzuFIqbrbBi4YaNlFlmo",
+            "6WEsUtq7dE5vk9OyZKaNv8r34gP4toR_Zr8DihCcbxM"
+          ],
+          "map_inclusion_path": [
+            "9MNWZOEKSRCtXntOOww1ndN8CFOB7hKBzAlBdMV9PCw"
+          ],
+          "map_index": 0,
+          "map_size": 2
+        },
+        "sth": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY1MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDEwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNCIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiI2V0VzVXRxN2RFNXZrOU95WkthTnY4cjM0Z1A0dG9SX1pyOERpaENjYnhNIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJMNHRQQk1EcUZRNk54Wjk0RmRrUHd4SVNCZEE5YnlKY2hwVDVZNjZDc3pnIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMTAwLCJ0cmVlX3NpemUiOjR9.76qS2G0vdrt_QACY7RK2NbGO1nSxJCWNcD9NqKz5ywewwuRyiTbeKe_FKH-gC2Mtva5SW9X0G3cA_lhwq1s1OQ"
+      },
+      "score": {
+        "active_contract_settlements": 0,
+        "distinct_counterparties": 0,
+        "revoked_jtis": [
+          "jti-rep-001"
+        ]
+      }
+    },
+    {
+      "expect": "pass",
+      "held_sths": [
+        "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLWNvcnItb2siLCJraWQiOiJ0ZXN0LWVzMjU2LTAxIiwibG9nX2lkIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlLy53ZWxsLWtub3duL2FpY3AtbG9nIiwicm9vdF9oYXNoIjoiWjFpbGs4bzNIQXhMYUZ5WmlZcXJSbkdYRmRHbGRMeUk5VndUZzVnSzMyRSIsInN0aF92ZXJzaW9uIjoxLCJzdWJqZWN0X21hcF9yb290IjoiUlN3YXVJWGwwQnJVbUpOT01IS3g4Vks2ZlQ2TGNPNW5KS2tnckJ5N3RCayIsInN1YmplY3RfbWFwX3NpemUiOjEsInRpbWVzdGFtcCI6MTcwMDAwMDMwMCwidHJlZV9zaXplIjo0fQ.0LKxw09seplq6di9uxhxX7zde1GSBBEqJrxIIcC6-e0MLWeZbrdT1HGsks1Tx29sMyoKi27gy2ZJfndsEyMpJA"
+      ],
+      "id": "corrected-fulfilled",
+      "presentation": {
+        "attestation": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJjbGFpbXMiOnsiY29udHJhY3RzX2NvbXBsZXRlZCI6MX0sImV4cCI6MTcwMDA4NjQwMCwiaWF0IjoxNzAwMDAwMDAwLCJpc3MiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJqdGkiOiJqdGktcHJlcy1jb3JyLW9rIiwia2lkIjoidGVzdC1lczI1Ni0wMSIsImxvZ19wcm9vZiI6eyJlbnRyeV9qdGkiOiJqdGktY29yci1vayIsImluY2x1c2lvbl9wYXRoIjpbInZwcmQtbFN5RlFhdDYtZS1tWFFTdGpZdEdXVDNtUzNOSG52Z0xKR3RPRk0iLCJEbF9YTVd2emdGUl9CWVphNnFfLU9hbWZ2VktmNGZOb3hYZ0F4X0FPZlpJIl0sImluZGV4IjowLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJaMWlsazhvM0hBeExhRnlaaVlxclJuR1hGZEdsZEx5STlWd1RnNWdLMzJFIiwidHJlZV9zaXplIjo0fSwic3ViIjoiY2FyZC1jb3JyIn0.pWoH8OGDsHzigNV4nUSDZ0DHj3Ejs1FLI8e9IG9aC5e3IozKlxTl89Eku7Lx0Gu56eqwMum_xcCo61MhCL9zYA",
+        "disclosures": [
+          {
+            "detail": {
+              "amount_minor": 5000,
+              "currency": "USD",
+              "outcome": "fulfilled"
+            },
+            "index": 0,
+            "salt": "YWFhYWFhYWFhYWFhYWFhYQ"
+          },
+          {
+            "detail": {
+              "outcome": "fulfilled"
+            },
+            "index": 2,
+            "salt": "gYGBgYGBgYGBgYGBgYGBgQ"
+          }
+        ],
+        "history_proof": {
+          "checkpoint": {
+            "count": 2,
+            "history_root": "Zg5CywZX2PyL7R2rmodaLm0SDBUG0lTaFQTQakNxbIk",
+            "index_entry": 3,
+            "latest_entry": 2,
+            "sub": "card-corr",
+            "v": 1
+          },
+          "entries": [
+            {
+              "entry": {
+                "counterparty_id": "cp-corr",
+                "detail_commit": "_f0og1fDM8CHdONralJI39JrECAgJvlBAJwkyIsUkWg",
+                "entry_type": "attestation",
+                "event": "contract_completed",
+                "iat": 1700000000,
+                "iss": "https://platform.example",
+                "jti": "jti-corr-ok",
+                "settlement_hash": "BYMriy8qURIyiC7SMXmbdaj9rwBQbyXsq83d1mNxSvY",
+                "sub": "card-corr",
+                "v": 1
+              },
+              "index": 0
+            },
+            {
+              "entry": {
+                "detail_commit": "qxi3w2gCegleZROYezxmeQSmVppXSf_bBR-dh-RppI8",
+                "entry_type": "correction",
+                "iat": 1700000100,
+                "iss": "https://platform.example",
+                "jti": "jti-corr-fix-ok",
+                "reason": "outcome_reversed",
+                "sub": "card-corr",
+                "target_index": 0,
+                "target_jti": "jti-corr-ok",
+                "v": 1
+              },
+              "index": 2
+            }
+          ],
+          "index_entry": {
+            "count": 2,
+            "entry_type": "subject_index",
+            "history_root": "Zg5CywZX2PyL7R2rmodaLm0SDBUG0lTaFQTQakNxbIk",
+            "iat": 1700000100,
+            "indices": [
+              0,
+              2
+            ],
+            "iss": "https://platform.example",
+            "jti": "jti-cidx-ok-2",
+            "sub": "card-corr",
+            "v": 1
+          },
+          "index_entry_inclusion_path": [
+            "1nuiwB3Hy5nEdjU7_xLfO3SP3mYfpc5frXNkiF9rel8",
+            "AwDSr_zDoxCuep89-XPzrqJZpaIu2DaivBY7RkRiYkQ"
+          ],
+          "map_inclusion_path": [],
+          "map_index": 0,
+          "map_size": 1
+        },
+        "sth": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLWNvcnItb2siLCJraWQiOiJ0ZXN0LWVzMjU2LTAxIiwibG9nX2lkIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlLy53ZWxsLWtub3duL2FpY3AtbG9nIiwicm9vdF9oYXNoIjoiWjFpbGs4bzNIQXhMYUZ5WmlZcXJSbkdYRmRHbGRMeUk5VndUZzVnSzMyRSIsInN0aF92ZXJzaW9uIjoxLCJzdWJqZWN0X21hcF9yb290IjoiUlN3YXVJWGwwQnJVbUpOT01IS3g4Vks2ZlQ2TGNPNW5KS2tnckJ5N3RCayIsInN1YmplY3RfbWFwX3NpemUiOjEsInRpbWVzdGFtcCI6MTcwMDAwMDMwMCwidHJlZV9zaXplIjo0fQ.0LKxw09seplq6di9uxhxX7zde1GSBBEqJrxIIcC6-e0MLWeZbrdT1HGsks1Tx29sMyoKi27gy2ZJfndsEyMpJA"
+      },
+      "score": {
+        "active_contract_settlements": 1,
+        "distinct_counterparties": 1,
+        "revoked_jtis": []
+      },
+      "status": "corrected"
+    },
+    {
+      "expect": "pass",
+      "held_sths": [
+        "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLWNvcnItbm8iLCJraWQiOiJ0ZXN0LWVzMjU2LTAxIiwibG9nX2lkIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlLy53ZWxsLWtub3duL2FpY3AtbG9nIiwicm9vdF9oYXNoIjoiZkhfcTRZbUZTRFRPZTBhQXdvX2hUQlFFMDgyQ1JKSmI4b1Y2c295WVVDbyIsInN0aF92ZXJzaW9uIjoxLCJzdWJqZWN0X21hcF9yb290Ijoia3JWSmVlX0w4bTdWWDQxVU40WFZUa1BLSU9KYVZwZ0xXaHZvNlJkZGw1WSIsInN1YmplY3RfbWFwX3NpemUiOjEsInRpbWVzdGFtcCI6MTcwMDAwMDMwMCwidHJlZV9zaXplIjo0fQ.7r_RsyU_4FfFNJF99pLIWPE067k_0fNnRlaqSq68QKVCh6QADCbP-evD86sz14_AotYCGv0mOCCe91hpiejapw"
+      ],
+      "id": "corrected-not",
+      "presentation": {
+        "attestation": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJjbGFpbXMiOnsiY29udHJhY3RzX2NvbXBsZXRlZCI6MX0sImV4cCI6MTcwMDA4NjQwMCwiaWF0IjoxNzAwMDAwMDAwLCJpc3MiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJqdGkiOiJqdGktcHJlcy1jb3JyLW5vIiwia2lkIjoidGVzdC1lczI1Ni0wMSIsImxvZ19wcm9vZiI6eyJlbnRyeV9qdGkiOiJqdGktY29yci1ubyIsImluY2x1c2lvbl9wYXRoIjpbIkM1MVg0Vk1RNGZ5UUM5UjVNc0pzd1p3Qld2czBSZHE4aHhkeUJnX0FuVnMiLCJvbjhxOUdnZzl5M2E5UlUxMWY3Y2tTY212ZFdWS0xKVEFuR0Z3Ukl0U0dZIl0sImluZGV4IjowLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJmSF9xNFltRlNEVE9lMGFBd29faFRCUUUwODJDUkpKYjhvVjZzb3lZVUNvIiwidHJlZV9zaXplIjo0fSwic3ViIjoiY2FyZC1jb3JyIn0.LVuAhddefpalrFpKhQopv9pY048HBY8k8vqZaDjeNgt8o0wGaVVSBCvOXI6gKfg8deEqGL5_xh_di3vZQscG1A",
+        "disclosures": [
+          {
+            "detail": {
+              "amount_minor": 5000,
+              "currency": "USD",
+              "outcome": "fulfilled"
+            },
+            "index": 0,
+            "salt": "YmJiYmJiYmJiYmJiYmJiYg"
+          },
+          {
+            "detail": {
+              "outcome": "reversed"
+            },
+            "index": 2,
+            "salt": "goKCgoKCgoKCgoKCgoKCgg"
+          }
+        ],
+        "history_proof": {
+          "checkpoint": {
+            "count": 2,
+            "history_root": "XeEwGKbCm4oRGAwKKjEatw_LkAmoUqVKGdngeWYHssA",
+            "index_entry": 3,
+            "latest_entry": 2,
+            "sub": "card-corr",
+            "v": 1
+          },
+          "entries": [
+            {
+              "entry": {
+                "counterparty_id": "cp-corr",
+                "detail_commit": "sKj2onZbBuTb7OwynKbHW8Yaey54-6OTG5NiGKYGLCM",
+                "entry_type": "attestation",
+                "event": "contract_completed",
+                "iat": 1700000000,
+                "iss": "https://platform.example",
+                "jti": "jti-corr-no",
+                "settlement_hash": "6-VCfse2O1ibq_K-Q4d0hIsbzJn4EDfSl61fn8vPvx8",
+                "sub": "card-corr",
+                "v": 1
+              },
+              "index": 0
+            },
+            {
+              "entry": {
+                "detail_commit": "uJn0jdckJIwNBMzPHDMohog9XhykbVK58JhgdL1a0kM",
+                "entry_type": "correction",
+                "iat": 1700000100,
+                "iss": "https://platform.example",
+                "jti": "jti-corr-fix-no",
+                "reason": "outcome_reversed",
+                "sub": "card-corr",
+                "target_index": 0,
+                "target_jti": "jti-corr-no",
+                "v": 1
+              },
+              "index": 2
+            }
+          ],
+          "index_entry": {
+            "count": 2,
+            "entry_type": "subject_index",
+            "history_root": "XeEwGKbCm4oRGAwKKjEatw_LkAmoUqVKGdngeWYHssA",
+            "iat": 1700000100,
+            "indices": [
+              0,
+              2
+            ],
+            "iss": "https://platform.example",
+            "jti": "jti-cidx-no-2",
+            "sub": "card-corr",
+            "v": 1
+          },
+          "index_entry_inclusion_path": [
+            "qYgWXXY1N9VUCaSKFZ2GXX64coMfxi4jbjamQIHYwGg",
+            "JeWKa0cujdKyeI-jbc8WXyCadHBmMq-QvclqVDUSVG0"
+          ],
+          "map_inclusion_path": [],
+          "map_index": 0,
+          "map_size": 1
+        },
+        "sth": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLWNvcnItbm8iLCJraWQiOiJ0ZXN0LWVzMjU2LTAxIiwibG9nX2lkIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlLy53ZWxsLWtub3duL2FpY3AtbG9nIiwicm9vdF9oYXNoIjoiZkhfcTRZbUZTRFRPZTBhQXdvX2hUQlFFMDgyQ1JKSmI4b1Y2c295WVVDbyIsInN0aF92ZXJzaW9uIjoxLCJzdWJqZWN0X21hcF9yb290Ijoia3JWSmVlX0w4bTdWWDQxVU40WFZUa1BLSU9KYVZwZ0xXaHZvNlJkZGw1WSIsInN1YmplY3RfbWFwX3NpemUiOjEsInRpbWVzdGFtcCI6MTcwMDAwMDMwMCwidHJlZV9zaXplIjo0fQ.7r_RsyU_4FfFNJF99pLIWPE067k_0fNnRlaqSq68QKVCh6QADCbP-evD86sz14_AotYCGv0mOCCe91hpiejapw"
+      },
+      "score": {
+        "active_contract_settlements": 0,
+        "distinct_counterparties": 0,
+        "revoked_jtis": []
+      },
+      "status": "corrected"
+    },
+    {
+      "expect": "pass",
+      "held_sths": [
+        "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.p24k4Qh1pLCFB1j71bVl50Gdg3DYRVKqpwWe30CKLx53YqR_dh66lzuT97gS6Ih_Ima3eoTwa1X6JQp5MArwOw"
+      ],
+      "id": "non-inclusion-pass",
+      "presentation": {
+        "disclosures": [],
+        "history_proof": {
+          "entries": [],
+          "non_inclusion": {
+            "right": {
+              "checkpoint": {
+                "count": 2,
+                "history_root": "w6dp4j3YV1kI6MCsCiz3xbdxCpXzGKdtaMLXExWIuW4",
+                "index_entry": 5,
+                "latest_entry": 4,
+                "sub": "card-test-001",
+                "v": 1
+              },
+              "map_inclusion_path": [
+                "9MNWZOEKSRCtXntOOww1ndN8CFOB7hKBzAlBdMV9PCw"
+              ],
+              "map_index": 0
+            },
+            "sub": "card-test-000"
+          }
+        },
+        "sth": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.p24k4Qh1pLCFB1j71bVl50Gdg3DYRVKqpwWe30CKLx53YqR_dh66lzuT97gS6Ih_Ima3eoTwa1X6JQp5MArwOw"
+      }
+    },
+    {
+      "expect": "pass",
+      "held_sths": [
+        "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwNzY0MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTY5OTk5MDAwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtMCIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiI0N0RFUXBqOEhCU2EtX1RJbVctNUpDZXVRZVJrbTVOTXBKV1pHM2hTdUZVIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiI0N0RFUXBqOEhCU2EtX1RJbVctNUpDZXVRZVJrbTVOTXBKV1pHM2hTdUZVIiwic3ViamVjdF9tYXBfc2l6ZSI6MCwidGltZXN0YW1wIjoxNjk5OTkwMDAwLCJ0cmVlX3NpemUiOjB9.ypxRrLegfRZXNSHfQHUmu9qqiPK-2BaKqfyhv65kRONhdNAHp2a-jaFuInx7zKEH0sI5ZjcnwiyHEnDKNIcA1w"
+      ],
+      "id": "empty-log-sth",
+      "presentation": {
+        "disclosures": [],
+        "history_proof": {
+          "entries": [],
+          "non_inclusion": {
+            "sub": "card-test-000"
+          }
+        },
+        "sth": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwNzY0MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTY5OTk5MDAwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtMCIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiI0N0RFUXBqOEhCU2EtX1RJbVctNUpDZXVRZVJrbTVOTXBKV1pHM2hTdUZVIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiI0N0RFUXBqOEhCU2EtX1RJbVctNUpDZXVRZVJrbTVOTXBKV1pHM2hTdUZVIiwic3ViamVjdF9tYXBfc2l6ZSI6MCwidGltZXN0YW1wIjoxNjk5OTkwMDAwLCJ0cmVlX3NpemUiOjB9.ypxRrLegfRZXNSHfQHUmu9qqiPK-2BaKqfyhv65kRONhdNAHp2a-jaFuInx7zKEH0sI5ZjcnwiyHEnDKNIcA1w"
+      }
+    },
+    {
+      "expect": "reject",
+      "held_sths": [
+        "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.p24k4Qh1pLCFB1j71bVl50Gdg3DYRVKqpwWe30CKLx53YqR_dh66lzuT97gS6Ih_Ima3eoTwa1X6JQp5MArwOw"
+      ],
+      "id": "reject-bad-inclusion",
+      "presentation": {
+        "attestation": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJjbGFpbXMiOnsiY29udHJhY3RzX2NvbXBsZXRlZCI6MX0sImV4cCI6MTcwMDA4NjQwMCwiaWF0IjoxNzAwMDAwMDAwLCJpc3MiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJqdGkiOiJqdGktcHJlcy1iYWQtaW5jbCIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfcHJvb2YiOnsiZW50cnlfanRpIjoianRpLXJlcC0wMDIiLCJpbmNsdXNpb25fcGF0aCI6WyJYZGROTHh0MWZTQldJSWxSQ1VCaS1lVDl0bFFlazd5M3c3MWhSYU5hdG1zIiwiUnhURzQ5QmpKZGNZa1QzelB1ZXAtNzhYUW9ZVkxlUWVza1pzX0V1d0Y2ZyIsImN5S3FCdE9uZUQtVGw1VkdjeDBFZUN3bXJ4RUNSTkhNZGxMUjcwanZJUlUiXSwiaW5kZXgiOjIsImxvZ19pZCI6Imh0dHBzOi8vcGxhdGZvcm0uZXhhbXBsZS8ud2VsbC1rbm93bi9haWNwLWxvZyIsInJvb3RfaGFzaCI6Im9vYVFuMUU2SXVaWVQwLW1TaXpXVGtmSTQ5RGZmOUFCSHd0eVVia0w1ZVkiLCJ0cmVlX3NpemUiOjZ9LCJzdWIiOiJjYXJkLXRlc3QtMDAyIn0.zBn9WPd5UdPkRaRUEHauVg_eQg3ZwTu2frb8CGcBS89Z5H5hwitR9nLQz_fZPbt1-doCbiv1yFt1_gm9skwcvA",
+        "disclosures": [
+          {
+            "detail": {
+              "outcome": "fulfilled"
+            },
+            "index": 2,
+            "salt": "IiIiIiIiIiIiIiIiIiIiIg"
+          }
+        ],
+        "history_proof": {
+          "checkpoint": {
+            "count": 1,
+            "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "index_entry": 3,
+            "latest_entry": 2,
+            "sub": "card-test-002",
+            "v": 1
+          },
+          "entries": [
+            {
+              "entry": {
+                "counterparty_id": "cp-bob",
+                "detail_commit": "F0E2KvL3bPD6e9C_ZSfGP9hQLfS1fR80X2t1967QcoM",
+                "entry_type": "attestation",
+                "event": "contract_completed",
+                "iat": 1700000100,
+                "iss": "https://platform.example",
+                "jti": "jti-rep-002",
+                "settlement_hash": "Y8TYkGx3LDdROF2otphpReS0lLzaNKhekdzEwMhMrv4",
+                "sub": "card-test-002",
+                "v": 1
+              },
+              "index": 2
+            }
+          ],
+          "index_entry": {
+            "count": 1,
+            "entry_type": "subject_index",
+            "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "iat": 1700000100,
+            "indices": [
+              2
+            ],
+            "iss": "https://platform.example",
+            "jti": "jti-idx-002-1",
+            "sub": "card-test-002",
+            "v": 1
+          },
+          "index_entry_inclusion_path": [
+            "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "RxTG49BjJdcYkT3zPuep-78XQoYVLeQeskZs_EuwF6g",
+            "cyKqBtOneD-Tl5VGcx0EeCwmrxECRNHMdlLR70jvIRU"
+          ],
+          "map_inclusion_path": [
+            "i8Av8Ei4m7O2VMniJjTuqAA4UNy66MI3Id-L8UjA6s8"
+          ],
+          "map_index": 1,
+          "map_size": 2
+        },
+        "sth": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.p24k4Qh1pLCFB1j71bVl50Gdg3DYRVKqpwWe30CKLx53YqR_dh66lzuT97gS6Ih_Ima3eoTwa1X6JQp5MArwOw"
+      },
+      "reason": "inclusion_failed"
+    },
+    {
+      "expect": "reject",
+      "held_sths": [
+        "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY1MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDEwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNCIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiI2V0VzVXRxN2RFNXZrOU95WkthTnY4cjM0Z1A0dG9SX1pyOERpaENjYnhNIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJMNHRQQk1EcUZRNk54Wjk0RmRrUHd4SVNCZEE5YnlKY2hwVDVZNjZDc3pnIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMTAwLCJ0cmVlX3NpemUiOjR9.76qS2G0vdrt_QACY7RK2NbGO1nSxJCWNcD9NqKz5ywewwuRyiTbeKe_FKH-gC2Mtva5SW9X0G3cA_lhwq1s1OQ",
+        "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.p24k4Qh1pLCFB1j71bVl50Gdg3DYRVKqpwWe30CKLx53YqR_dh66lzuT97gS6Ih_Ima3eoTwa1X6JQp5MArwOw"
+      ],
+      "id": "reject-bad-consistency",
+      "presentation": {
+        "attestation": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJjbGFpbXMiOnsiY29udHJhY3RzX2NvbXBsZXRlZCI6MX0sImV4cCI6MTcwMDA4NjQwMCwiaWF0IjoxNzAwMDAwMDAwLCJpc3MiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJqdGkiOiJqdGktcHJlcy1iYWQtY29ucyIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfcHJvb2YiOnsiZW50cnlfanRpIjoianRpLXJlcC0wMDIiLCJpbmNsdXNpb25fcGF0aCI6WyJvdGROTHh0MWZTQldJSWxSQ1VCaS1lVDl0bFFlazd5M3c3MWhSYU5hdG1zIiwiUnhURzQ5QmpKZGNZa1QzelB1ZXAtNzhYUW9ZVkxlUWVza1pzX0V1d0Y2ZyJdLCJpbmRleCI6MiwibG9nX2lkIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlLy53ZWxsLWtub3duL2FpY3AtbG9nIiwicm9vdF9oYXNoIjoiNldFc1V0cTdkRTV2azlPeVpLYU52OHIzNGdQNHRvUl9acjhEaWhDY2J4TSIsInRyZWVfc2l6ZSI6NH0sInN1YiI6ImNhcmQtdGVzdC0wMDIifQ.QaYeqIpiZ26CE0WD4oqwccKPqKC_oWvTCcGsL_Pf6t83QjKptxy2WGaC5268lTkVQv5tErlNQiN-nPDGYvAyeA",
+        "consistency_path": [
+          "jCKqBtOneD-Tl5VGcx0EeCwmrxECRNHMdlLR70jvIRU"
+        ],
+        "disclosures": [
+          {
+            "detail": {
+              "outcome": "fulfilled"
+            },
+            "index": 2,
+            "salt": "IiIiIiIiIiIiIiIiIiIiIg"
+          }
+        ],
+        "history_proof": {
+          "checkpoint": {
+            "count": 1,
+            "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "index_entry": 3,
+            "latest_entry": 2,
+            "sub": "card-test-002",
+            "v": 1
+          },
+          "entries": [
+            {
+              "entry": {
+                "counterparty_id": "cp-bob",
+                "detail_commit": "F0E2KvL3bPD6e9C_ZSfGP9hQLfS1fR80X2t1967QcoM",
+                "entry_type": "attestation",
+                "event": "contract_completed",
+                "iat": 1700000100,
+                "iss": "https://platform.example",
+                "jti": "jti-rep-002",
+                "settlement_hash": "Y8TYkGx3LDdROF2otphpReS0lLzaNKhekdzEwMhMrv4",
+                "sub": "card-test-002",
+                "v": 1
+              },
+              "index": 2
+            }
+          ],
+          "index_entry": {
+            "count": 1,
+            "entry_type": "subject_index",
+            "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "iat": 1700000100,
+            "indices": [
+              2
+            ],
+            "iss": "https://platform.example",
+            "jti": "jti-idx-002-1",
+            "sub": "card-test-002",
+            "v": 1
+          },
+          "index_entry_inclusion_path": [
+            "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "RxTG49BjJdcYkT3zPuep-78XQoYVLeQeskZs_EuwF6g",
+            "cyKqBtOneD-Tl5VGcx0EeCwmrxECRNHMdlLR70jvIRU"
+          ],
+          "map_inclusion_path": [
+            "i8Av8Ei4m7O2VMniJjTuqAA4UNy66MI3Id-L8UjA6s8"
+          ],
+          "map_index": 1,
+          "map_size": 2
+        },
+        "sth": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.p24k4Qh1pLCFB1j71bVl50Gdg3DYRVKqpwWe30CKLx53YqR_dh66lzuT97gS6Ih_Ima3eoTwa1X6JQp5MArwOw"
+      },
+      "reason": "consistency_failed"
+    },
+    {
+      "expect": "reject",
+      "held_sths": [
+        "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwNzY0MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTY5OTk5MDAwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtMCIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiI0N0RFUXBqOEhCU2EtX1RJbVctNUpDZXVRZVJrbTVOTXBKV1pHM2hTdUZVIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiI0N0RFUXBqOEhCU2EtX1RJbVctNUpDZXVRZVJrbTVOTXBKV1pHM2hTdUZVIiwic3ViamVjdF9tYXBfc2l6ZSI6MCwidGltZXN0YW1wIjoxNjk5OTkwMDAwLCJ0cmVlX3NpemUiOjB9.ypxRrLegfRZXNSHfQHUmu9qqiPK-2BaKqfyhv65kRONhdNAHp2a-jaFuInx7zKEH0sI5ZjcnwiyHEnDKNIcA1w",
+        "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY0MjAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDAyMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtMiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJSeFRHNDlCakpkY1lrVDN6UHVlcC03OFhRb1lWTGVRZXNrWnNfRXV3RjZnIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJnOGZCUkxYa1p3ak9QYm84eHhaRFoxYkZ3ckl3eDFzSDJvcTVxOXRORXh3Iiwic3ViamVjdF9tYXBfc2l6ZSI6MSwidGltZXN0YW1wIjoxNzAwMDAwMDIwLCJ0cmVlX3NpemUiOjJ9.S9zpWgsMEceCbVD0ywpLoT3_oz-Xy3w312kca0WXjQovT45vZqe9AN4lOdf-Uu9pifks2vCa7AN1d_SqNJ7hag",
+        "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.p24k4Qh1pLCFB1j71bVl50Gdg3DYRVKqpwWe30CKLx53YqR_dh66lzuT97gS6Ih_Ima3eoTwa1X6JQp5MArwOw"
+      ],
+      "id": "reject-junk-path-older-sth",
+      "presentation": {
+        "attestation": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJjbGFpbXMiOnsiY29udHJhY3RzX2NvbXBsZXRlZCI6MX0sImV4cCI6MTcwMDA4NjQwMCwiaWF0IjoxNzAwMDAwMDAwLCJpc3MiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJqdGkiOiJqdGktcHJlcy1iYWQtY29ucyIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfcHJvb2YiOnsiZW50cnlfanRpIjoianRpLXJlcC0wMDIiLCJpbmNsdXNpb25fcGF0aCI6WyJvdGROTHh0MWZTQldJSWxSQ1VCaS1lVDl0bFFlazd5M3c3MWhSYU5hdG1zIiwiUnhURzQ5QmpKZGNZa1QzelB1ZXAtNzhYUW9ZVkxlUWVza1pzX0V1d0Y2ZyJdLCJpbmRleCI6MiwibG9nX2lkIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlLy53ZWxsLWtub3duL2FpY3AtbG9nIiwicm9vdF9oYXNoIjoiNldFc1V0cTdkRTV2azlPeVpLYU52OHIzNGdQNHRvUl9acjhEaWhDY2J4TSIsInRyZWVfc2l6ZSI6NH0sInN1YiI6ImNhcmQtdGVzdC0wMDIifQ.QaYeqIpiZ26CE0WD4oqwccKPqKC_oWvTCcGsL_Pf6t83QjKptxy2WGaC5268lTkVQv5tErlNQiN-nPDGYvAyeA",
+        "consistency_path": [
+          "jCKqBtOneD-Tl5VGcx0EeCwmrxECRNHMdlLR70jvIRU"
+        ],
+        "disclosures": [
+          {
+            "detail": {
+              "outcome": "fulfilled"
+            },
+            "index": 2,
+            "salt": "IiIiIiIiIiIiIiIiIiIiIg"
+          }
+        ],
+        "history_proof": {
+          "checkpoint": {
+            "count": 1,
+            "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "index_entry": 3,
+            "latest_entry": 2,
+            "sub": "card-test-002",
+            "v": 1
+          },
+          "entries": [
+            {
+              "entry": {
+                "counterparty_id": "cp-bob",
+                "detail_commit": "F0E2KvL3bPD6e9C_ZSfGP9hQLfS1fR80X2t1967QcoM",
+                "entry_type": "attestation",
+                "event": "contract_completed",
+                "iat": 1700000100,
+                "iss": "https://platform.example",
+                "jti": "jti-rep-002",
+                "settlement_hash": "Y8TYkGx3LDdROF2otphpReS0lLzaNKhekdzEwMhMrv4",
+                "sub": "card-test-002",
+                "v": 1
+              },
+              "index": 2
+            }
+          ],
+          "index_entry": {
+            "count": 1,
+            "entry_type": "subject_index",
+            "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "iat": 1700000100,
+            "indices": [
+              2
+            ],
+            "iss": "https://platform.example",
+            "jti": "jti-idx-002-1",
+            "sub": "card-test-002",
+            "v": 1
+          },
+          "index_entry_inclusion_path": [
+            "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "RxTG49BjJdcYkT3zPuep-78XQoYVLeQeskZs_EuwF6g",
+            "cyKqBtOneD-Tl5VGcx0EeCwmrxECRNHMdlLR70jvIRU"
+          ],
+          "map_inclusion_path": [
+            "i8Av8Ei4m7O2VMniJjTuqAA4UNy66MI3Id-L8UjA6s8"
+          ],
+          "map_index": 1,
+          "map_size": 2
+        },
+        "sth": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.p24k4Qh1pLCFB1j71bVl50Gdg3DYRVKqpwWe30CKLx53YqR_dh66lzuT97gS6Ih_Ima3eoTwa1X6JQp5MArwOw"
+      },
+      "reason": "consistency_failed"
+    },
+    {
+      "expect": "reject",
+      "held_sths": [
+        "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE2OTk5OTk5OTksImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTY5OTkxMzU5OSwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXN0YWxlIiwia2lkIjoidGVzdC1lczI1Ni0wMSIsImxvZ19pZCI6Imh0dHBzOi8vcGxhdGZvcm0uZXhhbXBsZS8ud2VsbC1rbm93bi9haWNwLWxvZyIsInJvb3RfaGFzaCI6Im9vYVFuMUU2SXVaWVQwLW1TaXpXVGtmSTQ5RGZmOUFCSHd0eVVia0w1ZVkiLCJzdGhfdmVyc2lvbiI6MSwic3ViamVjdF9tYXBfcm9vdCI6IkVTVWdhVnJvX2EwQlNtSDFPX1N5c1JqckFyMFotbzBoV3VTRVgtNmlpbk0iLCJzdWJqZWN0X21hcF9zaXplIjoyLCJ0aW1lc3RhbXAiOjE2OTk5MTM1OTksInRyZWVfc2l6ZSI6Nn0.H3EfjGjYoWotkiC1r4r6cnEl85m4qsWYnzk4HNkfTmSBPkcUZSEGPO2Wk9MJ8496ZkCfcDt4GZL53NIe29KsKQ"
+      ],
+      "id": "reject-stale-sth",
+      "presentation": {
+        "attestation": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJjbGFpbXMiOnsiY29udHJhY3RzX2NvbXBsZXRlZCI6MX0sImV4cCI6MTcwMDA4NjQwMCwiaWF0IjoxNzAwMDAwMDAwLCJpc3MiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJqdGkiOiJqdGktcHJlcy1zdGFsZSIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfcHJvb2YiOnsiZW50cnlfanRpIjoianRpLXJlcC0wMDIiLCJpbmNsdXNpb25fcGF0aCI6WyJvdGROTHh0MWZTQldJSWxSQ1VCaS1lVDl0bFFlazd5M3c3MWhSYU5hdG1zIiwiUnhURzQ5QmpKZGNZa1QzelB1ZXAtNzhYUW9ZVkxlUWVza1pzX0V1d0Y2ZyIsImN5S3FCdE9uZUQtVGw1VkdjeDBFZUN3bXJ4RUNSTkhNZGxMUjcwanZJUlUiXSwiaW5kZXgiOjIsImxvZ19pZCI6Imh0dHBzOi8vcGxhdGZvcm0uZXhhbXBsZS8ud2VsbC1rbm93bi9haWNwLWxvZyIsInJvb3RfaGFzaCI6Im9vYVFuMUU2SXVaWVQwLW1TaXpXVGtmSTQ5RGZmOUFCSHd0eVVia0w1ZVkiLCJ0cmVlX3NpemUiOjZ9LCJzdWIiOiJjYXJkLXRlc3QtMDAyIn0.dV3UR1lSScwJMjDtL0r-gZGwuo76Xtkz_vSj3duUUkE-trUp5cA23Qm55n-rqpqYU2FRQ76eovL1BIhSx-HUGQ",
+        "disclosures": [
+          {
+            "detail": {
+              "outcome": "fulfilled"
+            },
+            "index": 2,
+            "salt": "IiIiIiIiIiIiIiIiIiIiIg"
+          }
+        ],
+        "history_proof": {
+          "checkpoint": {
+            "count": 1,
+            "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "index_entry": 3,
+            "latest_entry": 2,
+            "sub": "card-test-002",
+            "v": 1
+          },
+          "entries": [
+            {
+              "entry": {
+                "counterparty_id": "cp-bob",
+                "detail_commit": "F0E2KvL3bPD6e9C_ZSfGP9hQLfS1fR80X2t1967QcoM",
+                "entry_type": "attestation",
+                "event": "contract_completed",
+                "iat": 1700000100,
+                "iss": "https://platform.example",
+                "jti": "jti-rep-002",
+                "settlement_hash": "Y8TYkGx3LDdROF2otphpReS0lLzaNKhekdzEwMhMrv4",
+                "sub": "card-test-002",
+                "v": 1
+              },
+              "index": 2
+            }
+          ],
+          "index_entry": {
+            "count": 1,
+            "entry_type": "subject_index",
+            "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "iat": 1700000100,
+            "indices": [
+              2
+            ],
+            "iss": "https://platform.example",
+            "jti": "jti-idx-002-1",
+            "sub": "card-test-002",
+            "v": 1
+          },
+          "index_entry_inclusion_path": [
+            "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "RxTG49BjJdcYkT3zPuep-78XQoYVLeQeskZs_EuwF6g",
+            "cyKqBtOneD-Tl5VGcx0EeCwmrxECRNHMdlLR70jvIRU"
+          ],
+          "map_inclusion_path": [
+            "i8Av8Ei4m7O2VMniJjTuqAA4UNy66MI3Id-L8UjA6s8"
+          ],
+          "map_index": 1,
+          "map_size": 2
+        },
+        "sth": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE2OTk5OTk5OTksImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTY5OTkxMzU5OSwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXN0YWxlIiwia2lkIjoidGVzdC1lczI1Ni0wMSIsImxvZ19pZCI6Imh0dHBzOi8vcGxhdGZvcm0uZXhhbXBsZS8ud2VsbC1rbm93bi9haWNwLWxvZyIsInJvb3RfaGFzaCI6Im9vYVFuMUU2SXVaWVQwLW1TaXpXVGtmSTQ5RGZmOUFCSHd0eVVia0w1ZVkiLCJzdGhfdmVyc2lvbiI6MSwic3ViamVjdF9tYXBfcm9vdCI6IkVTVWdhVnJvX2EwQlNtSDFPX1N5c1JqckFyMFotbzBoV3VTRVgtNmlpbk0iLCJzdWJqZWN0X21hcF9zaXplIjoyLCJ0aW1lc3RhbXAiOjE2OTk5MTM1OTksInRyZWVfc2l6ZSI6Nn0.H3EfjGjYoWotkiC1r4r6cnEl85m4qsWYnzk4HNkfTmSBPkcUZSEGPO2Wk9MJ8496ZkCfcDt4GZL53NIe29KsKQ"
+      },
+      "reason": "sth_stale"
+    },
+    {
+      "expect": "reject",
+      "held_sths": [
+        "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODcwMDEsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDYwMSwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLWZ1dHVyZSIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwNjAxLCJ0cmVlX3NpemUiOjZ9.UyP1zsijXukXCVfvp1oMQKri_BC85_9_RcDsOW8IfY2RWZk4_LZA0ec4_YZsca7uaq-9t4L54p-2wpZSt4eiQg"
+      ],
+      "id": "reject-future-sth",
+      "presentation": {
+        "attestation": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJjbGFpbXMiOnsiY29udHJhY3RzX2NvbXBsZXRlZCI6MX0sImV4cCI6MTcwMDA4NjQwMCwiaWF0IjoxNzAwMDAwMDAwLCJpc3MiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJqdGkiOiJqdGktcHJlcy0wMDIiLCJraWQiOiJ0ZXN0LWVzMjU2LTAxIiwibG9nX3Byb29mIjp7ImVudHJ5X2p0aSI6Imp0aS1yZXAtMDAyIiwiaW5jbHVzaW9uX3BhdGgiOlsib3RkTkx4dDFmU0JXSUlsUkNVQmktZVQ5dGxRZWs3eTN3NzFoUmFOYXRtcyIsIlJ4VEc0OUJqSmRjWWtUM3pQdWVwLTc4WFFvWVZMZVFlc2tac19FdXdGNmciLCJjeUtxQnRPbmVELVRsNVZHY3gwRWVDd21yeEVDUk5ITWRsTFI3MGp2SVJVIl0sImluZGV4IjoyLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwidHJlZV9zaXplIjo2fSwic3ViIjoiY2FyZC10ZXN0LTAwMiJ9.0B7h1VFyUdNETmXjccoEC4vpswLPwLstM0EzFqagtSzR6Lhgg4ImwUmErrxaEfBqiNluQvpm8fy1Ijs3Vpyx5w",
+        "disclosures": [
+          {
+            "detail": {
+              "outcome": "fulfilled"
+            },
+            "index": 2,
+            "salt": "IiIiIiIiIiIiIiIiIiIiIg"
+          }
+        ],
+        "history_proof": {
+          "checkpoint": {
+            "count": 1,
+            "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "index_entry": 3,
+            "latest_entry": 2,
+            "sub": "card-test-002",
+            "v": 1
+          },
+          "entries": [
+            {
+              "entry": {
+                "counterparty_id": "cp-bob",
+                "detail_commit": "F0E2KvL3bPD6e9C_ZSfGP9hQLfS1fR80X2t1967QcoM",
+                "entry_type": "attestation",
+                "event": "contract_completed",
+                "iat": 1700000100,
+                "iss": "https://platform.example",
+                "jti": "jti-rep-002",
+                "settlement_hash": "Y8TYkGx3LDdROF2otphpReS0lLzaNKhekdzEwMhMrv4",
+                "sub": "card-test-002",
+                "v": 1
+              },
+              "index": 2
+            }
+          ],
+          "index_entry": {
+            "count": 1,
+            "entry_type": "subject_index",
+            "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "iat": 1700000100,
+            "indices": [
+              2
+            ],
+            "iss": "https://platform.example",
+            "jti": "jti-idx-002-1",
+            "sub": "card-test-002",
+            "v": 1
+          },
+          "index_entry_inclusion_path": [
+            "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "RxTG49BjJdcYkT3zPuep-78XQoYVLeQeskZs_EuwF6g",
+            "cyKqBtOneD-Tl5VGcx0EeCwmrxECRNHMdlLR70jvIRU"
+          ],
+          "map_inclusion_path": [
+            "i8Av8Ei4m7O2VMniJjTuqAA4UNy66MI3Id-L8UjA6s8"
+          ],
+          "map_index": 1,
+          "map_size": 2
+        },
+        "sth": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODcwMDEsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDYwMSwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLWZ1dHVyZSIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwNjAxLCJ0cmVlX3NpemUiOjZ9.UyP1zsijXukXCVfvp1oMQKri_BC85_9_RcDsOW8IfY2RWZk4_LZA0ec4_YZsca7uaq-9t4L54p-2wpZSt4eiQg"
+      },
+      "reason": "sth_stale"
+    },
+    {
+      "expect": "reject",
+      "held_sths": [
+        "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.p24k4Qh1pLCFB1j71bVl50Gdg3DYRVKqpwWe30CKLx53YqR_dh66lzuT97gS6Ih_Ima3eoTwa1X6JQp5MArwOw",
+        "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY1MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDEwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNC1mb3JrIiwia2lkIjoidGVzdC1lczI1Ni0wMSIsImxvZ19pZCI6Imh0dHBzOi8vcGxhdGZvcm0uZXhhbXBsZS8ud2VsbC1rbm93bi9haWNwLWxvZyIsInJvb3RfaGFzaCI6IkZtRXNVdHE3ZEU1dms5T3laS2FOdjhyMzRnUDR0b1JfWnI4RGloQ2NieE0iLCJzdGhfdmVyc2lvbiI6MSwic3ViamVjdF9tYXBfcm9vdCI6Ikw0dFBCTURxRlE2TnhaOTRGZGtQd3hJU0JkQTlieUpjaHBUNVk2NkNzemciLCJzdWJqZWN0X21hcF9zaXplIjoyLCJ0aW1lc3RhbXAiOjE3MDAwMDAxMDAsInRyZWVfc2l6ZSI6NH0.3uluFfN8z_CJM4NS_Swasi_lbEtC_KQ9f7NcVI39rwHvhxZUfIUIF1QJIalky7_kUxZ8fgh_euzav-ZIIBL5oQ"
+      ],
+      "id": "reject-rollback",
+      "presentation": {
+        "attestation": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJjbGFpbXMiOnsiY29udHJhY3RzX2NvbXBsZXRlZCI6MX0sImV4cCI6MTcwMDA4NjQwMCwiaWF0IjoxNzAwMDAwMDAwLCJpc3MiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJqdGkiOiJqdGktcHJlcy1yb2xsYmFjayIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfcHJvb2YiOnsiZW50cnlfanRpIjoianRpLXJlcC0wMDIiLCJpbmNsdXNpb25fcGF0aCI6WyJvdGROTHh0MWZTQldJSWxSQ1VCaS1lVDl0bFFlazd5M3c3MWhSYU5hdG1zIiwiUnhURzQ5QmpKZGNZa1QzelB1ZXAtNzhYUW9ZVkxlUWVza1pzX0V1d0Y2ZyJdLCJpbmRleCI6MiwibG9nX2lkIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlLy53ZWxsLWtub3duL2FpY3AtbG9nIiwicm9vdF9oYXNoIjoiNldFc1V0cTdkRTV2azlPeVpLYU52OHIzNGdQNHRvUl9acjhEaWhDY2J4TSIsInRyZWVfc2l6ZSI6NH0sInN1YiI6ImNhcmQtdGVzdC0wMDIifQ.nvLD76aG-Ltrp-K5_n1fbZZqhiVGbHQzhtvvOOQv1Zb-67ONbBWiTfhAQz-sOSfuzPJa_8d-dlqe_Z5kjaN50A",
+        "consistency_path": [
+          "cyKqBtOneD-Tl5VGcx0EeCwmrxECRNHMdlLR70jvIRU"
+        ],
+        "disclosures": [
+          {
+            "detail": {
+              "outcome": "fulfilled"
+            },
+            "index": 2,
+            "salt": "IiIiIiIiIiIiIiIiIiIiIg"
+          }
+        ],
+        "history_proof": {
+          "checkpoint": {
+            "count": 1,
+            "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "index_entry": 3,
+            "latest_entry": 2,
+            "sub": "card-test-002",
+            "v": 1
+          },
+          "entries": [
+            {
+              "entry": {
+                "counterparty_id": "cp-bob",
+                "detail_commit": "F0E2KvL3bPD6e9C_ZSfGP9hQLfS1fR80X2t1967QcoM",
+                "entry_type": "attestation",
+                "event": "contract_completed",
+                "iat": 1700000100,
+                "iss": "https://platform.example",
+                "jti": "jti-rep-002",
+                "settlement_hash": "Y8TYkGx3LDdROF2otphpReS0lLzaNKhekdzEwMhMrv4",
+                "sub": "card-test-002",
+                "v": 1
+              },
+              "index": 2
+            }
+          ],
+          "index_entry": {
+            "count": 1,
+            "entry_type": "subject_index",
+            "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "iat": 1700000100,
+            "indices": [
+              2
+            ],
+            "iss": "https://platform.example",
+            "jti": "jti-idx-002-1",
+            "sub": "card-test-002",
+            "v": 1
+          },
+          "index_entry_inclusion_path": [
+            "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "RxTG49BjJdcYkT3zPuep-78XQoYVLeQeskZs_EuwF6g",
+            "cyKqBtOneD-Tl5VGcx0EeCwmrxECRNHMdlLR70jvIRU"
+          ],
+          "map_inclusion_path": [
+            "i8Av8Ei4m7O2VMniJjTuqAA4UNy66MI3Id-L8UjA6s8"
+          ],
+          "map_index": 1,
+          "map_size": 2
+        },
+        "sth": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.p24k4Qh1pLCFB1j71bVl50Gdg3DYRVKqpwWe30CKLx53YqR_dh66lzuT97gS6Ih_Ima3eoTwa1X6JQp5MArwOw"
+      },
+      "reason": "split_view"
+    },
+    {
+      "expect": "reject",
+      "held_sths": [
+        "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.p24k4Qh1pLCFB1j71bVl50Gdg3DYRVKqpwWe30CKLx53YqR_dh66lzuT97gS6Ih_Ima3eoTwa1X6JQp5MArwOw",
+        "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLWZvcmsiLCJraWQiOiJ0ZXN0LWVzMjU2LTAxIiwibG9nX2lkIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlLy53ZWxsLWtub3duL2FpY3AtbG9nIiwicm9vdF9oYXNoIjoiWFlhUW4xRTZJdVpZVDAtbVNpeldUa2ZJNDlEZmY5QUJId3R5VWJrTDVlWSIsInN0aF92ZXJzaW9uIjoxLCJzdWJqZWN0X21hcF9yb290IjoiRVNVZ2FWcm9fYTBCU21IMU9fU3lzUmpyQXIwWi1vMGhXdVNFWC02aWluTSIsInN1YmplY3RfbWFwX3NpemUiOjIsInRpbWVzdGFtcCI6MTcwMDAwMDMwMCwidHJlZV9zaXplIjo2fQ.6ArrKPKIzz6Y9zBXFnx2oBbXHzWICwgQgumUC4_tvBp0E4CaW6kDf2lvLdHmLVR4v0RxKS0tm_QsJi93AVA_6Q"
+      ],
+      "id": "reject-same-size-fork",
+      "presentation": {
+        "attestation": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJjbGFpbXMiOnsiY29udHJhY3RzX2NvbXBsZXRlZCI6MX0sImV4cCI6MTcwMDA4NjQwMCwiaWF0IjoxNzAwMDAwMDAwLCJpc3MiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJqdGkiOiJqdGktcHJlcy0wMDIiLCJraWQiOiJ0ZXN0LWVzMjU2LTAxIiwibG9nX3Byb29mIjp7ImVudHJ5X2p0aSI6Imp0aS1yZXAtMDAyIiwiaW5jbHVzaW9uX3BhdGgiOlsib3RkTkx4dDFmU0JXSUlsUkNVQmktZVQ5dGxRZWs3eTN3NzFoUmFOYXRtcyIsIlJ4VEc0OUJqSmRjWWtUM3pQdWVwLTc4WFFvWVZMZVFlc2tac19FdXdGNmciLCJjeUtxQnRPbmVELVRsNVZHY3gwRWVDd21yeEVDUk5ITWRsTFI3MGp2SVJVIl0sImluZGV4IjoyLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwidHJlZV9zaXplIjo2fSwic3ViIjoiY2FyZC10ZXN0LTAwMiJ9.0B7h1VFyUdNETmXjccoEC4vpswLPwLstM0EzFqagtSzR6Lhgg4ImwUmErrxaEfBqiNluQvpm8fy1Ijs3Vpyx5w",
+        "disclosures": [
+          {
+            "detail": {
+              "outcome": "fulfilled"
+            },
+            "index": 2,
+            "salt": "IiIiIiIiIiIiIiIiIiIiIg"
+          }
+        ],
+        "history_proof": {
+          "checkpoint": {
+            "count": 1,
+            "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "index_entry": 3,
+            "latest_entry": 2,
+            "sub": "card-test-002",
+            "v": 1
+          },
+          "entries": [
+            {
+              "entry": {
+                "counterparty_id": "cp-bob",
+                "detail_commit": "F0E2KvL3bPD6e9C_ZSfGP9hQLfS1fR80X2t1967QcoM",
+                "entry_type": "attestation",
+                "event": "contract_completed",
+                "iat": 1700000100,
+                "iss": "https://platform.example",
+                "jti": "jti-rep-002",
+                "settlement_hash": "Y8TYkGx3LDdROF2otphpReS0lLzaNKhekdzEwMhMrv4",
+                "sub": "card-test-002",
+                "v": 1
+              },
+              "index": 2
+            }
+          ],
+          "index_entry": {
+            "count": 1,
+            "entry_type": "subject_index",
+            "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "iat": 1700000100,
+            "indices": [
+              2
+            ],
+            "iss": "https://platform.example",
+            "jti": "jti-idx-002-1",
+            "sub": "card-test-002",
+            "v": 1
+          },
+          "index_entry_inclusion_path": [
+            "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "RxTG49BjJdcYkT3zPuep-78XQoYVLeQeskZs_EuwF6g",
+            "cyKqBtOneD-Tl5VGcx0EeCwmrxECRNHMdlLR70jvIRU"
+          ],
+          "map_inclusion_path": [
+            "i8Av8Ei4m7O2VMniJjTuqAA4UNy66MI3Id-L8UjA6s8"
+          ],
+          "map_index": 1,
+          "map_size": 2
+        },
+        "sth": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.p24k4Qh1pLCFB1j71bVl50Gdg3DYRVKqpwWe30CKLx53YqR_dh66lzuT97gS6Ih_Ima3eoTwa1X6JQp5MArwOw"
+      },
+      "reason": "split_view"
+    },
+    {
+      "expect": "reject",
+      "held_sths": [
+        "eyJhbGciOiJSUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.Ndx40vsf_NGzyxO1kbPFWEehjGerWs9Ew-Rl2BfHhV-GbzRcpE7Hoc0Il5ajQXsaXkRd_ele-mndYPNAnCOjZaT7zsL3guT8eO5s_kr-XWdbrYRreR0lc1iv2l_TJ1diy8BKwEQvBe_E2SHz1jdHYvrEFmUM6PToKepWfxFojAX9AquS--tgCfslzJgXepsiYndBoXuOiiHqNEckn6Yr1LEk-rTBOvrZsyIaGfAY9n27La5MSId_XshRWrurmz4us8Z0wjdyKjT0HdGi9H3nAjdUr7cgV15pknELYVJxx23TpQYYmk87vSMNWHjEupZ-yud-qZLEnfwTQfhNFVflnA"
+      ],
+      "id": "reject-sth-rs256",
+      "presentation": {
+        "attestation": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJjbGFpbXMiOnsiY29udHJhY3RzX2NvbXBsZXRlZCI6MX0sImV4cCI6MTcwMDA4NjQwMCwiaWF0IjoxNzAwMDAwMDAwLCJpc3MiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJqdGkiOiJqdGktcHJlcy0wMDIiLCJraWQiOiJ0ZXN0LWVzMjU2LTAxIiwibG9nX3Byb29mIjp7ImVudHJ5X2p0aSI6Imp0aS1yZXAtMDAyIiwiaW5jbHVzaW9uX3BhdGgiOlsib3RkTkx4dDFmU0JXSUlsUkNVQmktZVQ5dGxRZWs3eTN3NzFoUmFOYXRtcyIsIlJ4VEc0OUJqSmRjWWtUM3pQdWVwLTc4WFFvWVZMZVFlc2tac19FdXdGNmciLCJjeUtxQnRPbmVELVRsNVZHY3gwRWVDd21yeEVDUk5ITWRsTFI3MGp2SVJVIl0sImluZGV4IjoyLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwidHJlZV9zaXplIjo2fSwic3ViIjoiY2FyZC10ZXN0LTAwMiJ9.0B7h1VFyUdNETmXjccoEC4vpswLPwLstM0EzFqagtSzR6Lhgg4ImwUmErrxaEfBqiNluQvpm8fy1Ijs3Vpyx5w",
+        "disclosures": [
+          {
+            "detail": {
+              "outcome": "fulfilled"
+            },
+            "index": 2,
+            "salt": "IiIiIiIiIiIiIiIiIiIiIg"
+          }
+        ],
+        "history_proof": {
+          "checkpoint": {
+            "count": 1,
+            "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "index_entry": 3,
+            "latest_entry": 2,
+            "sub": "card-test-002",
+            "v": 1
+          },
+          "entries": [
+            {
+              "entry": {
+                "counterparty_id": "cp-bob",
+                "detail_commit": "F0E2KvL3bPD6e9C_ZSfGP9hQLfS1fR80X2t1967QcoM",
+                "entry_type": "attestation",
+                "event": "contract_completed",
+                "iat": 1700000100,
+                "iss": "https://platform.example",
+                "jti": "jti-rep-002",
+                "settlement_hash": "Y8TYkGx3LDdROF2otphpReS0lLzaNKhekdzEwMhMrv4",
+                "sub": "card-test-002",
+                "v": 1
+              },
+              "index": 2
+            }
+          ],
+          "index_entry": {
+            "count": 1,
+            "entry_type": "subject_index",
+            "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "iat": 1700000100,
+            "indices": [
+              2
+            ],
+            "iss": "https://platform.example",
+            "jti": "jti-idx-002-1",
+            "sub": "card-test-002",
+            "v": 1
+          },
+          "index_entry_inclusion_path": [
+            "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "RxTG49BjJdcYkT3zPuep-78XQoYVLeQeskZs_EuwF6g",
+            "cyKqBtOneD-Tl5VGcx0EeCwmrxECRNHMdlLR70jvIRU"
+          ],
+          "map_inclusion_path": [
+            "i8Av8Ei4m7O2VMniJjTuqAA4UNy66MI3Id-L8UjA6s8"
+          ],
+          "map_index": 1,
+          "map_size": 2
+        },
+        "sth": "eyJhbGciOiJSUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.Ndx40vsf_NGzyxO1kbPFWEehjGerWs9Ew-Rl2BfHhV-GbzRcpE7Hoc0Il5ajQXsaXkRd_ele-mndYPNAnCOjZaT7zsL3guT8eO5s_kr-XWdbrYRreR0lc1iv2l_TJ1diy8BKwEQvBe_E2SHz1jdHYvrEFmUM6PToKepWfxFojAX9AquS--tgCfslzJgXepsiYndBoXuOiiHqNEckn6Yr1LEk-rTBOvrZsyIaGfAY9n27La5MSId_XshRWrurmz4us8Z0wjdyKjT0HdGi9H3nAjdUr7cgV15pknELYVJxx23TpQYYmk87vSMNWHjEupZ-yud-qZLEnfwTQfhNFVflnA"
+      },
+      "reason": "sth_alg"
+    },
+    {
+      "expect": "reject",
+      "held_sths": [
+        "eyJhbGciOiJIUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.X_MuC3JegBMYH9FSxCFk-LLV1d8SCeqM3rrsvf6ToXI"
+      ],
+      "id": "reject-sth-hs256",
+      "presentation": {
+        "attestation": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJjbGFpbXMiOnsiY29udHJhY3RzX2NvbXBsZXRlZCI6MX0sImV4cCI6MTcwMDA4NjQwMCwiaWF0IjoxNzAwMDAwMDAwLCJpc3MiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJqdGkiOiJqdGktcHJlcy0wMDIiLCJraWQiOiJ0ZXN0LWVzMjU2LTAxIiwibG9nX3Byb29mIjp7ImVudHJ5X2p0aSI6Imp0aS1yZXAtMDAyIiwiaW5jbHVzaW9uX3BhdGgiOlsib3RkTkx4dDFmU0JXSUlsUkNVQmktZVQ5dGxRZWs3eTN3NzFoUmFOYXRtcyIsIlJ4VEc0OUJqSmRjWWtUM3pQdWVwLTc4WFFvWVZMZVFlc2tac19FdXdGNmciLCJjeUtxQnRPbmVELVRsNVZHY3gwRWVDd21yeEVDUk5ITWRsTFI3MGp2SVJVIl0sImluZGV4IjoyLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwidHJlZV9zaXplIjo2fSwic3ViIjoiY2FyZC10ZXN0LTAwMiJ9.0B7h1VFyUdNETmXjccoEC4vpswLPwLstM0EzFqagtSzR6Lhgg4ImwUmErrxaEfBqiNluQvpm8fy1Ijs3Vpyx5w",
+        "disclosures": [
+          {
+            "detail": {
+              "outcome": "fulfilled"
+            },
+            "index": 2,
+            "salt": "IiIiIiIiIiIiIiIiIiIiIg"
+          }
+        ],
+        "history_proof": {
+          "checkpoint": {
+            "count": 1,
+            "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "index_entry": 3,
+            "latest_entry": 2,
+            "sub": "card-test-002",
+            "v": 1
+          },
+          "entries": [
+            {
+              "entry": {
+                "counterparty_id": "cp-bob",
+                "detail_commit": "F0E2KvL3bPD6e9C_ZSfGP9hQLfS1fR80X2t1967QcoM",
+                "entry_type": "attestation",
+                "event": "contract_completed",
+                "iat": 1700000100,
+                "iss": "https://platform.example",
+                "jti": "jti-rep-002",
+                "settlement_hash": "Y8TYkGx3LDdROF2otphpReS0lLzaNKhekdzEwMhMrv4",
+                "sub": "card-test-002",
+                "v": 1
+              },
+              "index": 2
+            }
+          ],
+          "index_entry": {
+            "count": 1,
+            "entry_type": "subject_index",
+            "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "iat": 1700000100,
+            "indices": [
+              2
+            ],
+            "iss": "https://platform.example",
+            "jti": "jti-idx-002-1",
+            "sub": "card-test-002",
+            "v": 1
+          },
+          "index_entry_inclusion_path": [
+            "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "RxTG49BjJdcYkT3zPuep-78XQoYVLeQeskZs_EuwF6g",
+            "cyKqBtOneD-Tl5VGcx0EeCwmrxECRNHMdlLR70jvIRU"
+          ],
+          "map_inclusion_path": [
+            "i8Av8Ei4m7O2VMniJjTuqAA4UNy66MI3Id-L8UjA6s8"
+          ],
+          "map_index": 1,
+          "map_size": 2
+        },
+        "sth": "eyJhbGciOiJIUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.X_MuC3JegBMYH9FSxCFk-LLV1d8SCeqM3rrsvf6ToXI"
+      },
+      "reason": "sth_alg"
+    },
+    {
+      "expect": "reject",
+      "held_sths": [
+        "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.8R6yjLoZwj2g_5LBPHnPBkYSdEjPRXPHdH93WrnwJ_uKtws1BrLMwtCRJpntMoALZgjLPET5uFGmN25neAfqAA"
+      ],
+      "id": "reject-sth-typ",
+      "presentation": {
+        "attestation": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJjbGFpbXMiOnsiY29udHJhY3RzX2NvbXBsZXRlZCI6MX0sImV4cCI6MTcwMDA4NjQwMCwiaWF0IjoxNzAwMDAwMDAwLCJpc3MiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJqdGkiOiJqdGktcHJlcy0wMDIiLCJraWQiOiJ0ZXN0LWVzMjU2LTAxIiwibG9nX3Byb29mIjp7ImVudHJ5X2p0aSI6Imp0aS1yZXAtMDAyIiwiaW5jbHVzaW9uX3BhdGgiOlsib3RkTkx4dDFmU0JXSUlsUkNVQmktZVQ5dGxRZWs3eTN3NzFoUmFOYXRtcyIsIlJ4VEc0OUJqSmRjWWtUM3pQdWVwLTc4WFFvWVZMZVFlc2tac19FdXdGNmciLCJjeUtxQnRPbmVELVRsNVZHY3gwRWVDd21yeEVDUk5ITWRsTFI3MGp2SVJVIl0sImluZGV4IjoyLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwidHJlZV9zaXplIjo2fSwic3ViIjoiY2FyZC10ZXN0LTAwMiJ9.0B7h1VFyUdNETmXjccoEC4vpswLPwLstM0EzFqagtSzR6Lhgg4ImwUmErrxaEfBqiNluQvpm8fy1Ijs3Vpyx5w",
+        "disclosures": [
+          {
+            "detail": {
+              "outcome": "fulfilled"
+            },
+            "index": 2,
+            "salt": "IiIiIiIiIiIiIiIiIiIiIg"
+          }
+        ],
+        "history_proof": {
+          "checkpoint": {
+            "count": 1,
+            "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "index_entry": 3,
+            "latest_entry": 2,
+            "sub": "card-test-002",
+            "v": 1
+          },
+          "entries": [
+            {
+              "entry": {
+                "counterparty_id": "cp-bob",
+                "detail_commit": "F0E2KvL3bPD6e9C_ZSfGP9hQLfS1fR80X2t1967QcoM",
+                "entry_type": "attestation",
+                "event": "contract_completed",
+                "iat": 1700000100,
+                "iss": "https://platform.example",
+                "jti": "jti-rep-002",
+                "settlement_hash": "Y8TYkGx3LDdROF2otphpReS0lLzaNKhekdzEwMhMrv4",
+                "sub": "card-test-002",
+                "v": 1
+              },
+              "index": 2
+            }
+          ],
+          "index_entry": {
+            "count": 1,
+            "entry_type": "subject_index",
+            "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "iat": 1700000100,
+            "indices": [
+              2
+            ],
+            "iss": "https://platform.example",
+            "jti": "jti-idx-002-1",
+            "sub": "card-test-002",
+            "v": 1
+          },
+          "index_entry_inclusion_path": [
+            "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "RxTG49BjJdcYkT3zPuep-78XQoYVLeQeskZs_EuwF6g",
+            "cyKqBtOneD-Tl5VGcx0EeCwmrxECRNHMdlLR70jvIRU"
+          ],
+          "map_inclusion_path": [
+            "i8Av8Ei4m7O2VMniJjTuqAA4UNy66MI3Id-L8UjA6s8"
+          ],
+          "map_index": 1,
+          "map_size": 2
+        },
+        "sth": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.8R6yjLoZwj2g_5LBPHnPBkYSdEjPRXPHdH93WrnwJ_uKtws1BrLMwtCRJpntMoALZgjLPET5uFGmN25neAfqAA"
+      },
+      "reason": "sth_typ"
+    },
+    {
+      "expect": "reject",
+      "held_sths": [
+        "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.p24k4Qh1pLCFB1j71bVl50Gdg3DYRVKqpwWe30CKLx53YqR_dh66lzuT97gS6Ih_Ima3eoTwa1X6JQp5MArwOw"
+      ],
+      "id": "reject-bad-map-inclusion",
+      "presentation": {
+        "attestation": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJjbGFpbXMiOnsiY29udHJhY3RzX2NvbXBsZXRlZCI6MX0sImV4cCI6MTcwMDA4NjQwMCwiaWF0IjoxNzAwMDAwMDAwLCJpc3MiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJqdGkiOiJqdGktcHJlcy1iYWQtbWFwIiwia2lkIjoidGVzdC1lczI1Ni0wMSIsImxvZ19wcm9vZiI6eyJlbnRyeV9qdGkiOiJqdGktcmVwLTAwMiIsImluY2x1c2lvbl9wYXRoIjpbIm90ZE5MeHQxZlNCV0lJbFJDVUJpLWVUOXRsUWVrN3kzdzcxaFJhTmF0bXMiLCJSeFRHNDlCakpkY1lrVDN6UHVlcC03OFhRb1lWTGVRZXNrWnNfRXV3RjZnIiwiY3lLcUJ0T25lRC1UbDVWR2N4MEVlQ3dtcnhFQ1JOSE1kbExSNzBqdklSVSJdLCJpbmRleCI6MiwibG9nX2lkIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlLy53ZWxsLWtub3duL2FpY3AtbG9nIiwicm9vdF9oYXNoIjoib29hUW4xRTZJdVpZVDAtbVNpeldUa2ZJNDlEZmY5QUJId3R5VWJrTDVlWSIsInRyZWVfc2l6ZSI6Nn0sInN1YiI6ImNhcmQtdGVzdC0wMDIifQ.p47Lbb0ujJ3t3tcE986fND3zYXkLKPd6SGSFPG90_dDKc5ysG4645ycHRWJrLdoqlZ2qDW93Gb0TS3xoNbupsQ",
+        "disclosures": [
+          {
+            "detail": {
+              "outcome": "fulfilled"
+            },
+            "index": 2,
+            "salt": "IiIiIiIiIiIiIiIiIiIiIg"
+          }
+        ],
+        "history_proof": {
+          "checkpoint": {
+            "count": 1,
+            "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "index_entry": 3,
+            "latest_entry": 2,
+            "sub": "card-test-002",
+            "v": 1
+          },
+          "entries": [
+            {
+              "entry": {
+                "counterparty_id": "cp-bob",
+                "detail_commit": "F0E2KvL3bPD6e9C_ZSfGP9hQLfS1fR80X2t1967QcoM",
+                "entry_type": "attestation",
+                "event": "contract_completed",
+                "iat": 1700000100,
+                "iss": "https://platform.example",
+                "jti": "jti-rep-002",
+                "settlement_hash": "Y8TYkGx3LDdROF2otphpReS0lLzaNKhekdzEwMhMrv4",
+                "sub": "card-test-002",
+                "v": 1
+              },
+              "index": 2
+            }
+          ],
+          "index_entry": {
+            "count": 1,
+            "entry_type": "subject_index",
+            "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "iat": 1700000100,
+            "indices": [
+              2
+            ],
+            "iss": "https://platform.example",
+            "jti": "jti-idx-002-1",
+            "sub": "card-test-002",
+            "v": 1
+          },
+          "index_entry_inclusion_path": [
+            "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "RxTG49BjJdcYkT3zPuep-78XQoYVLeQeskZs_EuwF6g",
+            "cyKqBtOneD-Tl5VGcx0EeCwmrxECRNHMdlLR70jvIRU"
+          ],
+          "map_inclusion_path": [
+            "dMAv8Ei4m7O2VMniJjTuqAA4UNy66MI3Id-L8UjA6s8"
+          ],
+          "map_index": 1,
+          "map_size": 2
+        },
+        "sth": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.p24k4Qh1pLCFB1j71bVl50Gdg3DYRVKqpwWe30CKLx53YqR_dh66lzuT97gS6Ih_Ima3eoTwa1X6JQp5MArwOw"
+      },
+      "reason": "map_proof_failed"
+    },
+    {
+      "expect": "reject",
+      "held_sths": [
+        "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.p24k4Qh1pLCFB1j71bVl50Gdg3DYRVKqpwWe30CKLx53YqR_dh66lzuT97gS6Ih_Ima3eoTwa1X6JQp5MArwOw"
+      ],
+      "id": "reject-wrong-map-size",
+      "presentation": {
+        "attestation": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJjbGFpbXMiOnsiY29udHJhY3RzX2NvbXBsZXRlZCI6MX0sImV4cCI6MTcwMDA4NjQwMCwiaWF0IjoxNzAwMDAwMDAwLCJpc3MiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJqdGkiOiJqdGktcHJlcy1tYXAtc2l6ZSIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfcHJvb2YiOnsiZW50cnlfanRpIjoianRpLXJlcC0wMDIiLCJpbmNsdXNpb25fcGF0aCI6WyJvdGROTHh0MWZTQldJSWxSQ1VCaS1lVDl0bFFlazd5M3c3MWhSYU5hdG1zIiwiUnhURzQ5QmpKZGNZa1QzelB1ZXAtNzhYUW9ZVkxlUWVza1pzX0V1d0Y2ZyIsImN5S3FCdE9uZUQtVGw1VkdjeDBFZUN3bXJ4RUNSTkhNZGxMUjcwanZJUlUiXSwiaW5kZXgiOjIsImxvZ19pZCI6Imh0dHBzOi8vcGxhdGZvcm0uZXhhbXBsZS8ud2VsbC1rbm93bi9haWNwLWxvZyIsInJvb3RfaGFzaCI6Im9vYVFuMUU2SXVaWVQwLW1TaXpXVGtmSTQ5RGZmOUFCSHd0eVVia0w1ZVkiLCJ0cmVlX3NpemUiOjZ9LCJzdWIiOiJjYXJkLXRlc3QtMDAyIn0.syDVtDWX1fhRkaEz2cGSDYuOXW_oktup4OZKRt4WH7ttL5rRTTmZ0r4uPJYQBrdMAKDwaE0Q59tdrYzf2HUVMQ",
+        "disclosures": [
+          {
+            "detail": {
+              "outcome": "fulfilled"
+            },
+            "index": 2,
+            "salt": "IiIiIiIiIiIiIiIiIiIiIg"
+          }
+        ],
+        "history_proof": {
+          "checkpoint": {
+            "count": 1,
+            "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "index_entry": 3,
+            "latest_entry": 2,
+            "sub": "card-test-002",
+            "v": 1
+          },
+          "entries": [
+            {
+              "entry": {
+                "counterparty_id": "cp-bob",
+                "detail_commit": "F0E2KvL3bPD6e9C_ZSfGP9hQLfS1fR80X2t1967QcoM",
+                "entry_type": "attestation",
+                "event": "contract_completed",
+                "iat": 1700000100,
+                "iss": "https://platform.example",
+                "jti": "jti-rep-002",
+                "settlement_hash": "Y8TYkGx3LDdROF2otphpReS0lLzaNKhekdzEwMhMrv4",
+                "sub": "card-test-002",
+                "v": 1
+              },
+              "index": 2
+            }
+          ],
+          "index_entry": {
+            "count": 1,
+            "entry_type": "subject_index",
+            "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "iat": 1700000100,
+            "indices": [
+              2
+            ],
+            "iss": "https://platform.example",
+            "jti": "jti-idx-002-1",
+            "sub": "card-test-002",
+            "v": 1
+          },
+          "index_entry_inclusion_path": [
+            "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "RxTG49BjJdcYkT3zPuep-78XQoYVLeQeskZs_EuwF6g",
+            "cyKqBtOneD-Tl5VGcx0EeCwmrxECRNHMdlLR70jvIRU"
+          ],
+          "map_inclusion_path": [
+            "i8Av8Ei4m7O2VMniJjTuqAA4UNy66MI3Id-L8UjA6s8"
+          ],
+          "map_index": 1,
+          "map_size": 99
+        },
+        "sth": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.p24k4Qh1pLCFB1j71bVl50Gdg3DYRVKqpwWe30CKLx53YqR_dh66lzuT97gS6Ih_Ima3eoTwa1X6JQp5MArwOw"
+      },
+      "reason": "map_proof_failed"
+    },
+    {
+      "expect": "reject",
+      "held_sths": [
+        "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.p24k4Qh1pLCFB1j71bVl50Gdg3DYRVKqpwWe30CKLx53YqR_dh66lzuT97gS6Ih_Ima3eoTwa1X6JQp5MArwOw"
+      ],
+      "id": "reject-dropped-history",
+      "presentation": {
+        "attestation": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJjbGFpbXMiOnsiY29udHJhY3RzX2NvbXBsZXRlZCI6MX0sImV4cCI6MTcwMDA4NjQwMCwiaWF0IjoxNzAwMDAwMDAwLCJpc3MiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJqdGkiOiJqdGktcHJlcy0wMDEtZnJlc2giLCJraWQiOiJ0ZXN0LWVzMjU2LTAxIiwibG9nX3Byb29mIjp7ImVudHJ5X2p0aSI6Imp0aS1yZXAtMDAxIiwiaW5jbHVzaW9uX3BhdGgiOlsiRGdLU01mb19tU1YxcGhxWHpnNlFSdElDd0JfWXdTTzJYSkZJeEF1N2hobyIsImVaMWNjSHZTZ0lTR2NHWGYyMTR1dnRGRDJWZUJWc1p2Q3R5NUgxcERSYVEiLCJjeUtxQnRPbmVELVRsNVZHY3gwRWVDd21yeEVDUk5ITWRsTFI3MGp2SVJVIl0sImluZGV4IjowLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwidHJlZV9zaXplIjo2fSwic3ViIjoiY2FyZC10ZXN0LTAwMSJ9.Wj6VEVNr__NOsFR-gfg85HJRg_iEOohPXfO9MVuudUnVuyzODfU926mETtjI_ZE0S_UrXYtTWG3LWIqBPU5nww",
+        "disclosures": [
+          {
+            "detail": {
+              "amount_minor": 5000,
+              "currency": "USD",
+              "outcome": "fulfilled"
+            },
+            "index": 0,
+            "salt": "EREREREREREREREREREREQ"
+          },
+          {
+            "detail": {
+              "outcome": "reversed"
+            },
+            "index": 4,
+            "salt": "MzMzMzMzMzMzMzMzMzMzMw"
+          }
+        ],
+        "history_proof": {
+          "checkpoint": {
+            "count": 2,
+            "history_root": "w6dp4j3YV1kI6MCsCiz3xbdxCpXzGKdtaMLXExWIuW4",
+            "index_entry": 5,
+            "latest_entry": 4,
+            "sub": "card-test-001",
+            "v": 1
+          },
+          "entries": [
+            {
+              "entry": {
+                "counterparty_id": "cp-alice",
+                "detail_commit": "xbvWfWmu5wP6sGU_hfXgJjtfPklEFzLBOaMKjCP1eew",
+                "entry_type": "attestation",
+                "event": "contract_completed",
+                "iat": 1700000000,
+                "iss": "https://platform.example",
+                "jti": "jti-rep-001",
+                "settlement_hash": "SExusiG52R4sQZFfomnIsReBC5aXmJAAhvAxBnILj5g",
+                "sub": "card-test-001",
+                "v": 1
+              },
+              "index": 0
+            }
+          ],
+          "index_entry": {
+            "count": 2,
+            "entry_type": "subject_index",
+            "history_root": "w6dp4j3YV1kI6MCsCiz3xbdxCpXzGKdtaMLXExWIuW4",
+            "iat": 1700000200,
+            "indices": [
+              0,
+              4
+            ],
+            "iss": "https://platform.example",
+            "jti": "jti-idx-001-2",
+            "sub": "card-test-001",
+            "v": 1
+          },
+          "index_entry_inclusion_path": [
+            "Wn2Ty8t_c275YBiRhxAFNX7GzuFIqbrbBi4YaNlFlmo",
+            "6WEsUtq7dE5vk9OyZKaNv8r34gP4toR_Zr8DihCcbxM"
+          ],
+          "map_inclusion_path": [
+            "9MNWZOEKSRCtXntOOww1ndN8CFOB7hKBzAlBdMV9PCw"
+          ],
+          "map_index": 0,
+          "map_size": 2
+        },
+        "sth": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.p24k4Qh1pLCFB1j71bVl50Gdg3DYRVKqpwWe30CKLx53YqR_dh66lzuT97gS6Ih_Ima3eoTwa1X6JQp5MArwOw"
+      },
+      "reason": "history_incomplete"
+    },
+    {
+      "expect": "reject",
+      "held_sths": [
+        "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.p24k4Qh1pLCFB1j71bVl50Gdg3DYRVKqpwWe30CKLx53YqR_dh66lzuT97gS6Ih_Ima3eoTwa1X6JQp5MArwOw"
+      ],
+      "id": "reject-missing-adverse-disclosure",
+      "presentation": {
+        "attestation": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJjbGFpbXMiOnsiY29udHJhY3RzX2NvbXBsZXRlZCI6MX0sImV4cCI6MTcwMDA4NjQwMCwiaWF0IjoxNzAwMDAwMDAwLCJpc3MiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJqdGkiOiJqdGktcHJlcy0wMDEtZnJlc2giLCJraWQiOiJ0ZXN0LWVzMjU2LTAxIiwibG9nX3Byb29mIjp7ImVudHJ5X2p0aSI6Imp0aS1yZXAtMDAxIiwiaW5jbHVzaW9uX3BhdGgiOlsiRGdLU01mb19tU1YxcGhxWHpnNlFSdElDd0JfWXdTTzJYSkZJeEF1N2hobyIsImVaMWNjSHZTZ0lTR2NHWGYyMTR1dnRGRDJWZUJWc1p2Q3R5NUgxcERSYVEiLCJjeUtxQnRPbmVELVRsNVZHY3gwRWVDd21yeEVDUk5ITWRsTFI3MGp2SVJVIl0sImluZGV4IjowLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwidHJlZV9zaXplIjo2fSwic3ViIjoiY2FyZC10ZXN0LTAwMSJ9.Wj6VEVNr__NOsFR-gfg85HJRg_iEOohPXfO9MVuudUnVuyzODfU926mETtjI_ZE0S_UrXYtTWG3LWIqBPU5nww",
+        "disclosures": [
+          {
+            "detail": {
+              "amount_minor": 5000,
+              "currency": "USD",
+              "outcome": "fulfilled"
+            },
+            "index": 0,
+            "salt": "EREREREREREREREREREREQ"
+          }
+        ],
+        "history_proof": {
+          "checkpoint": {
+            "count": 2,
+            "history_root": "w6dp4j3YV1kI6MCsCiz3xbdxCpXzGKdtaMLXExWIuW4",
+            "index_entry": 5,
+            "latest_entry": 4,
+            "sub": "card-test-001",
+            "v": 1
+          },
+          "entries": [
+            {
+              "entry": {
+                "counterparty_id": "cp-alice",
+                "detail_commit": "xbvWfWmu5wP6sGU_hfXgJjtfPklEFzLBOaMKjCP1eew",
+                "entry_type": "attestation",
+                "event": "contract_completed",
+                "iat": 1700000000,
+                "iss": "https://platform.example",
+                "jti": "jti-rep-001",
+                "settlement_hash": "SExusiG52R4sQZFfomnIsReBC5aXmJAAhvAxBnILj5g",
+                "sub": "card-test-001",
+                "v": 1
+              },
+              "index": 0
+            },
+            {
+              "entry": {
+                "detail_commit": "rBRBawqQo4mnv5l2nZa2Sk2bPfbU89gQk1TYiTTvgq0",
+                "entry_type": "revocation",
+                "iat": 1700000200,
+                "iss": "https://platform.example",
+                "jti": "jti-rev-001",
+                "reason": "outcome_reversed",
+                "sub": "card-test-001",
+                "target_index": 0,
+                "target_jti": "jti-rep-001",
+                "v": 1
+              },
+              "index": 4
+            }
+          ],
+          "index_entry": {
+            "count": 2,
+            "entry_type": "subject_index",
+            "history_root": "w6dp4j3YV1kI6MCsCiz3xbdxCpXzGKdtaMLXExWIuW4",
+            "iat": 1700000200,
+            "indices": [
+              0,
+              4
+            ],
+            "iss": "https://platform.example",
+            "jti": "jti-idx-001-2",
+            "sub": "card-test-001",
+            "v": 1
+          },
+          "index_entry_inclusion_path": [
+            "Wn2Ty8t_c275YBiRhxAFNX7GzuFIqbrbBi4YaNlFlmo",
+            "6WEsUtq7dE5vk9OyZKaNv8r34gP4toR_Zr8DihCcbxM"
+          ],
+          "map_inclusion_path": [
+            "9MNWZOEKSRCtXntOOww1ndN8CFOB7hKBzAlBdMV9PCw"
+          ],
+          "map_index": 0,
+          "map_size": 2
+        },
+        "sth": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.p24k4Qh1pLCFB1j71bVl50Gdg3DYRVKqpwWe30CKLx53YqR_dh66lzuT97gS6Ih_Ima3eoTwa1X6JQp5MArwOw"
+      },
+      "reason": "disclosure_missing"
+    },
+    {
+      "expect": "reject",
+      "held_sths": [
+        "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.p24k4Qh1pLCFB1j71bVl50Gdg3DYRVKqpwWe30CKLx53YqR_dh66lzuT97gS6Ih_Ima3eoTwa1X6JQp5MArwOw"
+      ],
+      "id": "reject-bad-salt",
+      "presentation": {
+        "attestation": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJjbGFpbXMiOnsiY29udHJhY3RzX2NvbXBsZXRlZCI6MX0sImV4cCI6MTcwMDA4NjQwMCwiaWF0IjoxNzAwMDAwMDAwLCJpc3MiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJqdGkiOiJqdGktcHJlcy0wMDIiLCJraWQiOiJ0ZXN0LWVzMjU2LTAxIiwibG9nX3Byb29mIjp7ImVudHJ5X2p0aSI6Imp0aS1yZXAtMDAyIiwiaW5jbHVzaW9uX3BhdGgiOlsib3RkTkx4dDFmU0JXSUlsUkNVQmktZVQ5dGxRZWs3eTN3NzFoUmFOYXRtcyIsIlJ4VEc0OUJqSmRjWWtUM3pQdWVwLTc4WFFvWVZMZVFlc2tac19FdXdGNmciLCJjeUtxQnRPbmVELVRsNVZHY3gwRWVDd21yeEVDUk5ITWRsTFI3MGp2SVJVIl0sImluZGV4IjoyLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwidHJlZV9zaXplIjo2fSwic3ViIjoiY2FyZC10ZXN0LTAwMiJ9.0B7h1VFyUdNETmXjccoEC4vpswLPwLstM0EzFqagtSzR6Lhgg4ImwUmErrxaEfBqiNluQvpm8fy1Ijs3Vpyx5w",
+        "disclosures": [
+          {
+            "detail": {
+              "outcome": "reversed"
+            },
+            "index": 2,
+            "salt": "IiIiIiIiIiIiIiIiIiIiIg"
+          }
+        ],
+        "history_proof": {
+          "checkpoint": {
+            "count": 1,
+            "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "index_entry": 3,
+            "latest_entry": 2,
+            "sub": "card-test-002",
+            "v": 1
+          },
+          "entries": [
+            {
+              "entry": {
+                "counterparty_id": "cp-bob",
+                "detail_commit": "F0E2KvL3bPD6e9C_ZSfGP9hQLfS1fR80X2t1967QcoM",
+                "entry_type": "attestation",
+                "event": "contract_completed",
+                "iat": 1700000100,
+                "iss": "https://platform.example",
+                "jti": "jti-rep-002",
+                "settlement_hash": "Y8TYkGx3LDdROF2otphpReS0lLzaNKhekdzEwMhMrv4",
+                "sub": "card-test-002",
+                "v": 1
+              },
+              "index": 2
+            }
+          ],
+          "index_entry": {
+            "count": 1,
+            "entry_type": "subject_index",
+            "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "iat": 1700000100,
+            "indices": [
+              2
+            ],
+            "iss": "https://platform.example",
+            "jti": "jti-idx-002-1",
+            "sub": "card-test-002",
+            "v": 1
+          },
+          "index_entry_inclusion_path": [
+            "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "RxTG49BjJdcYkT3zPuep-78XQoYVLeQeskZs_EuwF6g",
+            "cyKqBtOneD-Tl5VGcx0EeCwmrxECRNHMdlLR70jvIRU"
+          ],
+          "map_inclusion_path": [
+            "i8Av8Ei4m7O2VMniJjTuqAA4UNy66MI3Id-L8UjA6s8"
+          ],
+          "map_index": 1,
+          "map_size": 2
+        },
+        "sth": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.p24k4Qh1pLCFB1j71bVl50Gdg3DYRVKqpwWe30CKLx53YqR_dh66lzuT97gS6Ih_Ima3eoTwa1X6JQp5MArwOw"
+      },
+      "reason": "disclosure_mismatch"
+    },
+    {
+      "expect": "reject",
+      "held_sths": [
+        "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.p24k4Qh1pLCFB1j71bVl50Gdg3DYRVKqpwWe30CKLx53YqR_dh66lzuT97gS6Ih_Ima3eoTwa1X6JQp5MArwOw"
+      ],
+      "id": "reject-short-salt",
+      "presentation": {
+        "attestation": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJjbGFpbXMiOnsiY29udHJhY3RzX2NvbXBsZXRlZCI6MX0sImV4cCI6MTcwMDA4NjQwMCwiaWF0IjoxNzAwMDAwMDAwLCJpc3MiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJqdGkiOiJqdGktcHJlcy0wMDIiLCJraWQiOiJ0ZXN0LWVzMjU2LTAxIiwibG9nX3Byb29mIjp7ImVudHJ5X2p0aSI6Imp0aS1yZXAtMDAyIiwiaW5jbHVzaW9uX3BhdGgiOlsib3RkTkx4dDFmU0JXSUlsUkNVQmktZVQ5dGxRZWs3eTN3NzFoUmFOYXRtcyIsIlJ4VEc0OUJqSmRjWWtUM3pQdWVwLTc4WFFvWVZMZVFlc2tac19FdXdGNmciLCJjeUtxQnRPbmVELVRsNVZHY3gwRWVDd21yeEVDUk5ITWRsTFI3MGp2SVJVIl0sImluZGV4IjoyLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwidHJlZV9zaXplIjo2fSwic3ViIjoiY2FyZC10ZXN0LTAwMiJ9.0B7h1VFyUdNETmXjccoEC4vpswLPwLstM0EzFqagtSzR6Lhgg4ImwUmErrxaEfBqiNluQvpm8fy1Ijs3Vpyx5w",
+        "disclosures": [
+          {
+            "detail": {
+              "outcome": "fulfilled"
+            },
+            "index": 2,
+            "salt": "AQEBAQEBAQE"
+          }
+        ],
+        "history_proof": {
+          "checkpoint": {
+            "count": 1,
+            "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "index_entry": 3,
+            "latest_entry": 2,
+            "sub": "card-test-002",
+            "v": 1
+          },
+          "entries": [
+            {
+              "entry": {
+                "counterparty_id": "cp-bob",
+                "detail_commit": "F0E2KvL3bPD6e9C_ZSfGP9hQLfS1fR80X2t1967QcoM",
+                "entry_type": "attestation",
+                "event": "contract_completed",
+                "iat": 1700000100,
+                "iss": "https://platform.example",
+                "jti": "jti-rep-002",
+                "settlement_hash": "Y8TYkGx3LDdROF2otphpReS0lLzaNKhekdzEwMhMrv4",
+                "sub": "card-test-002",
+                "v": 1
+              },
+              "index": 2
+            }
+          ],
+          "index_entry": {
+            "count": 1,
+            "entry_type": "subject_index",
+            "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "iat": 1700000100,
+            "indices": [
+              2
+            ],
+            "iss": "https://platform.example",
+            "jti": "jti-idx-002-1",
+            "sub": "card-test-002",
+            "v": 1
+          },
+          "index_entry_inclusion_path": [
+            "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "RxTG49BjJdcYkT3zPuep-78XQoYVLeQeskZs_EuwF6g",
+            "cyKqBtOneD-Tl5VGcx0EeCwmrxECRNHMdlLR70jvIRU"
+          ],
+          "map_inclusion_path": [
+            "i8Av8Ei4m7O2VMniJjTuqAA4UNy66MI3Id-L8UjA6s8"
+          ],
+          "map_index": 1,
+          "map_size": 2
+        },
+        "sth": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.p24k4Qh1pLCFB1j71bVl50Gdg3DYRVKqpwWe30CKLx53YqR_dh66lzuT97gS6Ih_Ima3eoTwa1X6JQp5MArwOw"
+      },
+      "reason": "disclosure_mismatch"
+    },
+    {
+      "expect": "reject",
+      "held_sths": [
+        "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLWJhZC1yZXYiLCJraWQiOiJ0ZXN0LWVzMjU2LTAxIiwibG9nX2lkIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlLy53ZWxsLWtub3duL2FpY3AtbG9nIiwicm9vdF9oYXNoIjoiRW5uSFFOeFo4OHVKNHhnMWpMYzFLemlHRlJHVjdPUURoY0FTRE9WYkJFVSIsInN0aF92ZXJzaW9uIjoxLCJzdWJqZWN0X21hcF9yb290IjoiRWxKWEdrcmo0b25pU2p1a3QtaEZINkp1REZtdWZOa1JmQzNYYjhORWR3QSIsInN1YmplY3RfbWFwX3NpemUiOjEsInRpbWVzdGFtcCI6MTcwMDAwMDMwMCwidHJlZV9zaXplIjo0fQ.FjlCVSAhxxj_Ozn1vafk7WgFFnkWuTlj3XUQ-LQuY4VId745YrjOwF3fWzZ8WydG-U_BYx3YVqojEMgrkjrInA"
+      ],
+      "id": "reject-revocation-jti-only",
+      "presentation": {
+        "attestation": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJjbGFpbXMiOnsiY29udHJhY3RzX2NvbXBsZXRlZCI6MX0sImV4cCI6MTcwMDA4NjQwMCwiaWF0IjoxNzAwMDAwMDAwLCJpc3MiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJqdGkiOiJqdGktcHJlcy1qdGktb25seSIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfcHJvb2YiOnsiZW50cnlfanRpIjoianRpLXJlcC0wMDEiLCJpbmNsdXNpb25fcGF0aCI6WyJEZ0tTTWZvX21TVjFwaHFYemc2UVJ0SUN3Ql9Zd1NPMlhKRkl4QXU3aGhvIiwiZkhxZ0VVR2tUY0F0Q0ptZVpRUDVJOF9zSmpiTTJmR25TcVRCVktFSnZHayJdLCJpbmRleCI6MCwibG9nX2lkIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlLy53ZWxsLWtub3duL2FpY3AtbG9nIiwicm9vdF9oYXNoIjoiRW5uSFFOeFo4OHVKNHhnMWpMYzFLemlHRlJHVjdPUURoY0FTRE9WYkJFVSIsInRyZWVfc2l6ZSI6NH0sInN1YiI6ImNhcmQtdGVzdC0wMDEifQ.h5TGCoiaf-JNtacvzherSEjr5qtNPNj6hnGcp2_C8OwDkf9WcOD-UI-6dmPtE2xcQ5G4QGllVbe6k2PyG_hlTA",
+        "disclosures": [
+          {
+            "detail": {
+              "amount_minor": 5000,
+              "currency": "USD",
+              "outcome": "fulfilled"
+            },
+            "index": 0,
+            "salt": "EREREREREREREREREREREQ"
+          },
+          {
+            "detail": {
+              "outcome": "reversed"
+            },
+            "index": 2,
+            "salt": "RERERERERERERERERERERA"
+          }
+        ],
+        "history_proof": {
+          "checkpoint": {
+            "count": 2,
+            "history_root": "vVUbgLYoRvP3glJAvDJTkGePftb8tPMRzdnVJycisV0",
+            "index_entry": 3,
+            "latest_entry": 2,
+            "sub": "card-test-001",
+            "v": 1
+          },
+          "entries": [
+            {
+              "entry": {
+                "counterparty_id": "cp-alice",
+                "detail_commit": "xbvWfWmu5wP6sGU_hfXgJjtfPklEFzLBOaMKjCP1eew",
+                "entry_type": "attestation",
+                "event": "contract_completed",
+                "iat": 1700000000,
+                "iss": "https://platform.example",
+                "jti": "jti-rep-001",
+                "settlement_hash": "SExusiG52R4sQZFfomnIsReBC5aXmJAAhvAxBnILj5g",
+                "sub": "card-test-001",
+                "v": 1
+              },
+              "index": 0
+            },
+            {
+              "entry": {
+                "detail_commit": "5dojlPGTj40o-_1kapQ0r2yZKYZo7AFI_c6B75g_hLU",
+                "entry_type": "revocation",
+                "iat": 1700000200,
+                "iss": "https://platform.example",
+                "jti": "jti-rev-jti-only",
+                "reason": "outcome_reversed",
+                "sub": "card-test-001",
+                "target_index": 1,
+                "target_jti": "jti-rep-001",
+                "v": 1
+              },
+              "index": 2
+            }
+          ],
+          "index_entry": {
+            "count": 2,
+            "entry_type": "subject_index",
+            "history_root": "vVUbgLYoRvP3glJAvDJTkGePftb8tPMRzdnVJycisV0",
+            "iat": 1700000200,
+            "indices": [
+              0,
+              2
+            ],
+            "iss": "https://platform.example",
+            "jti": "jti-idx-bad",
+            "sub": "card-test-001",
+            "v": 1
+          },
+          "index_entry_inclusion_path": [
+            "k_7V6jkEtKyjWAdE_jQTz6VtExxjz1QJUCJJAuN9LM0",
+            "RxTG49BjJdcYkT3zPuep-78XQoYVLeQeskZs_EuwF6g"
+          ],
+          "map_inclusion_path": [],
+          "map_index": 0,
+          "map_size": 1
+        },
+        "sth": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLWJhZC1yZXYiLCJraWQiOiJ0ZXN0LWVzMjU2LTAxIiwibG9nX2lkIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlLy53ZWxsLWtub3duL2FpY3AtbG9nIiwicm9vdF9oYXNoIjoiRW5uSFFOeFo4OHVKNHhnMWpMYzFLemlHRlJHVjdPUURoY0FTRE9WYkJFVSIsInN0aF92ZXJzaW9uIjoxLCJzdWJqZWN0X21hcF9yb290IjoiRWxKWEdrcmo0b25pU2p1a3QtaEZINkp1REZtdWZOa1JmQzNYYjhORWR3QSIsInN1YmplY3RfbWFwX3NpemUiOjEsInRpbWVzdGFtcCI6MTcwMDAwMDMwMCwidHJlZV9zaXplIjo0fQ.FjlCVSAhxxj_Ozn1vafk7WgFFnkWuTlj3XUQ-LQuY4VId745YrjOwF3fWzZ8WydG-U_BYx3YVqojEMgrkjrInA"
+      },
+      "reason": "history_malformed"
+    },
+    {
+      "expect": "reject",
+      "held_sths": [
+        "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLWJhZC1yZXYyIiwia2lkIjoidGVzdC1lczI1Ni0wMSIsImxvZ19pZCI6Imh0dHBzOi8vcGxhdGZvcm0uZXhhbXBsZS8ud2VsbC1rbm93bi9haWNwLWxvZyIsInJvb3RfaGFzaCI6ImpsYzlXaWFKdVRPWmNsTW0tZGZlMkhBVTI4QVNUc0pGVnBsR3VFTWIyLWciLCJzdGhfdmVyc2lvbiI6MSwic3ViamVjdF9tYXBfcm9vdCI6InhfNUJNWEpMRzVtak9pdVJSUzdwOUFCNHAyc2IzOEtZTVRCRUpiYl82UVEiLCJzdWJqZWN0X21hcF9zaXplIjoxLCJ0aW1lc3RhbXAiOjE3MDAwMDAzMDAsInRyZWVfc2l6ZSI6NH0.0P-y74e1FzFCNFlP_1W4Y0GAvO24POEOJ62ezbXvEKP60ABgor3gP_cwDTV6B7yvKV2t7gJ238dWm4xQEivn3Q"
+      ],
+      "id": "reject-revocation-index-only",
+      "presentation": {
+        "attestation": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJjbGFpbXMiOnsiY29udHJhY3RzX2NvbXBsZXRlZCI6MX0sImV4cCI6MTcwMDA4NjQwMCwiaWF0IjoxNzAwMDAwMDAwLCJpc3MiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJqdGkiOiJqdGktcHJlcy1pZHgtb25seSIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfcHJvb2YiOnsiZW50cnlfanRpIjoianRpLXJlcC0wMDEiLCJpbmNsdXNpb25fcGF0aCI6WyJEZ0tTTWZvX21TVjFwaHFYemc2UVJ0SUN3Ql9Zd1NPMlhKRkl4QXU3aGhvIiwiWmh4ZkMtSkQ3X2tQRVlJcDJOVWFkR1h4MG9lMUtqX3VsMWVHbFN3bzUySSJdLCJpbmRleCI6MCwibG9nX2lkIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlLy53ZWxsLWtub3duL2FpY3AtbG9nIiwicm9vdF9oYXNoIjoiamxjOVdpYUp1VE9aY2xNbS1kZmUySEFVMjhBU1RzSkZWcGxHdUVNYjItZyIsInRyZWVfc2l6ZSI6NH0sInN1YiI6ImNhcmQtdGVzdC0wMDEifQ.2_rw-O63PrWMCfsBxtbEdSUkyHz9W0ml_9IvOof4oHgU2kY3mpfjSXmENzZ1jEBP0RG5YRRymqSp3TjqrANIDw",
+        "disclosures": [
+          {
+            "detail": {
+              "amount_minor": 5000,
+              "currency": "USD",
+              "outcome": "fulfilled"
+            },
+            "index": 0,
+            "salt": "EREREREREREREREREREREQ"
+          },
+          {
+            "detail": {
+              "outcome": "reversed"
+            },
+            "index": 2,
+            "salt": "VVVVVVVVVVVVVVVVVVVVVQ"
+          }
+        ],
+        "history_proof": {
+          "checkpoint": {
+            "count": 2,
+            "history_root": "6t_nQ0rlaud4biJbbfwahmbTzXl5GXM2bYSA0nISB_Q",
+            "index_entry": 3,
+            "latest_entry": 2,
+            "sub": "card-test-001",
+            "v": 1
+          },
+          "entries": [
+            {
+              "entry": {
+                "counterparty_id": "cp-alice",
+                "detail_commit": "xbvWfWmu5wP6sGU_hfXgJjtfPklEFzLBOaMKjCP1eew",
+                "entry_type": "attestation",
+                "event": "contract_completed",
+                "iat": 1700000000,
+                "iss": "https://platform.example",
+                "jti": "jti-rep-001",
+                "settlement_hash": "SExusiG52R4sQZFfomnIsReBC5aXmJAAhvAxBnILj5g",
+                "sub": "card-test-001",
+                "v": 1
+              },
+              "index": 0
+            },
+            {
+              "entry": {
+                "detail_commit": "JM0GDX84LsKHY1iTxX8dkViPDJ4HBPnB1AzOluAH-Gs",
+                "entry_type": "revocation",
+                "iat": 1700000200,
+                "iss": "https://platform.example",
+                "jti": "jti-rev-idx-only",
+                "reason": "outcome_reversed",
+                "sub": "card-test-001",
+                "target_index": 0,
+                "target_jti": "jti-does-not-match",
+                "v": 1
+              },
+              "index": 2
+            }
+          ],
+          "index_entry": {
+            "count": 2,
+            "entry_type": "subject_index",
+            "history_root": "6t_nQ0rlaud4biJbbfwahmbTzXl5GXM2bYSA0nISB_Q",
+            "iat": 1700000200,
+            "indices": [
+              0,
+              2
+            ],
+            "iss": "https://platform.example",
+            "jti": "jti-idx-bad2",
+            "sub": "card-test-001",
+            "v": 1
+          },
+          "index_entry_inclusion_path": [
+            "CSFGwKkIpTlKVt0GQyPk6uMgq-afLXVJ0g2efXW32SY",
+            "RxTG49BjJdcYkT3zPuep-78XQoYVLeQeskZs_EuwF6g"
+          ],
+          "map_inclusion_path": [],
+          "map_index": 0,
+          "map_size": 1
+        },
+        "sth": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLWJhZC1yZXYyIiwia2lkIjoidGVzdC1lczI1Ni0wMSIsImxvZ19pZCI6Imh0dHBzOi8vcGxhdGZvcm0uZXhhbXBsZS8ud2VsbC1rbm93bi9haWNwLWxvZyIsInJvb3RfaGFzaCI6ImpsYzlXaWFKdVRPWmNsTW0tZGZlMkhBVTI4QVNUc0pGVnBsR3VFTWIyLWciLCJzdGhfdmVyc2lvbiI6MSwic3ViamVjdF9tYXBfcm9vdCI6InhfNUJNWEpMRzVtak9pdVJSUzdwOUFCNHAyc2IzOEtZTVRCRUpiYl82UVEiLCJzdWJqZWN0X21hcF9zaXplIjoxLCJ0aW1lc3RhbXAiOjE3MDAwMDAzMDAsInRyZWVfc2l6ZSI6NH0.0P-y74e1FzFCNFlP_1W4Y0GAvO24POEOJ62ezbXvEKP60ABgor3gP_cwDTV6B7yvKV2t7gJ238dWm4xQEivn3Q"
+      },
+      "reason": "history_malformed"
+    },
+    {
+      "expect": "reject",
+      "held_sths": [
+        "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.p24k4Qh1pLCFB1j71bVl50Gdg3DYRVKqpwWe30CKLx53YqR_dh66lzuT97gS6Ih_Ima3eoTwa1X6JQp5MArwOw"
+      ],
+      "id": "reject-non-inclusion",
+      "presentation": {
+        "disclosures": [],
+        "history_proof": {
+          "entries": [],
+          "non_inclusion": {
+            "right": {
+              "checkpoint": {
+                "count": 2,
+                "history_root": "w6dp4j3YV1kI6MCsCiz3xbdxCpXzGKdtaMLXExWIuW4",
+                "index_entry": 5,
+                "latest_entry": 4,
+                "sub": "card-test-001",
+                "v": 1
+              },
+              "map_inclusion_path": [
+                "9MNWZOEKSRCtXntOOww1ndN8CFOB7hKBzAlBdMV9PCw"
+              ],
+              "map_index": 0
+            },
+            "sub": "card-test-001b"
+          }
+        },
+        "sth": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY3MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDMwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJFU1VnYVZyb19hMEJTbUgxT19TeXNSanJBcjBaLW8waFd1U0VYLTZpaW5NIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMzAwLCJ0cmVlX3NpemUiOjZ9.p24k4Qh1pLCFB1j71bVl50Gdg3DYRVKqpwWe30CKLx53YqR_dh66lzuT97gS6Ih_Ima3eoTwa1X6JQp5MArwOw"
+      },
+      "reason": "map_proof_failed"
+    },
+    {
+      "expect": "reject",
+      "held_sths": [
+        "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY1MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDEwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNCIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiI2V0VzVXRxN2RFNXZrOU95WkthTnY4cjM0Z1A0dG9SX1pyOERpaENjYnhNIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJMNHRQQk1EcUZRNk54Wjk0RmRrUHd4SVNCZEE5YnlKY2hwVDVZNjZDc3pnIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMTAwLCJ0cmVlX3NpemUiOjR9.76qS2G0vdrt_QACY7RK2NbGO1nSxJCWNcD9NqKz5ywewwuRyiTbeKe_FKH-gC2Mtva5SW9X0G3cA_lhwq1s1OQ"
+      ],
+      "id": "reject-sth-behind",
+      "presentation": {
+        "attestation": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJjbGFpbXMiOnsiY29udHJhY3RzX2NvbXBsZXRlZCI6MX0sImV4cCI6MTcwMDA4NjQwMCwiaWF0IjoxNzAwMDAwMDAwLCJpc3MiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJqdGkiOiJqdGktcHJlcy0wMDEtZnJlc2giLCJraWQiOiJ0ZXN0LWVzMjU2LTAxIiwibG9nX3Byb29mIjp7ImVudHJ5X2p0aSI6Imp0aS1yZXAtMDAxIiwiaW5jbHVzaW9uX3BhdGgiOlsiRGdLU01mb19tU1YxcGhxWHpnNlFSdElDd0JfWXdTTzJYSkZJeEF1N2hobyIsImVaMWNjSHZTZ0lTR2NHWGYyMTR1dnRGRDJWZUJWc1p2Q3R5NUgxcERSYVEiLCJjeUtxQnRPbmVELVRsNVZHY3gwRWVDd21yeEVDUk5ITWRsTFI3MGp2SVJVIl0sImluZGV4IjowLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwidHJlZV9zaXplIjo2fSwic3ViIjoiY2FyZC10ZXN0LTAwMSJ9.Wj6VEVNr__NOsFR-gfg85HJRg_iEOohPXfO9MVuudUnVuyzODfU926mETtjI_ZE0S_UrXYtTWG3LWIqBPU5nww",
+        "consistency_path": [
+          "cyKqBtOneD-Tl5VGcx0EeCwmrxECRNHMdlLR70jvIRU"
+        ],
+        "disclosures": [
+          {
+            "detail": {
+              "amount_minor": 5000,
+              "currency": "USD",
+              "outcome": "fulfilled"
+            },
+            "index": 0,
+            "salt": "EREREREREREREREREREREQ"
+          },
+          {
+            "detail": {
+              "outcome": "reversed"
+            },
+            "index": 4,
+            "salt": "MzMzMzMzMzMzMzMzMzMzMw"
+          }
+        ],
+        "history_proof": {
+          "checkpoint": {
+            "count": 2,
+            "history_root": "w6dp4j3YV1kI6MCsCiz3xbdxCpXzGKdtaMLXExWIuW4",
+            "index_entry": 5,
+            "latest_entry": 4,
+            "sub": "card-test-001",
+            "v": 1
+          },
+          "entries": [
+            {
+              "entry": {
+                "counterparty_id": "cp-alice",
+                "detail_commit": "xbvWfWmu5wP6sGU_hfXgJjtfPklEFzLBOaMKjCP1eew",
+                "entry_type": "attestation",
+                "event": "contract_completed",
+                "iat": 1700000000,
+                "iss": "https://platform.example",
+                "jti": "jti-rep-001",
+                "settlement_hash": "SExusiG52R4sQZFfomnIsReBC5aXmJAAhvAxBnILj5g",
+                "sub": "card-test-001",
+                "v": 1
+              },
+              "index": 0
+            },
+            {
+              "entry": {
+                "detail_commit": "rBRBawqQo4mnv5l2nZa2Sk2bPfbU89gQk1TYiTTvgq0",
+                "entry_type": "revocation",
+                "iat": 1700000200,
+                "iss": "https://platform.example",
+                "jti": "jti-rev-001",
+                "reason": "outcome_reversed",
+                "sub": "card-test-001",
+                "target_index": 0,
+                "target_jti": "jti-rep-001",
+                "v": 1
+              },
+              "index": 4
+            }
+          ],
+          "index_entry": {
+            "count": 2,
+            "entry_type": "subject_index",
+            "history_root": "w6dp4j3YV1kI6MCsCiz3xbdxCpXzGKdtaMLXExWIuW4",
+            "iat": 1700000200,
+            "indices": [
+              0,
+              4
+            ],
+            "iss": "https://platform.example",
+            "jti": "jti-idx-001-2",
+            "sub": "card-test-001",
+            "v": 1
+          },
+          "index_entry_inclusion_path": [
+            "Wn2Ty8t_c275YBiRhxAFNX7GzuFIqbrbBi4YaNlFlmo",
+            "6WEsUtq7dE5vk9OyZKaNv8r34gP4toR_Zr8DihCcbxM"
+          ],
+          "map_inclusion_path": [
+            "9MNWZOEKSRCtXntOOww1ndN8CFOB7hKBzAlBdMV9PCw"
+          ],
+          "map_index": 0,
+          "map_size": 2
+        },
+        "sth": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJhaWNwLXN0aCtqd3QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJleHAiOjE3MDAwODY1MDAsImhhc2hfYWxnIjoiU0hBLTI1NiIsImlhdCI6MTcwMDAwMDEwMCwiaXNzIjoiaHR0cHM6Ly9wbGF0Zm9ybS5leGFtcGxlIiwianRpIjoic3RoLXNpemUtNCIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiI2V0VzVXRxN2RFNXZrOU95WkthTnY4cjM0Z1A0dG9SX1pyOERpaENjYnhNIiwic3RoX3ZlcnNpb24iOjEsInN1YmplY3RfbWFwX3Jvb3QiOiJMNHRQQk1EcUZRNk54Wjk0RmRrUHd4SVNCZEE5YnlKY2hwVDVZNjZDc3pnIiwic3ViamVjdF9tYXBfc2l6ZSI6MiwidGltZXN0YW1wIjoxNzAwMDAwMTAwLCJ0cmVlX3NpemUiOjR9.76qS2G0vdrt_QACY7RK2NbGO1nSxJCWNcD9NqKz5ywewwuRyiTbeKe_FKH-gC2Mtva5SW9X0G3cA_lhwq1s1OQ"
+      },
+      "reason": "sth_behind"
+    },
+    {
+      "expect": "reject",
+      "held_sths": [],
+      "id": "reject-log-unreachable",
+      "presentation": {
+        "attestation": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRlc3QtZXMyNTYtMDEiLCJ0eXAiOiJKV1QifQ.eyJhdWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJjbGFpbXMiOnsiY29udHJhY3RzX2NvbXBsZXRlZCI6MX0sImV4cCI6MTcwMDA4NjQwMCwiaWF0IjoxNzAwMDAwMDAwLCJpc3MiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUiLCJqdGkiOiJqdGktcHJlcy0wMDIiLCJraWQiOiJ0ZXN0LWVzMjU2LTAxIiwibG9nX3Byb29mIjp7ImVudHJ5X2p0aSI6Imp0aS1yZXAtMDAyIiwiaW5jbHVzaW9uX3BhdGgiOlsib3RkTkx4dDFmU0JXSUlsUkNVQmktZVQ5dGxRZWs3eTN3NzFoUmFOYXRtcyIsIlJ4VEc0OUJqSmRjWWtUM3pQdWVwLTc4WFFvWVZMZVFlc2tac19FdXdGNmciLCJjeUtxQnRPbmVELVRsNVZHY3gwRWVDd21yeEVDUk5ITWRsTFI3MGp2SVJVIl0sImluZGV4IjoyLCJsb2dfaWQiOiJodHRwczovL3BsYXRmb3JtLmV4YW1wbGUvLndlbGwta25vd24vYWljcC1sb2ciLCJyb290X2hhc2giOiJvb2FRbjFFNkl1WllUMC1tU2l6V1RrZkk0OURmZjlBQkh3dHlVYmtMNWVZIiwidHJlZV9zaXplIjo2fSwic3ViIjoiY2FyZC10ZXN0LTAwMiJ9.0B7h1VFyUdNETmXjccoEC4vpswLPwLstM0EzFqagtSzR6Lhgg4ImwUmErrxaEfBqiNluQvpm8fy1Ijs3Vpyx5w",
+        "disclosures": [
+          {
+            "detail": {
+              "outcome": "fulfilled"
+            },
+            "index": 2,
+            "salt": "IiIiIiIiIiIiIiIiIiIiIg"
+          }
+        ],
+        "history_proof": {
+          "checkpoint": {
+            "count": 1,
+            "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "index_entry": 3,
+            "latest_entry": 2,
+            "sub": "card-test-002",
+            "v": 1
+          },
+          "entries": [
+            {
+              "entry": {
+                "counterparty_id": "cp-bob",
+                "detail_commit": "F0E2KvL3bPD6e9C_ZSfGP9hQLfS1fR80X2t1967QcoM",
+                "entry_type": "attestation",
+                "event": "contract_completed",
+                "iat": 1700000100,
+                "iss": "https://platform.example",
+                "jti": "jti-rep-002",
+                "settlement_hash": "Y8TYkGx3LDdROF2otphpReS0lLzaNKhekdzEwMhMrv4",
+                "sub": "card-test-002",
+                "v": 1
+              },
+              "index": 2
+            }
+          ],
+          "index_entry": {
+            "count": 1,
+            "entry_type": "subject_index",
+            "history_root": "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "iat": 1700000100,
+            "indices": [
+              2
+            ],
+            "iss": "https://platform.example",
+            "jti": "jti-idx-002-1",
+            "sub": "card-test-002",
+            "v": 1
+          },
+          "index_entry_inclusion_path": [
+            "_upFz7ayoCSruTrwJX5VO0LIvb2Y63Y8oWW5ATxouLs",
+            "RxTG49BjJdcYkT3zPuep-78XQoYVLeQeskZs_EuwF6g",
+            "cyKqBtOneD-Tl5VGcx0EeCwmrxECRNHMdlLR70jvIRU"
+          ],
+          "map_inclusion_path": [
+            "i8Av8Ei4m7O2VMniJjTuqAA4UNy66MI3Id-L8UjA6s8"
+          ],
+          "map_index": 1,
+          "map_size": 2
+        }
+      },
+      "reason": "log_unreachable"
+    }
+  ]
+}

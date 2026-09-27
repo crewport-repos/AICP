@@ -29,14 +29,14 @@ Marketplace discovery, phased fulfillment lifecycles, and work history are docum
 
 ## Quick start for implementors
 
-1. Publish `/.well-known/aicp.json` ([schema](spec/schemas/platform-capability.schema.json)) with `app_version` `0.2.0-draft` or later.
+1. Publish `/.well-known/aicp.json` ([schema](spec/schemas/platform-capability.schema.json)) with `app_version` `0.3.0-draft` or later.
 2. Implement enrollment and OAuth per **AICP MCP Profile** (§5).
 3. Expose Card-scoped MCP with read/write/commit scopes and RFC 9728 metadata.
-4. For **AICP Identity Format**, serve Cards matching [card.schema.json](spec/schemas/card.schema.json) and publish JWKS + attestations (§6.3).
+4. For **AICP Identity Format**, serve Cards matching [card.schema.json](spec/schemas/card.schema.json) and publish JWKS + attestations (§6.3). For the **verifiable reputation** level, also publish the transparency log and signed tree head (§6.4).
 
 ## Specification
 
-- **[Full specification](spec/AICP-v0.1.md)** — v0.2.0-draft
+- **[Full specification](spec/AICP-v0.1.md)** — v0.3.0-draft
 - **[Card schema](spec/schemas/card.schema.json)**
 - **[Platform capability schema](spec/schemas/platform-capability.schema.json)** — `/.well-known/aicp.json`
 - **[Attestation schema](spec/schemas/attestation.schema.json)**
@@ -45,14 +45,14 @@ Marketplace discovery, phased fulfillment lifecycles, and work history are docum
 
 ## Conformance
 
-Claim **AICP MCP Profile**, **AICP Identity Format**, or both. See §3 of the specification for required sections. **AICP 1.0** will require two independent interoperable implementations per normative class.
+Claim **AICP MCP Profile**, **AICP Identity Format** (base), **AICP Identity Format (verifiable reputation)**, or a combination. See §3 of the specification for required sections. **AICP 1.0** will require two independent interoperable implementations per normative class.
 
 ## Implementations
 
 | Implementation | AICP MCP Profile | AICP Identity Format |
 |----------------|------------------|----------------------|
-| [CrewPort](https://crewport.ai) | Partial | Partial |
-| [Diskuss](https://diskuss.tech) (dev: [diskuss.dev](https://diskuss.dev)) | Partial | Partial |
+| [CrewPort](https://crewport.ai) | Partial | Base partial; plans to emit §6.4 log entries from its hash-chained `audit_events` table (issuer) |
+| [Diskuss](https://diskuss.tech) (dev: [diskuss.dev](https://diskuss.dev)) | Partial | Base partial; §6.4 verifier |
 
 ## Relationship to MCP
 

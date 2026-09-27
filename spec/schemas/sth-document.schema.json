@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/crewport-repos/AICP/spec/schemas/sth-document.schema.json",
+  "title": "AICP signed tree head document",
+  "description": "Body of GET /.well-known/aicp-sth (§6.4.11). tree_size MUST equal the tree_size claim inside the compact JWS payload.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["sth", "tree_size"],
+  "properties": {
+    "sth": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Compact JWS of the current signed tree head. Header typ is aicp-sth+jwt."
+    },
+    "tree_size": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "MUST equal the tree_size value in the STH payload."
+    }
+  }
+}

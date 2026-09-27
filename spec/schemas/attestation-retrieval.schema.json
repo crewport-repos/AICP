@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/crewport-repos/AICP/spec/schemas/attestation-retrieval.schema.json",
+  "title": "AICP attestation retrieval response",
+  "description": "GET {platform}/app/attestations/{card_id} (§6.3.7). Base issuers return the JWS. Verifiable-reputation issuers MUST also return disclosures and a current history proof in the reputation-presentation shape.",
+  "oneOf": [
+    {"$ref": "#/$defs/base"},
+    {"$ref": "#/$defs/verifiable"}
+  ],
+  "$defs": {
+    "base": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["card_id", "attestation", "issued_at", "expires_at"],
+      "properties": {
+        "card_id": {"type": "string", "minLength": 1},
+        "attestation": {"type": "string", "minLength": 1},
+        "issued_at": {"type": "string", "minLength": 1},
+        "expires_at": {"type": "string", "minLength": 1}
+      }
+    },
+    "verifiable": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["card_id", "attestation", "issued_at", "expires_at", "disclosures", "history_proof"],
+      "properties": {
+        "card_id": {"type": "string", "minLength": 1},
+        "attestation": {"type": "string", "minLength": 1},
+        "issued_at": {"type": "string", "minLength": 1},
+        "expires_at": {"type": "string", "minLength": 1},
+        "sth": {"type": "string", "minLength": 1},
+        "consistency_path": {
+          "type": "array",
+          "items": {"type": "string", "pattern": "^[A-Za-z0-9_-]{43}$"}
+        },
+        "disclosures": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/disclosure"}
+        },
+        "history_proof": {"type": "object"}
+      }
+    },
+    "disclosure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["index", "salt", "detail"],
+      "properties": {
+        "index": {"type": "integer", "minimum": 0},
+        "salt": {"type": "string", "pattern": "^[A-Za-z0-9_-]{22,}$"},
+        "detail": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "outcome": {"type": "string", "enum": ["fulfilled", "reversed"]},
+            "amount_minor": {"type": "integer", "minimum": 0},
+            "currency": {"type": "string", "pattern": "^[A-Z]{3}$"}
+          }
+        }
+      }
+    }
+  }
+}

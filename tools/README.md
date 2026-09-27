@@ -1,7 +1,7 @@
 # tools/
 
 `check-spec.py` is the only automated check in this repository. It answers one
-question: **does the spec agree with its own schemas?**
+question: **does the spec agree with its own schemas?** Run it on **Python 3.12**.
 
 ```sh
 python3 -m venv .venv
@@ -18,6 +18,12 @@ python3 -m venv .venv
    validated against the schema it declares it illustrates.
 4. **drift** — a schema reproduced inside the prose is compared against the
    schema file it copies.
+5. **vectors** — `spec/test-vectors/vectors.json` attestation JWTs (§6.3.4.1).
+6. **reputation** — `spec/test-vectors/reputation-vectors.json`: RFC 9162
+   inclusion, consistency, per-subject completeness, revocation, and the
+   negative presentation vectors (§6.4.12). Each vector is graded from its
+   presentation and held signed tree heads. Log entries are checked against
+   `log-entry.schema.json`.
 
 ## How an example is bound to a schema
 

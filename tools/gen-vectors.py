@@ -1,14 +1,19 @@
 #!/usr/bin/env python3
-"""Generate AICP attestation test vectors (TEST ONLY keys)."""
+"""Generate AICP attestation and verifiable-reputation test vectors (TEST ONLY keys)."""
 from __future__ import annotations
 
 import base64
 import json
+import sys
 from pathlib import Path
 
 import jwt
-from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import ec, ed25519, rsa
+from cryptography.hazmat.primitives.asymmetric.utils import decode_dss_signature
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import merkle9162 as mkl
 
 REPO = Path(__file__).resolve().parent.parent
 OUT = REPO / "spec" / "test-vectors"
@@ -87,7 +92,7 @@ def load_or_create_keys() -> tuple[object, object, object, bool]:
     return es_priv, ed_priv, rsa_priv, True
 
 
-def main() -> None:
+def main(only: str = "all") -> None:
     OUT.mkdir(parents=True, exist_ok=True)
 
     es_priv, ed_priv, rsa_priv, fresh_keys = load_or_create_keys()
@@ -95,12 +100,13 @@ def main() -> None:
     es_kid = "test-es256-01"
     ed_kid = "test-ed25519-01"
 
-    jwks_es = {"keys": [ec_jwk_public(es_priv, es_kid)]}
-    jwks_ed = {"keys": [ed_jwk_public(ed_priv, ed_kid)]}
-    write_json(OUT / "jwks-es256.json", jwks_es)
-    write_json(OUT / "jwks-ed25519.json", jwks_ed)
+    if only in ("all", "attestations"):
+        jwks_es = {"keys": [ec_jwk_public(es_priv, es_kid)]}
+        jwks_ed = {"keys": [ed_jwk_public(ed_priv, ed_kid)]}
+        write_json(OUT / "jwks-es256.json", jwks_es)
+        write_json(OUT / "jwks-ed25519.json", jwks_ed)
 
-    if fresh_keys:
+    if fresh_keys and only in ("all", "attestations"):
         test_keys = {
             "_warning": "TEST ONLY — fixed material for AICP spec vectors. Do not use in production.",
             "fixed_clock_unix": FIXED_IAT,
@@ -122,6 +128,10 @@ def main() -> None:
             ).decode("ascii"),
         }
         write_json(OUT / "test-keys.json", test_keys)
+
+    if only == "reputation":
+        write_reputation_vectors(es_priv, rsa_priv)
+        return
 
     def sign_es(payload: dict, *, headers: dict | None = None, key=es_priv) -> str:
         h = {"alg": "ES256", "typ": "JWT", "kid": payload.get("kid", es_kid)}
@@ -192,7 +202,22 @@ def main() -> None:
     }
     write_json(OUT / "vectors.json", meta)
     print(f"Wrote {len(vectors)} vectors to {OUT}")
+    write_reputation_vectors(es_priv, rsa_priv)
 
+
+def write_reputation_vectors(es_priv, rsa_priv) -> None:
+    from build_reputation import write_reputation_vectors as _write
+
+    _write(es_priv, rsa_priv, OUT, ISS, FIXED_IAT, FIXED_EXP)
 
 if __name__ == "__main__":
-    main()
+    import argparse
+
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument(
+        "--only",
+        choices=["all", "attestations", "reputation"],
+        default="all",
+        help="which vectors to regenerate (ECDSA signatures are not deterministic)",
+    )
+    main(ap.parse_args().only)
