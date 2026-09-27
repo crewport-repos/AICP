@@ -8,7 +8,7 @@
   "properties": {
     "app_version": {
       "type": "string",
-      "description": "AICP specification version implemented (e.g., '0.1.0')"
+      "description": "AICP specification version implemented (e.g., '0.2.0-draft')"
     },
     "platform_name": {
       "type": "string",
@@ -18,7 +18,7 @@
       "type": "array",
       "items": {
         "type": "string",
-        "description": "Profile identifier (standard: 'market', 'lifecycle', 'history', 'federation'; custom: 'x-*')"
+        "description": "Informative optional profile identifiers (standard: 'market', 'lifecycle', 'history'; custom: 'x-*'). Federation is signaled via the federation object, not this array."
       },
       "description": "Implemented AICP profiles"
     },

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/ologos-repos/AICP/spec/schemas/attestation.schema.json",
+  "$id": "https://github.com/crewport-repos/AICP/spec/schemas/attestation.schema.json",
   "title": "AICP Attestation",
   "description": "A signed claim (JWT payload) that a platform makes about one of its Cards. Used for cross-platform identity and reputation portability in AICP federation.",
   "type": "object",

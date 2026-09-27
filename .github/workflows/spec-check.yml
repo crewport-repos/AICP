@@ -34,11 +34,7 @@ jobs:
       - run: python tools/check-spec.py --check examples
 
   # A schema reproduced inside the prose must not disagree with the schema file
-  # it copies. This job is CURRENTLY RED on purpose: Appendix C is a stale copy
-  # of platform-capability.schema.json and the two disagree about what a valid
-  # `supported_classes` entry is. That is a finding about AICP for a human to
-  # resolve by editing the spec — not something this check should be softened to
-  # accept. See the pull request that introduced this workflow.
+  # it copies (Appendix G mirrors platform-capability.schema.json).
   drift:
     name: in-document schema copies match spec/schemas
     runs-on: ubuntu-24.04
