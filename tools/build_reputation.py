@@ -288,6 +288,7 @@ def write_reputation_vectors(es_priv, rsa_priv, out: Path, iss: str, fixed_iat: 
         return sign_tree_sth(subset_entries, timestamp, jti, es_priv, iss)
 
     sth0 = sign_tree_sth([], 1699990000, "sth-size-0", es_priv, iss)
+    sth2 = sth_for(2, 1700000020, "sth-size-2", entries[:2])
     sth4 = sth_for(4, 1700000100, "sth-size-4", entries[:4])
     sth6 = sth_for(6, CLOCK, "sth-size-6", entries)
     cons46 = b64s(mkl.consistency_proof(encoded, 4))
@@ -591,6 +592,14 @@ def write_reputation_vectors(es_priv, rsa_priv, out: Path, iss: str, fixed_iat: 
         },
         {
             "expect": "pass",
+            "held_sths": [sth0["jwt"], sth2["jwt"], sth6["jwt"]],
+            "id": "older-sth-size-0-and-2",
+            "presentation": pres_inclusion,
+            "score": {"active_contract_settlements": 1, "distinct_counterparties": 1, "revoked_jtis": []},
+            "status": "active",
+        },
+        {
+            "expect": "pass",
             "held_sths": [sth6["jwt"]],
             "id": "completeness-card-test-001",
             "presentation": pres_complete,
@@ -642,7 +651,13 @@ def write_reputation_vectors(es_priv, rsa_priv, out: Path, iss: str, fixed_iat: 
             "presentation": {"disclosures": [], "history_proof": {"entries": [], "non_inclusion": {"sub": "card-test-000"}}, "sth": sth0["jwt"]},
         },
         reject("reject-bad-inclusion", "inclusion_failed", bad_incl),
-        reject("reject-bad-consistency", "consistency_failed", bad_cons, held=[sth6["jwt"]]),
+        reject("reject-bad-consistency", "consistency_failed", bad_cons, held=[sth4["jwt"], sth6["jwt"]]),
+        reject(
+            "reject-junk-path-older-sth",
+            "consistency_failed",
+            bad_cons,
+            held=[sth0["jwt"], sth2["jwt"], sth6["jwt"]],
+        ),
         reject("reject-stale-sth", "sth_stale", stale_pres, held=[stale_jwt]),
         reject("reject-future-sth", "sth_stale", future_pres, held=[future_jwt]),
         reject("reject-rollback", "split_view", rollback_pres, held=[sth6["jwt"], fork4_jwt]),
@@ -681,6 +696,7 @@ def write_reputation_vectors(es_priv, rsa_priv, out: Path, iss: str, fixed_iat: 
         ],
         "sth": {
             "0": sth0,
+            "2": sth2,
             "4": sth4,
             "6": sth6,
         },

@@ -676,20 +676,27 @@ def _accept_sth(store: dict[str, list[dict]], sth: dict) -> None:
     previous.append(sth)
 
 
-def _reconcile_older(held: list[dict], current: dict, path: list[str] | None) -> None:
-    """A smaller consistent STH is ignored. A failed proof between two held STHs is a fork.
+def _reconcile_older(held: list[dict], current: dict, issuer_proofs: dict[tuple[int, int], list[str]] | None) -> None:
+    """Decide freeze from the issuer consistency endpoint, never from the presenter's path.
 
-    Missing proof does not freeze: an older STH alone is not split_view.
+    Fetch a proof only for exactly the two held sizes. tree_size 0 is a prefix of every
+    later tree. No issuer proof for the pair means ignore the older STH and do not freeze.
     """
     older = [sth for sth in held if sth["tree_size"] < current["tree_size"]]
-    if not older or not path:
+    if not older:
         return
-    try:
-        nodes = _decode_path(path)
-    except ReputationFailure:
-        raise ReputationFailure("split_view") from None
+    proofs = issuer_proofs or {}
     current_root = mkl.b64url_decode(current["root_hash"])
     for sth in older:
+        if sth["tree_size"] == 0:
+            continue
+        path = proofs.get((sth["tree_size"], current["tree_size"]))
+        if not path:
+            continue
+        try:
+            nodes = _decode_path(path)
+        except ReputationFailure:
+            raise ReputationFailure("split_view") from None
         if not mkl.verify_consistency(
             sth["tree_size"],
             current["tree_size"],
@@ -698,6 +705,17 @@ def _reconcile_older(held: list[dict], current: dict, path: list[str] | None) ->
             nodes,
         ):
             raise ReputationFailure("split_view")
+
+
+def _issuer_consistency_proofs(entries: list[dict]) -> dict[tuple[int, int], list[str]]:
+    """What GET consistency?first=&second= returns for the fixture log. Not a presenter path."""
+    encoded = [mkl.canon(entry) for entry in entries]
+    proofs: dict[tuple[int, int], list[str]] = {}
+    n = len(encoded)
+    for first in range(1, n):
+        for second in range(first + 1, n + 1):
+            proofs[(first, second)] = [mkl.b64url(node) for node in mkl.consistency_proof(encoded[:second], first)]
+    return proofs
 
 
 def _verify_leaf(index: int, tree_size: int, entry: dict, path: list[str], root_b64: str, code: str) -> None:
@@ -842,7 +860,7 @@ def _verify_history(hp: dict, sth: dict, disclosures: list[dict], earlier_indice
         if entry.get("entry_type") not in REPUTATION_TYPES or entry.get("sub") != checkpoint["sub"]:
             raise ReputationFailure("history_malformed")
     if earlier_indices is not None and indices[: len(earlier_indices)] != list(earlier_indices):
-        raise ReputationFailure("split_view")
+        raise ReputationFailure("history_malformed")
     _check_disclosures(presented, disclosures)
     return presented
 
@@ -882,8 +900,9 @@ def evaluate_presentation(
     jwt_mod,
     jti_cache: set[str],
     earlier_indices: list[int] | None = None,
+    issuer_proofs: dict[tuple[int, int], list[str]] | None = None,
 ) -> dict:
-    """Presentation-only verifier. Does not read the issuer's full log."""
+    """Presentation-only verifier. Issuer consistency proofs are a separate fetch."""
     tokens = list(held_sths)
     if presentation.get("sth"):
         tokens.append(presentation["sth"])
@@ -906,7 +925,7 @@ def evaluate_presentation(
         raise ReputationFailure("log_unreachable")
     held = store[next(iter(log_ids))]
     current = max(held, key=lambda item: (item["tree_size"], item["timestamp"]))
-    _reconcile_older(held, current, presentation.get("consistency_path"))
+    _reconcile_older(held, current, issuer_proofs)
     history_proof = presentation["history_proof"]
     if "non_inclusion" in history_proof:
         _verify_history(history_proof, current, presentation.get("disclosures") or [], earlier_indices)
@@ -1144,6 +1163,7 @@ def check_reputation() -> list[str]:
                 jwt_mod,
                 cache,
                 earlier,
+                _issuer_consistency_proofs(doc["entries"]),
             )
             if vector["expect"] == "reject":
                 outcome = "error:accepted"
