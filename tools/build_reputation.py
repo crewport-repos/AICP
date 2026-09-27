@@ -378,6 +378,12 @@ def write_reputation_vectors(es_priv, rsa_priv, out: Path, iss: str, fixed_iat: 
         es_priv, iss, "card-test-002", "jti-pres-bad-cons-b64", "jti-rep-002", 2, 4, root4,
         path_at(encoded4, 4, 2), fixed_iat, fixed_exp,
     )
+    bad_cons_not_array = copy.deepcopy(pres_consistency)
+    bad_cons_not_array["consistency_path"] = 5
+    bad_cons_not_array["attestation"] = card_jws(
+        es_priv, iss, "card-test-002", "jti-pres-bad-cons-arr", "jti-rep-002", 2, 4, root4,
+        path_at(encoded4, 4, 2), fixed_iat, fixed_exp,
+    )
 
     stale_payload = copy.deepcopy(sth6["payload"])
     stale_payload["timestamp"] = CLOCK - MAX_AGE - SKEW - 1
@@ -695,7 +701,7 @@ def write_reputation_vectors(es_priv, rsa_priv, out: Path, iss: str, fixed_iat: 
             "reject-issuer-proof-empty",
             "split_view",
             pres_inclusion,
-            held=[fork4_jwt, sth6["jwt"]],
+            held=[sth4["jwt"], sth6["jwt"]],
             extra={"issuer_proof_overrides": {"4,6": []}},
         ),
         reject(
@@ -713,6 +719,7 @@ def write_reputation_vectors(es_priv, rsa_priv, out: Path, iss: str, fixed_iat: 
             extra={"issuer_proof_overrides": {"4,6": ["a"]}},
         ),
         reject("reject-presenter-consistency-undecodable", "consistency_failed", bad_cons_undecodable),
+        reject("reject-presenter-consistency-not-array", "consistency_failed", bad_cons_not_array),
         reject(
             "reject-shrunk-history",
             "history_malformed",

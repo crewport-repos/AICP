@@ -477,8 +477,12 @@ class PathDecodeError(Exception):
 
 
 def _decode_path(items: list[str]) -> list[bytes]:
+    if not isinstance(items, list):
+        raise PathDecodeError("not_a_list")
     out = []
     for item in items:
+        if not isinstance(item, str):
+            raise PathDecodeError("not_a_string")
         try:
             raw = mkl.b64url_decode(item)
         except Exception as exc:
